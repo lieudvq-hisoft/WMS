@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  wms:
+    image: ${DOCKER_REGISTRY-}wms
+    build:
+      context: .
+      dockerfile: WMS/Dockerfile
