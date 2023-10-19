@@ -20,4 +20,10 @@ namespace Data.Model
         public string? NormalizedName { get; set; }
         public string Name { get; set; }
     }
+
+    public class AssignRoleModel
+    {
+        public Guid UserId { get; set; }
+        public Guid RoleId { get; set; }
+    }
 }
