@@ -12,6 +12,7 @@ namespace Services.Mapping
             CreateMap<User, UserModel>();
             
             CreateMap<RoleCreateModel, Role>();
+            CreateMap<Role, RoleModel>();
         }
     }
 }

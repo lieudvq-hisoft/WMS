@@ -15,7 +15,6 @@ using Services.Utils;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Services.Core;
 
@@ -30,6 +29,10 @@ public interface IUserService
     Task<ResultModel> ForgotPassword(ForgotPasswordModel model);
     Task<ResultModel> DeactivateUser(Guid userId);
     Task<ResultModel> ActivateUser(Guid userId);
+    Task<ResultModel> AssignRole(AssignRoleModel model);
+    Task<ResultModel> UnassignRole(AssignRoleModel model);
+    Task<ResultModel> GetRoleOfUser(Guid userId);
+    Task<ResultModel> GetUsersInRole(String name);
 }
 public class UserService : IUserService
 {
@@ -410,6 +413,133 @@ public class UserService : IUserService
             result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
         }
 
+        return result;
+    }
+
+    public async Task<ResultModel> AssignRole(AssignRoleModel model)
+    {
+        ResultModel result = new ResultModel();
+        try
+        {
+            var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+            if (user == null)
+            {
+                result.ErrorMessage = "User not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (!user.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
+                return result;
+            }
+            var role = _dbContext.Role.Where(_ => _.Id == model.RoleId).FirstOrDefault();
+            if (role == null)
+            {
+                result.ErrorMessage = "Role not exists";
+                result.Succeed = false;
+                return result;
+            }
+            await _userManager.AddToRoleAsync(user, role.NormalizedName);
+            result.Succeed = true;
+            result.Data = _mapper.Map<Role, RoleModel>(role);
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UnassignRole(AssignRoleModel model)
+    {
+        ResultModel result = new ResultModel();
+        try
+        {
+            var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+            if (user == null)
+            {
+                result.ErrorMessage = "User not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (!user.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
+                return result;
+            }
+            var role = _dbContext.Role.Where(_ => _.Id == model.RoleId).FirstOrDefault();
+            if (role == null)
+            {
+                result.ErrorMessage = "Role not exists";
+                result.Succeed = false;
+                return result;
+            }
+            await _userManager.RemoveFromRoleAsync(user, role.NormalizedName);
+            result.Succeed = true;
+            result.Data = _mapper.Map<Role, RoleModel>(role);
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetRoleOfUser(Guid userId)
+    {
+        ResultModel result = new ResultModel();
+        try
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                result.ErrorMessage = "User not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (!user.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
+                return result;
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            result.Succeed = true;
+            result.Data = roles;
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetUsersInRole(String name)
+    {
+        ResultModel result = new ResultModel();
+        try
+        {
+            var users = await _userManager.GetUsersInRoleAsync(name);
+            result.Succeed = true;
+            result.Data = users.Select(_ =>
+            new UserModel
+            {
+                Id = _.Id,
+                Address = _.Address,
+                Email = _.Email!,
+                FirstName = _.FirstName,
+                LastName = _.LastName,
+                PhoneNumber = _.PhoneNumber,
+                UserName = _.UserName!, 
+            });
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
         return result;
     }
 

@@ -94,4 +94,43 @@ public class UserController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "Admin")]
+    [HttpPost("AssignRole")]
+    public async Task<ActionResult> AssignRole(AssignRoleModel model)
+    {
+        var result = await _userService.AssignRole(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "Admin")]
+    [HttpPost("UnassignRole")]
+    public async Task<ActionResult> UnassignRole(AssignRoleModel model)
+    {
+        var result = await _userService.UnassignRole(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpGet("Roles")]
+    public async Task<ActionResult> GetRoleOfUser()
+    {
+        var result = await _userService.GetRoleOfUser(Guid.Parse(User.GetId()));
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "Admin")]
+    [HttpGet("UsersInRole/{roleName}")]
+    public async Task<ActionResult> GetUsersInRole(String roleName)
+    {
+        var result = await _userService.GetUsersInRole(roleName);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }
