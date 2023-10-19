@@ -24,6 +24,7 @@ public interface IUserService
     Task<ResultModel> Register(UserCreateModel model);
     Task<ResultModel> Login(LoginModel model);
     Task<ResultModel> Get(PagingParam<UserSortCriteria> paginationModel, UserSearchModel searchModel);
+    Task<ResultModel> UpdateProfile(ProfileUpdateModel model, Guid userId);
 }
 public class UserService : IUserService
 {
@@ -169,6 +170,46 @@ public class UserService : IUserService
             result.Data = paging;
             result.Succeed = true;
 
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UpdateProfile(ProfileUpdateModel model, Guid userId)
+    {
+        ResultModel result = new ResultModel();
+        try
+        {
+            var data = _dbContext.User.Where(_ => _.Id == userId && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "User not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if(model.FirstName != null)
+            {
+                data.FirstName = model.FirstName;
+            }
+            if (model.LastName != null)
+            {
+                data.LastName = model.LastName;
+            }
+            if (model.Address != null)
+            {
+                data.Address = model.Address;
+            }
+            if (model.PhoneNumber != null)
+            {
+                data.PhoneNumber = model.PhoneNumber;
+            }
+            data.DateUpdated = DateTime.Now;
+            await _dbContext.SaveChangesAsync();
+            result.Succeed = true;
+            result.Data = _mapper.Map<User, UserModel>(data);
         }
         catch (Exception e)
         {

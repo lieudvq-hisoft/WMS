@@ -27,6 +27,14 @@ namespace Data.Model
         public string Email { get; set; }
     }
 
+    public class ProfileUpdateModel
+    {
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Address { get; set; }
+        public string? PhoneNumber { get; set; }
+    }
+
     public class UserSearchModel
     {
         public string? SearchValue { get; set; } = "";
