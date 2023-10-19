@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Data.Common.PaginationModel;
 using Data.DataAccess;
-using Data.DataAccess.Constant;
 using Data.Entities;
 using Data.Enums;
 using Data.Model;
@@ -25,17 +24,21 @@ public interface IUserService
     Task<ResultModel> Login(LoginModel model);
     Task<ResultModel> Get(PagingParam<UserSortCriteria> paginationModel, UserSearchModel searchModel);
     Task<ResultModel> UpdateProfile(ProfileUpdateModel model, Guid userId);
+    Task<ResultModel> ChangePassword(ChangePasswordModel model, Guid userId);
+    Task<ResultModel> ResetPassword(ResetPasswordModel model);
+    Task<ResultModel> ForgotPassword(ForgotPasswordModel model);
 }
 public class UserService : IUserService
 {
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IMailService _mailService;
     private readonly IConfiguration _configuration;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly RoleManager<Role> _roleManager;
 
-    public UserService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager)
+    public UserService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, IMailService mailService)
     {
         _dbContext = dbContext;
         _mapper = mapper;
@@ -43,6 +46,7 @@ public class UserService : IUserService
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
+        _mailService = mailService;
     }
 
     public async Task<ResultModel> Login(LoginModel model)
@@ -215,6 +219,101 @@ public class UserService : IUserService
         {
             result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
         }
+        return result;
+    }
+
+    public async Task<ResultModel> ChangePassword(ChangePasswordModel model, Guid userId)
+    {
+        var result = new ResultModel();
+
+        try
+        {
+            var user = _dbContext.User.Where(_ => _.Email == model.Email && _.Id == userId && !_.IsDeleted).FirstOrDefault();
+
+            if (user == null)
+            {
+                result.ErrorMessage = "Email or Password not correct";
+                result.Succeed = false;
+                return result;
+            }
+            var check = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (!check.Succeeded)
+            {
+                result.ErrorMessage = check.ToString() ?? "Change password failed";
+                result.Succeed = false;
+                return result;
+            }
+            result.Succeed = check.Succeeded;
+            result.Data = "Change password successful";
+
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
+
+
+        return result;
+    }
+
+    public async Task<ResultModel> ResetPassword(ResetPasswordModel model)
+    {
+        var result = new ResultModel();
+
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User not found";
+                return result;
+            }
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (!resetPassResult.Succeeded)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = resetPassResult.ToString();
+                return result;
+            }
+            result.Succeed = true;
+            result.Data = "Reset password successful";
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
+
+        return result;
+    }
+
+    public async Task<ResultModel> ForgotPassword(ForgotPasswordModel model)
+    {
+        var result = new ResultModel();
+
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User not found";
+                return result;
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            //string url = $"https://digitalcapstone.hisoft.vn/resetPassword?token={token}";
+            //var confirmTokenLink = $"<a href={url}>Please click for reset password</a><div></div>";
+
+            var email = new EmailInfoModel { Subject = "Reset password", To = model.Email, Text = token };
+            result.Succeed = await _mailService.SendEmail(email);
+            result.Data = result.Succeed ? "Password reset email has been sent" : "Password reset email sent failed";
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
+
         return result;
     }
 

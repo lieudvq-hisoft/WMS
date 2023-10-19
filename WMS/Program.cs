@@ -1,5 +1,5 @@
+using Data.Models;
 using WMS.Extensions;
-using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddAutoMapper();
 builder.Services.ConfigIdentityService();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddBussinessService(builder.Configuration);
 builder.Services.ConfigureSwagger();
