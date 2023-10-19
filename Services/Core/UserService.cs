@@ -3,6 +3,7 @@ using Data.DataAccess;
 using Data.DataAccess.Constant;
 using Data.Entities;
 using Data.Model;
+using Data.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,30 @@ public class UserService : IUserService
         var result = new ResultModel();
         try
         {
+            var userByEmail = await _userManager.FindByEmailAsync(model.Email);
+            if (userByEmail == null)
+            {
+                result.ErrorMessage = "Email not exists";
+                result.Succeed = false;
+                return result;
+            }
+            var check = await _signInManager.CheckPasswordSignInAsync(userByEmail, model.Password, false);
+            if (!check.Succeeded)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Password isn't correct";
+                return result;
+            }
+            var userRoles = _dbContext.UserRoles.Where(ur => ur.UserId == userByEmail.Id).ToList();
+            var roles = new List<string>();
+            foreach (var userRole in userRoles)
+            {
+                var role = await _dbContext.Roles.FindAsync(userRole.RoleId);
+                if (role != null) roles.Add(role.Name);
+            }
+            var token = await GetAccessToken(userByEmail, roles);
+            result.Succeed = true;
+            result.Data = token;
         }
         catch (Exception ex)
         {
@@ -57,6 +82,50 @@ public class UserService : IUserService
         result.Succeed = false;
         try
         {
+            var checkEmailExisted = await _userManager.FindByEmailAsync(model.Email);
+            if (checkEmailExisted != null)
+            {
+                result.ErrorMessage = "Email already existed";
+                result.Succeed = false;
+                return result;
+            }
+            var checkUserNameExisted = await _userManager.FindByNameAsync(model.UserName);
+            if (checkUserNameExisted != null)
+            {
+                result.ErrorMessage = "UserName already existed";
+                result.Succeed = false;
+                return result;
+            }
+
+            var userRole = new UserRole {};
+
+            var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.NormalizedName == RoleNormalizedName.Staff);
+            if (role == null)
+            {
+                var newRole = _mapper.Map<RoleCreateModel, Role>(new RoleCreateModel { Description = "Role for Staff", Name = "Staff", NormalizedName = RoleNormalizedName.Staff });
+                _dbContext.Roles.Add(newRole);
+                userRole.RoleId = newRole.Id;
+            }
+            else
+            {
+                userRole.RoleId = role.Id;
+            }
+
+            var user = _mapper.Map<UserCreateModel, User>(model);
+
+            var checkCreateSuccess = await _userManager.CreateAsync(user, model.Password);
+
+            if (!checkCreateSuccess.Succeeded)
+            {
+                result.ErrorMessage = "User registration failed";
+                result.Succeed = false;
+                return result;
+            }
+            userRole.UserId = user.Id;
+            _dbContext.UserRoles.Add(userRole);
+            await _dbContext.SaveChangesAsync();
+            result.Succeed = true;
+            result.Data = user.Id;
         }
         catch (Exception ex)
         {

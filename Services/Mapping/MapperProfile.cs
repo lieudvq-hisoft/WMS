@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Data.Entities;
+using Data.Model;
 
 namespace Services.Mapping
 {
@@ -6,15 +8,9 @@ namespace Services.Mapping
     {
         public MapperProfile()
         {
-            //CreateMap<UserCreateModel, User>();
-            //CreateMap<User, UserPostModel>();
-            //CreateMap<User, UserModel>();
-            //CreateMap<User, UserViewModel>();
-            //CreateMap<UserRole, UserRoleModel>();
-
-            //CreateMap<Role,RoleModel>();
-            //CreateMap<UpdateRoleModel, Role>();
-            //CreateMap<CreateRoleModel, Role>();
+            CreateMap<UserCreateModel, User>();
+            
+            CreateMap<RoleCreateModel, Role>();
         }
     }
 }
