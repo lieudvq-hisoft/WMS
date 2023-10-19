@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Core;
 using Services.Utils;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.Design;
 
 namespace UserController.Controllers;
 
@@ -50,6 +48,31 @@ public class UserController : ControllerBase
     public async Task<ActionResult> UpdateProfile([FromBody] ProfileUpdateModel model)
     {
         var result = await _userService.UpdateProfile(model, Guid.Parse(User.GetId()));
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpPut("ChangePassword")]
+    public async Task<ActionResult> ChangePassword(ChangePasswordModel model)
+    {
+        var result = await _userService.ChangePassword(model, Guid.Parse(User.GetId()));
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [HttpPost("ForgotPassword")]
+    public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordModel model)
+    {
+        var result = await _userService.ForgotPassword(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [HttpPost("ResetPassword")]
+    public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordModel model)
+    {
+        var result = await _userService.ResetPassword(model);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }

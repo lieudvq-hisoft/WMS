@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using System.ComponentModel.Design;
-using System.Data;
-using System;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using AutoMapper;
@@ -55,6 +52,7 @@ public static class StartupExtension
     public static void AddBussinessService(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IMailService, MailService>();
     }
 
     public static void ConfigIdentityService(this IServiceCollection services)

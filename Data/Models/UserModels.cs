@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using Data.DataAccess.Constant;
 using System.ComponentModel.DataAnnotations;
 
 namespace Data.Model
@@ -33,6 +33,32 @@ namespace Data.Model
         public string? LastName { get; set; }
         public string? Address { get; set; }
         public string? PhoneNumber { get; set; }
+    }
+
+    public class ChangePasswordModel
+    {
+        public string Email { get; set; }
+        public string CurrentPassword { get; set; }
+        public string NewPassword { get; set; }
+    }
+
+    public class ResetPasswordModel
+    {
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
+
+        public string Email { get; set; }
+        public string Token { get; set; }
+    }
+
+    public class ForgotPasswordModel
+    {
+        public string Email { get; set; }
     }
 
     public class UserSearchModel
