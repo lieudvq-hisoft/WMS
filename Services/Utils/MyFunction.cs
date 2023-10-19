@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -6,6 +7,15 @@ namespace Services.Utils
 {
     public static class MyFunction
     {
+        public static string GetId(this ClaimsPrincipal user)
+        {
+            var idClaim = user.Claims.FirstOrDefault(i => i.Type.Equals("UserId"));
+            if (idClaim != null)
+            {
+                return idClaim.Value;
+            }
+            return "";
+        }
         public static string ConvertToUnSign(string input)
         {
             input = input.Trim();

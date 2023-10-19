@@ -4,6 +4,7 @@ using Data.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Core;
+using Services.Utils;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.Design;
 
@@ -40,6 +41,15 @@ public class UserController : ControllerBase
     public async Task<ActionResult> Get([FromQuery] PagingParam<UserSortCriteria> paginationModel, [FromQuery] UserSearchModel searchModel)
     {
         var result = await _userService.Get(paginationModel, searchModel);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpPut("Profile")]
+    public async Task<ActionResult> UpdateProfile([FromBody] ProfileUpdateModel model)
+    {
+        var result = await _userService.UpdateProfile(model, Guid.Parse(User.GetId()));
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
