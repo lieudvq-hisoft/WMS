@@ -1,13 +1,18 @@
 ﻿using AutoMapper;
+using Data.Common.PaginationModel;
 using Data.DataAccess;
 using Data.DataAccess.Constant;
 using Data.Entities;
+using Data.Enums;
 using Data.Model;
+using Data.Models;
 using Data.Utils;
+using Data.Utils.Paging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Services.Utils;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -18,6 +23,7 @@ public interface IUserService
 {
     Task<ResultModel> Register(UserCreateModel model);
     Task<ResultModel> Login(LoginModel model);
+    Task<ResultModel> Get(PagingParam<UserSortCriteria> paginationModel, UserSearchModel searchModel);
 }
 public class UserService : IUserService
 {
@@ -130,6 +136,43 @@ public class UserService : IUserService
         catch (Exception ex)
         {
             result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> Get(PagingParam<UserSortCriteria> paginationModel, UserSearchModel searchModel)
+    {
+        ResultModel result = new ResultModel();
+        try
+        {
+            var data = _dbContext.Users.Include(_ => _.UserRoles).ThenInclude(_ => _.Role).Where(delegate (User m)
+            {
+                if (
+                    (MyFunction.ConvertToUnSign(m.FirstName ?? "").IndexOf(MyFunction.ConvertToUnSign(searchModel.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0) ||
+                    (MyFunction.ConvertToUnSign(m.LastName ?? "").IndexOf(MyFunction.ConvertToUnSign(searchModel.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0) ||
+                    (MyFunction.ConvertToUnSign(m.Address ?? "").IndexOf(MyFunction.ConvertToUnSign(searchModel.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    || (m.PhoneNumber.ToUpper().Contains(searchModel.SearchValue ?? "".ToUpper())
+                    || (m.UserName.ToUpper().Contains(searchModel.SearchValue ?? "".ToUpper())
+                    || (m.Email.ToUpper().Contains(Uri.UnescapeDataString(searchModel.SearchValue ?? "").ToUpper())
+                    ))))
+                    return true;
+                else
+                    return false;
+            }).AsQueryable();
+
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, data.Count());
+
+            var uses = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            uses = uses.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<UserModel>(uses);
+            paging.Data = viewModels;
+            result.Data = paging;
+            result.Succeed = true;
+
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
         }
         return result;
     }

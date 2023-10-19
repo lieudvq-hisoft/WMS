@@ -9,6 +9,7 @@ namespace Services.Mapping
         public MapperProfile()
         {
             CreateMap<UserCreateModel, User>();
+            CreateMap<User, UserModel>();
             
             CreateMap<RoleCreateModel, Role>();
         }
