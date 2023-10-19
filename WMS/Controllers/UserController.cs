@@ -76,4 +76,22 @@ public class UserController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpPut("Active/{userId}")]
+    public async Task<ActionResult> ActiveUser(Guid userId)
+    {
+        var result = await _userService.ActivateUser(userId);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpPut("Deactive/{userId}")]
+    public async Task<ActionResult> DeactiveUser(Guid userId)
+    {
+        var result = await _userService.DeactivateUser(userId);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }

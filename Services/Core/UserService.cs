@@ -15,6 +15,7 @@ using Services.Utils;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Services.Core;
 
@@ -27,6 +28,8 @@ public interface IUserService
     Task<ResultModel> ChangePassword(ChangePasswordModel model, Guid userId);
     Task<ResultModel> ResetPassword(ResetPasswordModel model);
     Task<ResultModel> ForgotPassword(ForgotPasswordModel model);
+    Task<ResultModel> DeactivateUser(Guid userId);
+    Task<ResultModel> ActivateUser(Guid userId);
 }
 public class UserService : IUserService
 {
@@ -60,6 +63,12 @@ public class UserService : IUserService
             {
                 result.ErrorMessage = "Email not exists";
                 result.Succeed = false;
+                return result;
+            }
+            if (!userByEmail.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
                 return result;
             }
             var check = await _signInManager.CheckPasswordSignInAsync(userByEmail, model.Password, false);
@@ -128,7 +137,7 @@ public class UserService : IUserService
 
             if (!checkCreateSuccess.Succeeded)
             {
-                result.ErrorMessage = "User registration failed";
+                result.ErrorMessage = checkCreateSuccess.ToString();
                 result.Succeed = false;
                 return result;
             }
@@ -194,6 +203,12 @@ public class UserService : IUserService
                 result.Succeed = false;
                 return result;
             }
+            if (!data.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
+                return result;
+            }
             if(model.FirstName != null)
             {
                 data.FirstName = model.FirstName;
@@ -230,12 +245,13 @@ public class UserService : IUserService
         {
             var user = _dbContext.User.Where(_ => _.Email == model.Email && _.Id == userId && !_.IsDeleted).FirstOrDefault();
 
-            if (user == null)
+            if (!user.IsActive)
             {
-                result.ErrorMessage = "Email or Password not correct";
                 result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
                 return result;
             }
+
             var check = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
             if (!check.Succeeded)
             {
@@ -269,6 +285,12 @@ public class UserService : IUserService
                 result.ErrorMessage = "User not found";
                 return result;
             }
+            if (!user.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
+                return result;
+            }
             var resetPassResult = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
             if (!resetPassResult.Succeeded)
             {
@@ -300,6 +322,12 @@ public class UserService : IUserService
                 result.ErrorMessage = "User not found";
                 return result;
             }
+            if (!user.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
+                return result;
+            }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             //string url = $"https://digitalcapstone.hisoft.vn/resetPassword?token={token}";
@@ -308,6 +336,74 @@ public class UserService : IUserService
             var email = new EmailInfoModel { Subject = "Reset password", To = model.Email, Text = token };
             result.Succeed = await _mailService.SendEmail(email);
             result.Data = result.Succeed ? "Password reset email has been sent" : "Password reset email sent failed";
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
+
+        return result;
+    }
+
+    public async Task<ResultModel> DeactivateUser(Guid userId)
+    {
+        var result = new ResultModel();
+
+        try
+        {
+            var user = _dbContext.User.Where(_ => _.Id == userId && !_.IsDeleted).FirstOrDefault();
+            if (user == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User not found";
+                return result;
+            }
+
+            if(!user.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
+                return result;
+            }
+            user.IsActive = false;
+            user.DateUpdated = DateTime.Now;
+            await _dbContext.SaveChangesAsync();
+            result.Succeed = true;
+            result.Data = user.Id;
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
+
+        return result;
+    }
+
+    public async Task<ResultModel> ActivateUser(Guid userId)
+    {
+        var result = new ResultModel();
+
+        try
+        {
+            var user = _dbContext.User.Where(_ => _.Id == userId && !_.IsDeleted).FirstOrDefault();
+            if (user == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User not found";
+                return result;
+            }
+
+            if (user.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been activated";
+                return result;
+            }
+            user.IsActive = true;
+            user.DateUpdated = DateTime.Now;
+            await _dbContext.SaveChangesAsync();
+            result.Succeed = true;
+            result.Data = user.Id;
         }
         catch (Exception e)
         {
