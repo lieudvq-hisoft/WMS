@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Data.Entities;
 using Data.Model;
+using Data.Models;
 
 namespace Services.Mapping
 {
@@ -13,6 +14,10 @@ namespace Services.Mapping
             
             CreateMap<RoleCreateModel, Role>();
             CreateMap<Role, RoleModel>();
+
+            CreateMap<SupplierCreateModel, Supplier>();
+            CreateMap<SupplierUpdateModel, Supplier>();
+            CreateMap<SupplierModel, Supplier>().ReverseMap();
         }
     }
 }

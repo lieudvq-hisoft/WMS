@@ -15,3 +15,8 @@ public enum UserSortCriteria
     Email
 }
 
+public enum SupplierSortCriteria
+{
+    Email
+}
+
