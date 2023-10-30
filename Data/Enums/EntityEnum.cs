@@ -17,6 +17,12 @@ public enum UserSortCriteria
 
 public enum SupplierSortCriteria
 {
-    Email
+    DateCreated
+}
+
+public enum ReceiptSortCriteria
+{
+    DateCreated
+
 }
 
