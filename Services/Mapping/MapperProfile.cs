@@ -18,6 +18,10 @@ namespace Services.Mapping
             CreateMap<SupplierCreateModel, Supplier>();
             CreateMap<SupplierUpdateModel, Supplier>();
             CreateMap<SupplierModel, Supplier>().ReverseMap();
+
+            CreateMap<ReceiptCreateModel, Receipt>();
+            CreateMap<ReceiptUpdateModel, Receipt>();
+            CreateMap<ReceiptModel, Receipt>().ReverseMap();
         }
     }
 }
