@@ -54,6 +54,11 @@ public static class StartupExtension
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IMailService, MailService>();
         services.AddScoped<IRoleService, RoleService>();
+
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IInboundProductService, InboundProductService>();
+        services.AddScoped<IReceiptService, ReceiptService>();
+        services.AddScoped<ISupplierService, SupplierService>();
     }
 
     public static void ConfigIdentityService(this IServiceCollection services)
