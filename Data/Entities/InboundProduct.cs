@@ -8,8 +8,8 @@ public class InboundProduct : BaseEntity
     [ForeignKey("ProductId")]
     public virtual Product? Product { get; set; }
 
-    public Guid ReceivedId { get; set; }
-    [ForeignKey("ReceivedId")]
+    public Guid ReceiptId { get; set; }
+    [ForeignKey("ReceiptId")]
     public virtual Receipt? Receipt { get; set; }
 
     public int? Quantity { get; set; }
