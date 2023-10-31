@@ -26,3 +26,15 @@ public enum ReceiptSortCriteria
 
 }
 
+public enum ProductSortCriteria
+{
+    DateCreated
+
+}
+
+public enum InboundProductSortCriteria
+{
+    DateCreated
+
+}
+

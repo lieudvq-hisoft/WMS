@@ -111,9 +111,9 @@ public class ReceiptService : IReceiptService
             }).AsQueryable();
             data = data.Where(_ => !_.IsDeleted);
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, data.Count());
-            var suppliers = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
-            suppliers = suppliers.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
-            var viewModels = _mapper.ProjectTo<ReceiptModel>(suppliers);
+            var receipts = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            receipts = receipts.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<ReceiptModel>(receipts);
             paging.Data = viewModels;
             result.Data = paging;
             result.Succeed = true;

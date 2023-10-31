@@ -22,6 +22,14 @@ namespace Services.Mapping
             CreateMap<ReceiptCreateModel, Receipt>();
             CreateMap<ReceiptUpdateModel, Receipt>();
             CreateMap<ReceiptModel, Receipt>().ReverseMap();
+
+            CreateMap<ProductCreateModel, Product>();
+            CreateMap<ProductUpdateModel, Product>();
+            CreateMap<ProductModel, Product>().ReverseMap();
+
+            CreateMap<InboundProductCreateModel, InboundProduct>();
+            CreateMap<InboundProductUpdateModel, InboundProduct>();
+            CreateMap<InboundProductModel, InboundProduct>().ReverseMap();
         }
     }
 }
