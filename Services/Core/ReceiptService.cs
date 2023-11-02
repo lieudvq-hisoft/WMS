@@ -158,11 +158,6 @@ public class ReceiptService : IReceiptService
                 data!.Note = model.Note;
             }
 
-            if (model.Status != null)
-            {
-                data!.Status = model.Status;
-            }
-
             if (model.InventoryCount != null)
             {
                 data!.InventoryCount = model.InventoryCount;

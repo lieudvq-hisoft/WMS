@@ -44,4 +44,7 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<InboundProduct> InboundProduct { get; set; }
     public DbSet<Inventory> Inventory { get; set; }
     public DbSet<Location> Location { get; set; }
+    public DbSet<PickingRequest> PickingRequest { get; set; }
+    public DbSet<OutboundProduct> OutboundProduct { get; set; }
+    public DbSet<LocationOutboundProduct> LocationOutboundProduct { get; set; }
 }

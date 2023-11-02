@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Data.Enums;
 
 namespace Data.Entities;
 
@@ -18,5 +19,5 @@ public class Receipt : BaseEntity
     public string? Note { get; set; }
     public int? InventoryCount { get; set; }
     public DateTime? ReceivedDate { get; set; }
-    public int? Status { get; set; }
+    public ReceiptStatus Status { get; set; } = ReceiptStatus.Pending;
 }
