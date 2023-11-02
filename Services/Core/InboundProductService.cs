@@ -17,6 +17,7 @@ public interface IInboundProductService
     Task<ResultModel> Update(InboundProductUpdateModel model);
     Task<ResultModel> Get(PagingParam<InboundProductSortCriteria> paginationModel, InboundProductSearchModel model);
     Task<ResultModel> Delete(Guid id);
+    Task<ResultModel> Completed(InboundProductCompletedModel model);
 }
 public class InboundProductService : IInboundProductService
 {
@@ -27,6 +28,68 @@ public class InboundProductService : IInboundProductService
     {
         _dbContext = dbContext;
         _mapper = mapper;
+    }
+
+    public async Task<ResultModel> Completed(InboundProductCompletedModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        var transaction = _dbContext.Database.BeginTransaction();
+        try
+        {
+            var data = _dbContext.InboundProduct.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Inbound Product not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if(data.Status == InboundProductStatus.Completed)
+            {
+                result.ErrorMessage = "Inbound Product is completed";
+                result.Succeed = false;
+                return result;
+            }
+            if (data.Quantity <= 0)
+            {
+                result.ErrorMessage = "Inbound product cannot be completed with a quantity of 0 or less than 0";
+                result.Succeed = false;
+                return result;
+            }
+            var location = _dbContext.Location.Where(_ => _.Id == model.LocationId && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Location not exists";
+                result.Succeed = false;
+                return result;
+            }
+
+            data.Status = InboundProductStatus.Completed;
+            data.DateUpdated = DateTime.Now;
+            data.CompletedDate = DateTime.Now;
+            _dbContext.InboundProduct.Update(data);
+
+            var inventory = new Inventory
+            {
+                ProductId = data.ProductId,
+                QuantityOnHand = data.Quantity,
+                ReceivedDate = data.CompletedDate,
+                Type = InventoryType.In,
+                LocationId = location!.Id
+            };
+            _dbContext.Inventory.Add(inventory);
+
+            _dbContext.SaveChanges();
+            await transaction.CommitAsync();
+            result.Succeed = true;
+            result.Data = data.Id;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            await transaction.RollbackAsync();
+        }
+        return result;
     }
 
     public async Task<ResultModel> Create(InboundProductCreateModel model)
@@ -136,7 +199,7 @@ public class InboundProductService : IInboundProductService
             }
             if (model.Quantity != null)
             {
-                data!.Quantity = model.Quantity;
+                data!.Quantity = (int)model.Quantity;
             }
 
             if (model.PurchaseUnitPrice != null)
@@ -156,7 +219,7 @@ public class InboundProductService : IInboundProductService
 
             if (model.Status != null)
             {
-                data!.Status = model.Status;
+                data!.Status = (InboundProductStatus)model.Status;
             }
 
             if (model.ManufacturedDate != null)

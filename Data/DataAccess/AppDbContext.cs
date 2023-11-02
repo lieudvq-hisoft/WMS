@@ -42,4 +42,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<Supplier> Supplier { get; set; }
     public DbSet<Receipt> Receipt { get; set; }
     public DbSet<InboundProduct> InboundProduct { get; set; }
+    public DbSet<Inventory> Inventory { get; set; }
+    public DbSet<Location> Location { get; set; }
 }

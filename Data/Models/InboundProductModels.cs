@@ -1,6 +1,7 @@
 ﻿using System;
 using Data.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Enums;
 
 namespace Data.Models
 {
@@ -44,8 +45,14 @@ namespace Data.Models
         public DateTime? ManufacturedDate { get; set; }
         public DateTime? ExpiredDate { get; set; }
         public string? Note { get; set; }
-        public int? Status { get; set; }
+        public InboundProductStatus? Status { get; set; }
         public int? BatchNumber { get; set; }
+    }
+
+    public class InboundProductCompletedModel
+    {
+        public Guid Id { get; set; }
+        public Guid LocationId { get; set; }
     }
 
     public class InboundProductSearchModel

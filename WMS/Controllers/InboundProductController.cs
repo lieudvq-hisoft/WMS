@@ -27,6 +27,14 @@ namespace WMS.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpPost("Completed")]
+        public async Task<ActionResult> Completed([FromBody] InboundProductCompletedModel model)
+        {
+            var result = await _inboundProductService.Completed(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpPut]
         public async Task<ActionResult> Update([FromBody] InboundProductUpdateModel model)
         {

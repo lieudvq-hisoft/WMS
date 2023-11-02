@@ -30,6 +30,10 @@ namespace Services.Mapping
             CreateMap<InboundProductCreateModel, InboundProduct>();
             CreateMap<InboundProductUpdateModel, InboundProduct>();
             CreateMap<InboundProductModel, InboundProduct>().ReverseMap();
+
+            CreateMap<LocationCreateModel, Location>();
+            CreateMap<LocationUpdateModel, Location>();
+            CreateMap<LocationModel, Location>().ReverseMap();
         }
     }
 }
