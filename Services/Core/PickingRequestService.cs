@@ -17,6 +17,7 @@ public interface IPickingRequestService
     Task<ResultModel> Update(PickingRequestUpdateModel model);
     Task<ResultModel> Get(PagingParam<PickingRequestSortCriteria> paginationModel, PickingRequestSearchModel model);
     Task<ResultModel> Delete(Guid id);
+    Task<ResultModel> Complete(PickingRequestCompleteModel model);
 }
 public class PickingRequestService : IPickingRequestService
 {
@@ -27,6 +28,86 @@ public class PickingRequestService : IPickingRequestService
     {
         _dbContext = dbContext;
         _mapper = mapper;
+    }
+
+    public async Task<ResultModel> Complete(PickingRequestCompleteModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        var transaction = _dbContext.Database.BeginTransaction();
+        try
+        {
+            var pickingRequest = _dbContext.PickingRequest.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (pickingRequest == null)
+            {
+                result.ErrorMessage = "Picking request not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (pickingRequest.Status == PickingRequestStatus.Completed)
+            {
+                result.ErrorMessage = "Picking request is completed";
+                result.Succeed = false;
+                return result;
+            }
+            if (model.pickingRequestInventories.Any())
+            {
+                foreach (var pickingRequestInventory in model.pickingRequestInventories)
+                {
+                    var inventoryCheck = _dbContext.Inventory.Where(_ => _.Id == pickingRequestInventory.InventoryId && !_.IsDeleted).FirstOrDefault();
+                    if(inventoryCheck == null)
+                    {
+                        result.ErrorMessage = "Inventory not exists with Id: " + pickingRequestInventory.InventoryId;
+                        result.Succeed = false;
+                        await transaction.RollbackAsync();
+                        return result;
+                    }
+                    if(inventoryCheck.QuantityOnHand < pickingRequestInventory.Quantity)
+                    {
+                        result.ErrorMessage = "Out of stock inventory with Id: " + pickingRequestInventory.InventoryId;
+                        result.Succeed = false;
+                        await transaction.RollbackAsync();
+                        return result;
+                    }
+                    inventoryCheck.QuantityOnHand -= pickingRequestInventory.Quantity;
+                    inventoryCheck.DateUpdated = DateTime.Now;
+                    _dbContext.Inventory.Update(inventoryCheck);
+                    var pickingRequestInventoryAdd = new Data.Entities.PickingRequestInventory
+                    {
+                        InventoryId = inventoryCheck.Id,
+                        PickingRequestId = pickingRequest.Id,
+                        Quantity = pickingRequestInventory.Quantity,
+                    };
+                    _dbContext.PickingRequestInventory.Add(pickingRequestInventoryAdd);
+                }
+            }
+            var pickingRequestAfterCheck = _dbContext.PickingRequest.Include(_ => _.PickingRequestInventories).Where(_ => _.Id == pickingRequest.Id && !_.IsDeleted).FirstOrDefault();
+            var quantityAfterCheck = 0;
+            foreach (var item in pickingRequestAfterCheck!.PickingRequestInventories)
+            {
+                quantityAfterCheck += item.Quantity;
+            }
+            if(quantityAfterCheck != pickingRequest.Quantity)
+            {
+                result.ErrorMessage = "Error";
+                result.Succeed = false;
+                await transaction.RollbackAsync();
+                return result;
+            }
+            pickingRequest.Status = PickingRequestStatus.Completed;
+            pickingRequest.DateUpdated = DateTime.Now;
+            _dbContext.PickingRequest.Update(pickingRequest);
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+            result.Succeed = true;
+            result.Data = pickingRequest.Id;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            await transaction.RollbackAsync();
+        }
+        return result;
     }
 
     public async Task<ResultModel> Create(PickingRequestCreateModel model)
