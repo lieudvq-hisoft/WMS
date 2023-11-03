@@ -47,7 +47,11 @@ public enum LocationSortCriteria
 public enum InboundProductSortCriteria
 {
     DateCreated
+}
 
+public enum OutboundProductSortCriteria
+{
+    DateCreated
 }
 
 public enum InboundProductStatus

@@ -128,9 +128,19 @@ public class PickingRequestService : IPickingRequestService
                 result.Succeed = false;
                 return result;
             }
+            if (data.Status == PickingRequestStatus.Completed)
+            {
+                result.ErrorMessage = "Receipt is complete, cannot be updated";
+                result.Succeed = false;
+                return result;
+            }
             if (model.Note != null)
             {
                 data!.Note = model.Note;
+            }
+            if (model.Quantity != null)
+            {
+                data!.Quantity = (int)model.Quantity;
             }
             data!.DateUpdated = DateTime.Now;
             _dbContext.PickingRequest.Update(data);

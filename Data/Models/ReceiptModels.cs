@@ -10,37 +10,34 @@ namespace Data.Models
         public Supplier Supplier { get; set; }
         public UserModel ReceivedByUser { get; set; }
 
-        public int? ReceiptNumber { get; set; }
-        public int? ReceiptType { get; set; }
-        public double? TotalAmount { get; set; }
+        public int Quantity { get; set; }
         public string? Note { get; set; }
-        public int? InventoryCount { get; set; }
-        public DateTime? ReceivedDate { get; set; }
-        public ReceiptStatus Status { get; set; }
+        public ReceiptStatus status { get; set; }
+        public double? PurchaseUnitPrice { get; set; }
     }
 
     public class ReceiptCreateModel
     {
         public Guid SupplierId { get; set; }
         public Guid ReceivedBy { get; set; }
-
-        public int? ReceiptNumber { get; set; }
-        public int? ReceiptType { get; set; }
-        public double? TotalAmount { get; set; }
+        public Guid ProductId { get; set; }
+        public int Quantity { get; set; }
         public string? Note { get; set; }
-        public int? InventoryCount { get; set; }
-        public DateTime? ReceivedDate { get; set; }
+        public double? PurchaseUnitPrice { get; set; }
     }
 
     public class ReceiptUpdateModel
     {
         public Guid Id { get; set; }
-        public int? ReceiptNumber { get; set; }
-        public int? ReceiptType { get; set; }
-        public double? TotalAmount { get; set; }
+        public int? Quantity { get; set; }
         public string? Note { get; set; }
-        public int? InventoryCount { get; set; }
-        public DateTime? ReceivedDate { get; set; }
+        public double? PurchaseUnitPrice { get; set; }
+    }
+
+    public class ReceiptCompleteModel
+    {
+        public Guid Id { get; set; }
+        public Guid LocationId { get; set; }
     }
 
     public class ReceiptSearchModel

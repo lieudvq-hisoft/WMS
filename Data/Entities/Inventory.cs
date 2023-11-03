@@ -12,7 +12,6 @@ public class Inventory : BaseEntity
     public Guid LocationId { get; set; }
     [ForeignKey("LocationId")]
     public virtual Location? Location { get; set; }
-    public DateTime? ReceivedDate { get; set; }
-    public int QuantityOnHand { get; set; }
-    public InventoryType? Type { get; set; }
+    public string? Note { get; set; }
+    public int QuantityOnHand { get; set; } = 0;
 }
