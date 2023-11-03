@@ -17,6 +17,7 @@ public interface IReceiptService
     Task<ResultModel> Update(ReceiptUpdateModel model);
     Task<ResultModel> Get(PagingParam<ReceiptSortCriteria> paginationModel, ReceiptSearchModel model);
     Task<ResultModel> Delete(Guid id);
+    Task<ResultModel> Complete(ReceiptCompleteModel model);
 }
 public class ReceiptService : IReceiptService
 {
@@ -27,6 +28,79 @@ public class ReceiptService : IReceiptService
     {
         _dbContext = dbContext;
         _mapper = mapper;
+    }
+
+    public async Task<ResultModel> Complete(ReceiptCompleteModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        var transaction = _dbContext.Database.BeginTransaction();
+        try
+        {
+            var receipt = _dbContext.Receipt
+                .Include(_ => _.Product).ThenInclude(_ => _.Inventories)
+                .Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (receipt == null)
+            {
+                result.ErrorMessage = "Receipt not exists";
+                result.Succeed = false;
+                return result;
+            }
+
+            if (receipt.Status == ReceiptStatus.Completed)
+            {
+                result.ErrorMessage = "Receipt is completed";
+                result.Succeed = false;
+                return result;
+            }
+
+            var location = _dbContext.Location.Where(_ => _.Id == model.LocationId).FirstOrDefault();
+            if (location == null)
+            {
+                result.ErrorMessage = "Location not exists";
+                result.Succeed = false;
+                return result;
+            }
+
+            var receiptInventory = new ReceiptInventory
+            {
+                ReceiptId = receipt.Id,
+                Note = "",
+                Quantity = receipt.Quantity,
+            };
+            var inventory = receipt.Product.Inventories.Where(_ => _.LocationId == model.LocationId).FirstOrDefault();
+            if(inventory == null)
+            {
+                var inventoryAddNew = new Inventory
+                {
+                    LocationId = model.LocationId,
+                    ProductId = receipt.ProductId,
+                    Note = "",
+                    QuantityOnHand = receipt.Quantity,
+                };
+                _dbContext.Inventory.Add(inventoryAddNew);
+                receiptInventory.InventoryId = inventoryAddNew.Id;
+            }else
+            {
+                inventory.QuantityOnHand += receiptInventory.Quantity;
+                inventory.DateUpdated = DateTime.Now;
+                receiptInventory.InventoryId = inventory.Id;
+            }
+            _dbContext.ReceiptInventory.Add(receiptInventory);
+            receipt.Status = ReceiptStatus.Completed;
+            receipt.DateUpdated = DateTime.Now;
+            _dbContext.Receipt.Update(receipt);
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+            result.Succeed = true;
+            result.Data = receipt.Id;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            await transaction.RollbackAsync();
+        }
+        return result;
     }
 
     public async Task<ResultModel> Create(ReceiptCreateModel model)
@@ -138,34 +212,25 @@ public class ReceiptService : IReceiptService
                 result.Succeed = false;
                 return result;
             }
-            if (model.ReceiptNumber != null)
-            {
-                data!.ReceiptNumber = model.ReceiptNumber;
-            }
 
-            if (model.ReceiptType != null)
+            if (data.Status == ReceiptStatus.Completed)
             {
-                data!.ReceiptType = model.ReceiptType;
-            }
-
-            if (model.TotalAmount != null)
-            {
-                data!.TotalAmount = model.TotalAmount;
+                result.ErrorMessage = "Receipt is complete, cannot be updated";
+                result.Succeed = false;
+                return result;
             }
 
             if (model.Note != null)
             {
                 data!.Note = model.Note;
             }
-
-            if (model.InventoryCount != null)
+            if (model!.Quantity != null)
             {
-                data!.InventoryCount = model.InventoryCount;
+                data!.Quantity = (int)model.Quantity;
             }
-
-            if (model.ReceivedDate != null)
+            if (model?.PurchaseUnitPrice != null)
             {
-                data!.ReceivedDate = model.ReceivedDate;
+                data!.PurchaseUnitPrice = model.PurchaseUnitPrice;
             }
 
             data!.DateUpdated = DateTime.Now;

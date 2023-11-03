@@ -28,6 +28,14 @@ namespace WMS.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpPost("Complete")]
+        public async Task<ActionResult> Complete([FromBody] ReceiptCompleteModel model)
+        {
+            var result = await _receiptService.Complete(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpPut]
         public async Task<ActionResult> Update([FromBody] ReceiptUpdateModel model)
         {

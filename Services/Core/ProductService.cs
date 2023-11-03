@@ -35,13 +35,6 @@ public class ProductService : IProductService
         result.Succeed = false;
         try
         {
-            var supplier = _dbContext.Supplier.Where(_ => _.Id == model.SupplierId && !_.IsDeleted).FirstOrDefault();
-            if (supplier == null)
-            {
-                result.ErrorMessage = "Supplier not exists";
-                result.Succeed = false;
-                return result;
-            }
             var data = _mapper.Map<ProductCreateModel, Product>(model);
             _dbContext.Product.Add(data);
             await _dbContext.SaveChangesAsync();
@@ -89,15 +82,11 @@ public class ProductService : IProductService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Product.Include(_ => _.Supplier).Where(delegate (Product p)
+            var data = _dbContext.Product.Where(delegate (Product p)
             {
                 if (
                     (MyFunction.ConvertToUnSign(p.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
-                    ||
-                    (MyFunction.ConvertToUnSign(p.Supplier.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
-                    || (p.Supplier.Phone.ToUpper().Contains(model.SearchValue ?? "".ToUpper())
-                    || (p.Supplier.Email.ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
-                    )))
+                    )
                     return true;
                 else
                     return false;
@@ -150,22 +139,6 @@ public class ProductService : IProductService
             {
                 data!.CostPrice = model.CostPrice;
             }
-
-            if (model.Status != null)
-            {
-                data!.Status = model.Status;
-            }
-
-            if (model.InventoryCount != null)
-            {
-                data!.InventoryCount = model.InventoryCount;
-            }
-
-            if (model.Status != null)
-            {
-                data!.Status = model.Status;
-            }
-
             data!.DateUpdated = DateTime.Now;
             _dbContext.Product.Update(data);
             await _dbContext.SaveChangesAsync();
