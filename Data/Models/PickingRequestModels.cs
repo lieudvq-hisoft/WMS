@@ -30,6 +30,18 @@ namespace Data.Models
         public int? Quantity { get; set; }
     }
 
+    public class PickingRequestInventory
+    {
+        public Guid InventoryId { get; set; }
+        public int Quantity { get; set; }
+    }
+
+    public class PickingRequestCompleteModel
+    {
+        public Guid Id { get; set; }
+        public List<PickingRequestInventory> pickingRequestInventories { get; set; }
+    }
+
     public class PickingRequestSearchModel
     {
         public string? SearchValue { get; set; } = "";
