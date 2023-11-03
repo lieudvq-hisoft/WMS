@@ -42,6 +42,31 @@ public class PickingRequestService : IPickingRequestService
                 result.Succeed = false;
                 return result;
             }
+            var product = _dbContext.Product.Include(_ => _.Inventories).Where(_ => _.Id == model.ProductId && !_.IsDeleted).FirstOrDefault();
+            if(product == null)
+            {
+                result.ErrorMessage = "Product not exists";
+                result.Succeed = false;
+                return result;
+            }
+            //check inventory
+            var inventories = product.Inventories.Where(_ => _.QuantityOnHand > 0 && !_.IsDeleted);
+            var totalInventory = 0;
+            if (inventories.Any())
+            {
+                foreach (var item in inventories)
+                {
+                    totalInventory += item.QuantityOnHand;
+                }
+            }
+            if(totalInventory < model.Quantity)
+            {
+                result.ErrorMessage = "Out of stock";
+                result.Succeed = false;
+                return result;
+            }
+            //end check inventory
+
             var data = _mapper.Map<PickingRequestCreateModel, PickingRequest>(model);
             _dbContext.PickingRequest.Add(data);
             await _dbContext.SaveChangesAsync();
