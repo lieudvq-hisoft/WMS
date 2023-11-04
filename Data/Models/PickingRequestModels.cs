@@ -1,12 +1,13 @@
 ﻿using Data.Entities;
 using Data.Enums;
+using Data.Model;
 
 namespace Data.Models
 {
 	public class PickingRequestModel
     {   
         public Guid Id { get; set; }
-        public User SentByUser { get; set; }
+        public UserModel SentByUser { get; set; }
         public Product Product { get; set; }
         public string? Note { get; set; }
         public int Quantity { get; set; }
