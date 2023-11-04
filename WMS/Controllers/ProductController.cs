@@ -43,6 +43,38 @@ namespace WMS.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("InventoryQuantity/{id}")]
+        public async Task<ActionResult> GetInventoryQuantity(Guid id)
+        {
+            var result = await _productService.GetInventoryQuantity(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("Inventories/{id}")]
+        public async Task<ActionResult> GetInventories(Guid id)
+        {
+            var result = await _productService.GetInventories(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("PickingRequest/Completed/{id}")]
+        public async Task<ActionResult> GetPickingRequestCompleted(Guid id)
+        {
+            var result = await _productService.GetPickingRequestCompleted(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("PickingRequest/Pending/{id}")]
+        public async Task<ActionResult> GetPickingRequestPending(Guid id)
+        {
+            var result = await _productService.GetPickingRequestPending(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpDelete("id")]
         public async Task<ActionResult> Delete(Guid id)
         {
