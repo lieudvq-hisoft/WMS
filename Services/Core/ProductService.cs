@@ -17,6 +17,10 @@ public interface IProductService
     Task<ResultModel> Update(ProductUpdateModel model);
     Task<ResultModel> Get(PagingParam<ProductSortCriteria> paginationModel, ProductSearchModel model);
     Task<ResultModel> Delete(Guid id);
+    Task<ResultModel> GetInventoryQuantity(Guid id);
+    Task<ResultModel> GetInventories(Guid id);
+    Task<ResultModel> GetPickingRequestCompleted(Guid id);
+    Task<ResultModel> GetPickingRequestPending(Guid id);
 }
 public class ProductService : IProductService
 {
@@ -99,6 +103,112 @@ public class ProductService : IProductService
             paging.Data = viewModels;
             result.Data = paging;
             result.Succeed = true;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetInventories(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Product.Include(_ => _.Inventories).ThenInclude(_ => _.Location).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Product not exists";
+                result.Succeed = false;
+                return result;
+            }
+            var inventories = data.Inventories.Where(_ => _.QuantityOnHand > 0 && !_.IsDeleted).AsQueryable();
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<InventoryModel>(inventories);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetInventoryQuantity(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Product.Include(_ => _.Inventories).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Product not exists";
+                result.Succeed = false;
+                return result;
+            }
+            var quantity = 0;
+            foreach (var item in data.Inventories)
+            {
+                if(item.QuantityOnHand > 0)
+                {
+                    quantity += item.QuantityOnHand;
+                }
+            }
+            result.Succeed = true;
+            result.Data = quantity;
+
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetPickingRequestCompleted(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Product.Include(_ => _.PickingRequests).ThenInclude(_ => _.SentByUser).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Product not exists";
+                result.Succeed = false;
+                return result;
+            }
+            var pickingRequests = data.PickingRequests.Where(_ => _.Status == PickingRequestStatus.Completed && !_.IsDeleted).AsQueryable();
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<PickingRequestModel>(pickingRequests);
+
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetPickingRequestPending(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Product.Include(_ => _.PickingRequests).ThenInclude(_ => _.SentByUser).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Product not exists";
+                result.Succeed = false;
+                return result;
+            }
+            var pickingRequests = data.PickingRequests.Where(_ => _.Status == PickingRequestStatus.Pending && !_.IsDeleted).AsQueryable();
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<PickingRequestModel>(pickingRequests);
+
         }
         catch (Exception ex)
         {

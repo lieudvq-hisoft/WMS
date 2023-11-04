@@ -194,7 +194,7 @@ public class PickingRequestService : IPickingRequestService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.PickingRequest.Include(_ => _.SentByUser).Where(delegate (PickingRequest p)
+            var data = _dbContext.PickingRequest.Include(_ => _.Product).Include(_ => _.SentByUser).Where(delegate (PickingRequest p)
             {
                 if (
                     (MyFunction.ConvertToUnSign(p.Note ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
