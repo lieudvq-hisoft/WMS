@@ -3,6 +3,7 @@ using System;
 using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WMS.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231105070108_updateProduct")]
+    partial class updateProduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,15 +83,7 @@ namespace WMS.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("RackLevelId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("SectionNumber")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RackLevelId");
 
                     b.ToTable("Location");
                 });
@@ -121,9 +116,6 @@ namespace WMS.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Type")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -206,74 +198,11 @@ namespace WMS.Migrations
                     b.ToTable("Product");
                 });
 
-            modelBuilder.Entity("Data.Entities.Rack", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("RackNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TotalLevel")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Rack");
-                });
-
-            modelBuilder.Entity("Data.Entities.RackLevel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("LevelNumber")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("RackId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RackId");
-
-                    b.ToTable("RackLevel");
-                });
-
             modelBuilder.Entity("Data.Entities.Receipt", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<double?>("CostPrice")
-                        .HasColumnType("double precision");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("timestamp without time zone");
@@ -290,6 +219,9 @@ namespace WMS.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
+                    b.Property<double?>("PurchaseUnitPrice")
+                        .HasColumnType("double precision");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
@@ -301,9 +233,6 @@ namespace WMS.Migrations
 
                     b.Property<Guid>("SupplierId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -637,17 +566,6 @@ namespace WMS.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Data.Entities.Location", b =>
-                {
-                    b.HasOne("Data.Entities.RackLevel", "RackLevel")
-                        .WithMany()
-                        .HasForeignKey("RackLevelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RackLevel");
-                });
-
             modelBuilder.Entity("Data.Entities.PickingRequest", b =>
                 {
                     b.HasOne("Data.Entities.Product", "Product")
@@ -684,17 +602,6 @@ namespace WMS.Migrations
                     b.Navigation("Inventory");
 
                     b.Navigation("PickingRequest");
-                });
-
-            modelBuilder.Entity("Data.Entities.RackLevel", b =>
-                {
-                    b.HasOne("Data.Entities.Rack", "Rack")
-                        .WithMany()
-                        .HasForeignKey("RackId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Rack");
                 });
 
             modelBuilder.Entity("Data.Entities.Receipt", b =>

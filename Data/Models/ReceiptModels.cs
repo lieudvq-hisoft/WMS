@@ -13,7 +13,8 @@ namespace Data.Models
         public int Quantity { get; set; }
         public string? Note { get; set; }
         public ReceiptStatus status { get; set; }
-        public double? PurchaseUnitPrice { get; set; }
+        public ReceiptType Type { get; set; }
+        public double? CostPrice { get; set; }
     }
 
     public class ReceiptCreateModel
@@ -23,7 +24,7 @@ namespace Data.Models
         public Guid ProductId { get; set; }
         public int Quantity { get; set; }
         public string? Note { get; set; }
-        public double? PurchaseUnitPrice { get; set; }
+        public double? CostPrice { get; set; }
     }
 
     public class ReceiptUpdateModel
@@ -31,7 +32,7 @@ namespace Data.Models
         public Guid Id { get; set; }
         public int? Quantity { get; set; }
         public string? Note { get; set; }
-        public double? PurchaseUnitPrice { get; set; }
+        public double? CostPrice { get; set; }
     }
 
     public class ReceiptCompleteModel

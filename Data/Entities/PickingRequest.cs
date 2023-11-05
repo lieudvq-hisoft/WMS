@@ -16,5 +16,6 @@ public class PickingRequest : BaseEntity
     public string? Note { get; set; }
     public int Quantity { get; set; }
     public PickingRequestStatus Status { get; set; } = PickingRequestStatus.Pending;
+    public PickingRequestType Type { get; set; } = PickingRequestType.Outbound;
     public virtual ICollection<PickingRequestInventory> PickingRequestInventories { get; set; }
 }
