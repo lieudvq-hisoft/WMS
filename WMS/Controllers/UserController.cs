@@ -80,6 +80,7 @@ public class UserController : ControllerBase
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "Admin")]
     [HttpPut("Active/{userId}")]
     public async Task<ActionResult> ActiveUser(Guid userId)
     {
@@ -89,6 +90,7 @@ public class UserController : ControllerBase
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(Roles = "Admin")]
     [HttpPut("Deactive/{userId}")]
     public async Task<ActionResult> DeactiveUser(Guid userId)
     {
