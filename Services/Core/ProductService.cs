@@ -124,7 +124,7 @@ public class ProductService : IProductService
                 result.Succeed = false;
                 return result;
             }
-            var inventories = data.Inventories.Where(_ => _.QuantityOnHand > 0 && !_.IsDeleted).AsQueryable();
+            var inventories = data.Inventories.Where(_ => _.QuantityOnHand > 0 && !_.IsDeleted).OrderBy(_ => _.DateCreated).AsQueryable();
             result.Succeed = true;
             result.Data = _mapper.ProjectTo<InventoryModel>(inventories);
         }
@@ -240,14 +240,18 @@ public class ProductService : IProductService
                 data!.Description = model.Description;
             }
 
-            if (model.UnitPrice != null)
+            if (model.SalePrice != null)
             {
-                data!.UnitPrice = model.UnitPrice;
+                data!.SalePrice = model.SalePrice;
             }
 
-            if (model.CostPrice != null)
+            if (model.SerialNumber != null)
             {
-                data!.CostPrice = model.CostPrice;
+                data!.SerialNumber = model.SerialNumber;
+            }
+            if (model.InternalCode != null)
+            {
+                data!.InternalCode = model.InternalCode;
             }
             data!.DateUpdated = DateTime.Now;
             _dbContext.Product.Update(data);

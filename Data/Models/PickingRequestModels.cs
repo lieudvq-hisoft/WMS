@@ -12,6 +12,7 @@ namespace Data.Models
         public string? Note { get; set; }
         public int Quantity { get; set; }
         public PickingRequestStatus Status { get; set; }
+        public PickingRequestType Type { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
     }

@@ -228,9 +228,9 @@ public class ReceiptService : IReceiptService
             {
                 data!.Quantity = (int)model.Quantity;
             }
-            if (model?.PurchaseUnitPrice != null)
+            if (model?.CostPrice != null)
             {
-                data!.PurchaseUnitPrice = model.PurchaseUnitPrice;
+                data!.CostPrice = model.CostPrice;
             }
 
             data!.DateUpdated = DateTime.Now;

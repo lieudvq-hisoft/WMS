@@ -60,6 +60,8 @@ public static class StartupExtension
         services.AddScoped<ISupplierService, SupplierService>();
         services.AddScoped<ILocationService, LocationService>();
         services.AddScoped<IPickingRequestService, PickingRequestService>();
+        services.AddScoped<IRackService, RackService>();
+        services.AddScoped<IRackLevelService, RackLevelService>();
     }
 
     public static void ConfigIdentityService(this IServiceCollection services)

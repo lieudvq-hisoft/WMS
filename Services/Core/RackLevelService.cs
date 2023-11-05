@@ -11,39 +11,39 @@ using Services.Utils;
 
 namespace Services.Core;
 
-public interface ILocationService
+public interface IRackLevelService
 {
-    Task<ResultModel> Create(LocationCreateModel model);
-    Task<ResultModel> Update(LocationUpdateModel model);
-    Task<ResultModel> Get(PagingParam<LocationSortCriteria> paginationModel, LocationSearchModel model);
+    Task<ResultModel> Create(RackLevelCreateModel model);
+    Task<ResultModel> Update(RackLevelUpdateModel model);
+    Task<ResultModel> Get(PagingParam<RackLevelSortCriteria> paginationModel, RackLevelSearchModel model);
     Task<ResultModel> Delete(Guid id);
 }
-public class LocationService : ILocationService
+public class RackLevelService : IRackLevelService
 {
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
 
-    public LocationService(AppDbContext dbContext, IMapper mapper)
+    public RackLevelService(AppDbContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;
     }
 
-    public async Task<ResultModel> Create(LocationCreateModel model)
+    public async Task<ResultModel> Create(RackLevelCreateModel model)
     {
         var result = new ResultModel();
         result.Succeed = false;
         try
         {
-            var rackLevel = _dbContext.RackLevel.Where(_ => _.Id == model.RackLevelId && !_.IsDeleted).FirstOrDefault();
-            if (rackLevel == null)
+            var rack = _dbContext.Rack.Where(_ => _.Id == model.RackId && !_.IsDeleted).FirstOrDefault();
+            if (rack == null)
             {
-                result.ErrorMessage = "Rack level not exists";
+                result.ErrorMessage = "Rack not exists";
                 result.Succeed = false;
                 return result;
             }
-            var data = _mapper.Map<LocationCreateModel, Location>(model);
-            _dbContext.Location.Add(data);
+            var data = _mapper.Map<RackLevelCreateModel, RackLevel>(model);
+            _dbContext.RackLevel.Add(data);
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = data.Id;
@@ -61,16 +61,16 @@ public class LocationService : ILocationService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Location.Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            var data = _dbContext.RackLevel.Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
             if (data == null)
             {
-                result.ErrorMessage = "Location not exists";
+                result.ErrorMessage = "Rack level not exists";
                 result.Succeed = false;
                 return result;
             }
             data.IsDeleted = true;
             data.DateUpdated = DateTime.Now;
-            _dbContext.Location.Update(data);
+            _dbContext.RackLevel.Update(data);
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = data.Id;
@@ -83,18 +83,16 @@ public class LocationService : ILocationService
         return result;
     }
 
-    public async Task<ResultModel> Get(PagingParam<LocationSortCriteria> paginationModel, LocationSearchModel model)
+    public async Task<ResultModel> Get(PagingParam<RackLevelSortCriteria> paginationModel, RackLevelSearchModel model)
     {
         var result = new ResultModel();
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Location.Include(_ => _.RackLevel).Where(delegate (Location l)
+            var data = _dbContext.RackLevel.Include(_ => _.Rack).Include(_ => _.Locations).Where(delegate (RackLevel r)
             {
                 if (
-                    (MyFunction.ConvertToUnSign(l.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
-                    ||
-                    (MyFunction.ConvertToUnSign(l.Description ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    (MyFunction.ConvertToUnSign(r.Description ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
                     )
                     return true;
                 else
@@ -102,9 +100,9 @@ public class LocationService : ILocationService
             }).AsQueryable();
             data = data.Where(_ => !_.IsDeleted);
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, data.Count());
-            var locations = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
-            locations = locations.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
-            var viewModels = _mapper.ProjectTo<LocationModel>(locations);
+            var rackLevels = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            rackLevels = rackLevels.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<RackLevelModel>(rackLevels);
             paging.Data = viewModels;
             result.Data = paging;
             result.Succeed = true;
@@ -116,22 +114,22 @@ public class LocationService : ILocationService
         return result;
     }
 
-    public async Task<ResultModel> Update(LocationUpdateModel model)
+    public async Task<ResultModel> Update(RackLevelUpdateModel model)
     {
         var result = new ResultModel();
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Location.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            var data = _dbContext.RackLevel.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
             if (data == null)
             {
-                result.ErrorMessage = "Location not exists";
+                result.ErrorMessage = "Rack level not exists";
                 result.Succeed = false;
                 return result;
             }
-            if (model.Name != null)
+            if (model.LevelNumber != null)
             {
-                data!.Name = model.Name;
+                data!.LevelNumber = (int)model.LevelNumber;
             }
 
             if (model.Description != null)
@@ -139,16 +137,11 @@ public class LocationService : ILocationService
                 data!.Description = model.Description;
             }
 
-            if (model.SectionNumber != null)
-            {
-                data!.SectionNumber = (int)model.SectionNumber;
-            }
-
             data!.DateUpdated = DateTime.Now;
-            _dbContext.Location.Update(data);
+            _dbContext.RackLevel.Update(data);
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
-            result.Data = _mapper.Map<Location, LocationModel>(data);
+            result.Data = _mapper.Map<RackLevel, RackLevelModel>(data);
         }
         catch (Exception ex)
         {

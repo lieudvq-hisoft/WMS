@@ -20,5 +20,6 @@ public class Receipt : BaseEntity
     public int Quantity { get; set; }
     public string? Note { get; set; }
     public ReceiptStatus Status { get; set; } = ReceiptStatus.Pending;
-    public double? PurchaseUnitPrice { get; set; }
+    public ReceiptType Type { get; set; } = ReceiptType.Inbound;
+    public double? CostPrice { get; set; }
 }

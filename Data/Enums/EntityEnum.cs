@@ -6,6 +6,14 @@ public enum RoleType
     Admin = 1,
     Member = 2,
 }
+public enum PickingRequestType
+{
+    Outbound = 1,
+}
+public enum ReceiptType
+{
+    Inbound = 1,
+}
 public enum NotificationSortCriteria
 {
     DateCreated
@@ -39,6 +47,18 @@ public enum ProductSortCriteria
 }
 
 public enum LocationSortCriteria
+{
+    DateCreated
+
+}
+
+public enum RackSortCriteria
+{
+    DateCreated
+
+}
+
+public enum RackLevelSortCriteria
 {
     DateCreated
 
