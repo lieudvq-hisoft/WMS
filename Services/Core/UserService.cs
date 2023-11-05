@@ -20,7 +20,7 @@ namespace Services.Core;
 
 public interface IUserService
 {
-    Task<ResultModel> Register(UserCreateModel model);
+    Task<ResultModel> Create(UserCreateModel model);
     Task<ResultModel> Login(LoginModel model);
     Task<ResultModel> Get(PagingParam<UserSortCriteria> paginationModel, UserSearchModel searchModel);
     Task<ResultModel> UpdateProfile(ProfileUpdateModel model, Guid userId);
@@ -99,7 +99,7 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<ResultModel> Register(UserCreateModel model)
+    public async Task<ResultModel> Create(UserCreateModel model)
     {
         var result = new ResultModel();
         result.Succeed = false;
