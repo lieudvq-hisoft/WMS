@@ -464,6 +464,12 @@ public class UserService : IUserService
                 result.Succeed = false;
                 return result;
             }
+            if (user.UserName == "admin")
+            {
+                result.ErrorMessage = "You cannot unassign this user";
+                result.Succeed = false;
+                return result;
+            }
             if (!user.IsActive)
             {
                 result.Succeed = false;
