@@ -20,6 +20,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<ActionResult> Create([FromBody] LocationCreateModel model)
         {
             var result = await _locationService.Create(model);
@@ -28,6 +29,7 @@ namespace WMS.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<ActionResult> Update([FromBody] LocationUpdateModel model)
         {
             var result = await _locationService.Update(model);
@@ -44,6 +46,7 @@ namespace WMS.Controllers
         }
 
         [HttpDelete("id")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<ActionResult> Delete(Guid id)
         {
             var result = await _locationService.Delete(id);

@@ -20,6 +20,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Create([FromBody] SupplierCreateModel model)
         {
             var result = await _supplierService.Create(model);
@@ -28,6 +29,7 @@ namespace WMS.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Update([FromBody] SupplierUpdateModel model)
         {
             var result = await _supplierService.Update(model);
@@ -44,6 +46,7 @@ namespace WMS.Controllers
         }
 
         [HttpDelete("id")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(Guid id)
         {
             var result = await _supplierService.Delete(id);

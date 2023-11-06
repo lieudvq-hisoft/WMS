@@ -20,6 +20,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult> Create([FromBody] ProductCreateModel model)
         {
             var result = await _productService.Create(model);
@@ -28,6 +29,7 @@ namespace WMS.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult> Update([FromBody] ProductUpdateModel model)
         {
             var result = await _productService.Update(model);
@@ -44,6 +46,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("InventoryQuantity/{id}")]
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult> GetInventoryQuantity(Guid id)
         {
             var result = await _productService.GetInventoryQuantity(id);
@@ -52,6 +55,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("Inventories/{id}")]
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult> GetInventories(Guid id)
         {
             var result = await _productService.GetInventories(id);
@@ -60,6 +64,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("PickingRequest/Completed/{id}")]
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult> GetPickingRequestCompleted(Guid id)
         {
             var result = await _productService.GetPickingRequestCompleted(id);
@@ -68,6 +73,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("PickingRequest/Pending/{id}")]
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult> GetPickingRequestPending(Guid id)
         {
             var result = await _productService.GetPickingRequestPending(id);
@@ -76,6 +82,7 @@ namespace WMS.Controllers
         }
 
         [HttpDelete("id")]
+        [Authorize(Roles = "Manager")]
         public async Task<ActionResult> Delete(Guid id)
         {
             var result = await _productService.Delete(id);

@@ -20,6 +20,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Manager,Staff")]
         public async Task<ActionResult> Create([FromBody] PickingRequestCreateModel model)
         {
             var result = await _pickingRequestService.Create(model);
@@ -28,6 +29,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost("Complete")]
+        [Authorize(Roles = "Manager,Staff")]
         public async Task<ActionResult> Complete([FromBody] PickingRequestCompleteModel model)
         {
             var result = await _pickingRequestService.Complete(model);
@@ -36,6 +38,7 @@ namespace WMS.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Manager,Staff")]
         public async Task<ActionResult> Update([FromBody] PickingRequestUpdateModel model)
         {
             var result = await _pickingRequestService.Update(model);
@@ -44,6 +47,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Manager,Staff")]
         public async Task<ActionResult> Get([FromQuery] PagingParam<PickingRequestSortCriteria> paginationModel, [FromQuery] PickingRequestSearchModel searchModel)
         {
             var result = await _pickingRequestService.Get(paginationModel, searchModel);
@@ -52,6 +56,7 @@ namespace WMS.Controllers
         }
 
         [HttpDelete("id")]
+        [Authorize(Roles = "Manager,Staff")]
         public async Task<ActionResult> Delete(Guid id)
         {
             var result = await _pickingRequestService.Delete(id);
