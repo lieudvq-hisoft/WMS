@@ -21,6 +21,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Staff")]
         public async Task<ActionResult> Create([FromBody] ReceiptCreateModel model)
         {
             var result = await _receiptService.Create(model);
@@ -29,6 +30,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost("Complete")]
+        [Authorize(Roles = "Staff")]
         public async Task<ActionResult> Complete([FromBody] ReceiptCompleteModel model)
         {
             var result = await _receiptService.Complete(model);
@@ -37,6 +39,7 @@ namespace WMS.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Staff")]
         public async Task<ActionResult> Update([FromBody] ReceiptUpdateModel model)
         {
             var result = await _receiptService.Update(model);
@@ -45,6 +48,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Staff")]
         public async Task<ActionResult> Get([FromQuery] PagingParam<ReceiptSortCriteria> paginationModel, [FromQuery] ReceiptSearchModel searchModel)
         {
             var result = await _receiptService.Get(paginationModel, searchModel);
@@ -53,6 +57,7 @@ namespace WMS.Controllers
         }
 
         [HttpDelete("id")]
+        [Authorize(Roles = "Staff")]
         public async Task<ActionResult> Delete(Guid id)
         {
             var result = await _receiptService.Delete(id);
