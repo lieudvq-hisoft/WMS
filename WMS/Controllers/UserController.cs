@@ -14,11 +14,9 @@ namespace UserController.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-    private readonly IProducer<Null, string> _producer;
-    public UserController(IUserService userService, IProducer<Null, string> producer)
+    public UserController(IUserService userService)
     {
         _userService = userService;
-        _producer = producer;
     }
 
     [HttpPost("Login")]
@@ -43,8 +41,6 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> Get([FromQuery] PagingParam<UserSortCriteria> paginationModel, [FromQuery] UserSearchModel searchModel)
     {
-        var results = await _producer.ProduceAsync("user-topic", new Message<Null, string> { Value = "Hello world test-topic!" });
-        _producer.Flush();
         var result = await _userService.Get(paginationModel, searchModel);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);

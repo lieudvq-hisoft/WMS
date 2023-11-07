@@ -13,7 +13,6 @@ using System.Text.Json;
 using Services.Mapping;
 using Services.Core;
 using Confluent.Kafka;
-using Services.kafka;
 
 namespace WMS.Extensions;
 
@@ -70,17 +69,6 @@ public static class StartupExtension
             {
                 BootstrapServers = "192.168.40.83:9092"
             }).Build());
-
-        services.AddHostedService<KafkaConsumer>();
-        services.AddSingleton<ConsumerConfig>(option =>
-        {
-            ConsumerConfig config = new ConsumerConfig
-            {
-                BootstrapServers = "192.168.40.83:9092",
-                GroupId = new Guid().ToString(),
-            };
-            return config;
-        });
     }
 
     public static void ConfigIdentityService(this IServiceCollection services)
