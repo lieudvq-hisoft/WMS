@@ -23,10 +23,8 @@
 
   <ItemGroup>
     <None Remove="Utils\" />
-    <None Remove="kafka\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\" />
-    <Folder Include="kafka\" />
   </ItemGroup>
 </Project>

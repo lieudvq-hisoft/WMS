@@ -15,11 +15,9 @@ namespace WMS.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-        private readonly IProducer<Null, string> _producer;
-        public ProductController(IProductService productService, IProducer<Null, string> producer)
+        public ProductController(IProductService productService)
         {
             _productService = productService;
-            _producer = producer;
         }
 
         [HttpPost]
@@ -43,8 +41,6 @@ namespace WMS.Controllers
         [HttpGet]
         public async Task<ActionResult> Get([FromQuery] PagingParam<ProductSortCriteria> paginationModel, [FromQuery] ProductSearchModel searchModel)
         {
-            var results = await _producer.ProduceAsync("product-topic", new Message<Null, string> { Value = "Hello world!" });
-            _producer.Flush();
             var result = await _productService.Get(paginationModel, searchModel);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);

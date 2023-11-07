@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Confluent.Kafka;
 using Data.Common.PaginationModel;
 using Data.DataAccess;
 using Data.Entities;
@@ -43,8 +44,11 @@ public class UserService : IUserService
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly RoleManager<Role> _roleManager;
+    private readonly IProducer<Null, string> _producer;
 
-    public UserService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration, UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager, IMailService mailService)
+    public UserService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration, UserManager<User> userManager,
+        SignInManager<User> signInManager, RoleManager<Role> roleManager,
+        IMailService mailService, IProducer<Null, string> producer)
     {
         _dbContext = dbContext;
         _mapper = mapper;
@@ -53,6 +57,7 @@ public class UserService : IUserService
         _signInManager = signInManager;
         _roleManager = roleManager;
         _mailService = mailService;
+        _producer = producer;
     }
 
     public async Task<ResultModel> Login(LoginModel model)
@@ -147,6 +152,10 @@ public class UserService : IUserService
             userRole.UserId = user.Id;
             _dbContext.UserRoles.Add(userRole);
             await _dbContext.SaveChangesAsync();
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(_mapper.Map<UserModel>(user));
+            await _producer.ProduceAsync("user-create-new", new Message<Null, string> { Value = json });
+            _producer.Flush();
+
             result.Succeed = true;
             result.Data = user.Id;
         }
@@ -230,8 +239,12 @@ public class UserService : IUserService
             }
             data.DateUpdated = DateTime.Now;
             await _dbContext.SaveChangesAsync();
+
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(_mapper.Map<UserModel>(data));
+            await _producer.ProduceAsync("user-update", new Message<Null, string> { Value = json });
+            _producer.Flush();
             result.Succeed = true;
-            result.Data = _mapper.Map<User, UserModel>(data);
+            result.Data = _mapper.Map<UserModel>(data);
         }
         catch (Exception e)
         {
