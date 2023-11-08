@@ -9,7 +9,7 @@ namespace Data.Model;
 
 public class Token
 {
-    public string AccessToken { get; set; }
+    public string Access_Token { get; set; }
     public string TokenType { get; set; }
     public string UserID { get; set; }
     public int ExpiresIn { get; set; }
