@@ -23,7 +23,9 @@ builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
     builder
         .AllowAnyMethod()
         .AllowAnyHeader()
-        .AllowAnyOrigin();
+        .AllowAnyOrigin()
+        .WithOrigins("http://localhost:3000", "https://wms.hisoft.vn"
+        );
 }));
 
 builder.Services.AddSignalR();
