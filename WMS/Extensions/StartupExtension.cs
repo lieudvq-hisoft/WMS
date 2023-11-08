@@ -157,7 +157,7 @@ public static class StartupExtension
                     },
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.Request.Query["accessToken"];
+                        var accessToken = context.Request.Query["access_token"];
 
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
