@@ -578,7 +578,7 @@ public class UserService : IUserService
 
         return new Token
         {
-            Access_Token = serializedToken,
+            Access_token = serializedToken,
             TokenType = "Bearer",
             ExpiresIn = int.Parse(_configuration["Jwt:ExpireTimes"]) * 3600,
             UserID = user.Id.ToString(),
