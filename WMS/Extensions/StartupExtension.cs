@@ -67,7 +67,7 @@ public static class StartupExtension
         services.AddSingleton<IProducer<Null, string>>(sp =>
             new ProducerBuilder<Null, string>(new ProducerConfig
             {
-                BootstrapServers = "192.168.40.83:9092"
+                BootstrapServers = "192.168.40.81:9092"
             }).Build());
     }
 
