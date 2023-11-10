@@ -34,6 +34,7 @@ public interface IUserService
     Task<ResultModel> UnassignRole(AssignRoleModel model);
     Task<ResultModel> GetRoleOfUser(Guid userId);
     Task<ResultModel> GetUsersInRole(String name);
+    Task<ResultModel> Profile(Guid id);
 }
 public class UserService : IUserService
 {
@@ -245,6 +246,36 @@ public class UserService : IUserService
             _producer.Flush();
             result.Succeed = true;
             result.Data = _mapper.Map<UserModel>(data);
+        }
+        catch (Exception e)
+        {
+            result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> Profile(Guid id)
+    {
+        ResultModel result = new ResultModel();
+        try
+        {
+            var data = _dbContext.User.Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "User not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (!data.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
+                return result;
+            }
+            result.Succeed = true;
+            var dataView = _mapper.Map<ProfileModel>(data);
+            dataView.FullName = data.FirstName + " " + data.LastName;
+            result.Data = dataView;
         }
         catch (Exception e)
         {
