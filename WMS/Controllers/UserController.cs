@@ -47,6 +47,15 @@ public class UserController : ControllerBase
     }
 
     [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpGet("Profile")]
+    public async Task<ActionResult> GetProfile()
+    {
+        var result = await _userService.Profile(Guid.Parse(User.GetId()));
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [HttpPut("Profile")]
     public async Task<ActionResult> UpdateProfile([FromBody] ProfileUpdateModel model)
     {
