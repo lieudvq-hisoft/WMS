@@ -47,7 +47,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("Detail/{id}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetDetail(Guid id)
         {
             var result = await _productService.GetDetail(id);
@@ -56,7 +56,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("Barcode/{id}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetBarcode(Guid id)
         {
             var result = await _productService.GetBarcode(id);
