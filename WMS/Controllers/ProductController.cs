@@ -46,6 +46,15 @@ namespace WMS.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("Barcode/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> GetBarcode(Guid id)
+        {
+            var result = await _productService.GetBarcode(id);
+            if (result.Succeed) return File((byte[])result.Data, "image/png");
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("InventoryQuantity/{id}")]
         [Authorize(Roles = "Manager")]
         public async Task<ActionResult> GetInventoryQuantity(Guid id)
