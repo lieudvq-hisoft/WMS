@@ -170,7 +170,7 @@ public class ReceiptService : IReceiptService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Receipt.Include(_ => _.ReceivedByUser).Include(_ => _.Supplier).Where(delegate (Receipt r)
+            var data = _dbContext.Receipt.Include(_ => _.Product).Include(_ => _.ReceivedByUser).Include(_ => _.Supplier).Where(delegate (Receipt r)
             {
                 if (
                     (MyFunction.ConvertToUnSign(r.Supplier.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
