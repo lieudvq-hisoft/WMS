@@ -543,7 +543,7 @@ public class UserService : IUserService
         ResultModel result = new ResultModel();
         try
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = _dbContext.Users.Include(_ => _.UserRoles).ThenInclude(_ => _.Role).Where(_ => _.Id == userId && !_.IsDeleted).FirstOrDefault();
             if (user == null)
             {
                 result.ErrorMessage = "User not exists";
@@ -556,9 +556,8 @@ public class UserService : IUserService
                 result.ErrorMessage = "User has been deactivated";
                 return result;
             }
-            var roles = await _userManager.GetRolesAsync(user);
             result.Succeed = true;
-            result.Data = roles;
+            result.Data = user.UserRoles.Select(_ => new RoleModel { Id = _.Role.Id, Name = _.Role.Name, Description = _.Role.Description, IsDeactive = _.Role.IsDeactive});
         }
         catch (Exception e)
         {
