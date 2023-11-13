@@ -9,6 +9,7 @@ namespace Data.Models
         public Guid Id { get; set; }
         public Supplier Supplier { get; set; }
         public UserModel ReceivedByUser { get; set; }
+        public ProductModel Product { get; set; }
 
         public int Quantity { get; set; }
         public string? Note { get; set; }
