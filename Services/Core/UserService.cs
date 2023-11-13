@@ -616,7 +616,10 @@ public class UserService : IUserService
             UserName = user.UserName,
             PhoneNumber = user.PhoneNumber,
             UserAva = user.UserAva,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
             CurrenNoticeCount = user.CurrenNoticeCount,
+            Roles = role
         };
     }
 
