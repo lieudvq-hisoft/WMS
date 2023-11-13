@@ -170,7 +170,8 @@ public class ProductService : IProductService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Product.Include(_ => _.Inventories).ThenInclude(_ => _.Location).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            var data = _dbContext.Product.Include(_ => _.Inventories).ThenInclude(_ => _.Location).ThenInclude(_ => _.RackLevel).ThenInclude(_ => _.Rack)
+                .Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
             if (data == null)
             {
                 result.ErrorMessage = "Product not exists";
