@@ -31,6 +31,7 @@ namespace Services.Mapping
             CreateMap<LocationCreateModel, Location>();
             CreateMap<LocationUpdateModel, Location>();
             CreateMap<LocationModel, Location>().ReverseMap();
+            CreateMap<Inventory, InventoryForLocation>();
 
             CreateMap<PickingRequestCreateModel, PickingRequest>();
             CreateMap<PickingRequestUpdateModel, PickingRequest>();

@@ -89,7 +89,8 @@ public class LocationService : ILocationService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Location.Include(_ => _.RackLevel).Where(delegate (Location l)
+            var data = _dbContext.Location.Include(_ => _.Inventories).ThenInclude(_ => _.Product)
+                .Include(_ => _.RackLevel).Where(delegate (Location l)
             {
                 if (
                     (MyFunction.ConvertToUnSign(l.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)

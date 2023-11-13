@@ -1,4 +1,6 @@
-﻿namespace Data.Models
+﻿using Data.Model;
+
+namespace Data.Models
 {
 	public class InventoryModel
 	{
