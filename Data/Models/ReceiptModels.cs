@@ -16,6 +16,8 @@ namespace Data.Models
         public ReceiptStatus status { get; set; }
         public ReceiptType Type { get; set; }
         public double? CostPrice { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
     }
 
     public class ReceiptCreateModel
