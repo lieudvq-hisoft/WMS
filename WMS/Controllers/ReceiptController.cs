@@ -30,7 +30,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost("Complete")]
-        [Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "Staff")]
         public async Task<ActionResult> Complete([FromBody] ReceiptCompleteModel model)
         {
             var result = await _receiptService.Complete(model);
