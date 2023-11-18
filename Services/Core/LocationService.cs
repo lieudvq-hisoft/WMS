@@ -19,6 +19,7 @@ public interface ILocationService
     Task<ResultModel> Get(PagingParam<LocationSortCriteria> paginationModel, LocationSearchModel model);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetBarcode(Guid id);
+    Task<ResultModel> GetDetail(Guid id);
 }
 public class LocationService : ILocationService
 {
@@ -139,6 +140,30 @@ public class LocationService : ILocationService
             QRCode = bitmap.GetGraphic(20);
             result.Succeed = true;
             result.Data = QRCode;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetDetail(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Location.Include(_ => _.Inventories).ThenInclude(_ => _.Product)
+                .Include(_ => _.RackLevel).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Location not exists";
+                result.Succeed = false;
+                return result;
+            }
+            result.Succeed = true;
+            result.Data = _mapper.Map<LocationModel>(data);
         }
         catch (Exception ex)
         {
