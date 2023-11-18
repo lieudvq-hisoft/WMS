@@ -56,6 +56,15 @@ namespace WMS.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("Pending")]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<ActionResult> GetReceiptPending([FromQuery] PagingParam<ReceiptSortCriteria> paginationModel, [FromQuery] ReceiptSearchModel searchModel)
+        {
+            var result = await _receiptService.GetReceiptPending(paginationModel, searchModel);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpDelete("id")]
         [Authorize(Roles = "Staff")]
         public async Task<ActionResult> Delete(Guid id)
