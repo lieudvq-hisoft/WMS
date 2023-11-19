@@ -175,8 +175,8 @@ public class ReceiptService : IReceiptService
             {
                 if (
                     (MyFunction.ConvertToUnSign(r.Supplier.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
-                    //||
-                    //(MyFunction.ConvertToUnSign(r.ReceivedByUser.Email ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    ||
+                    (MyFunction.ConvertToUnSign(r.Product.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
                     || (r.Supplier.Phone.ToUpper().Contains(model.SearchValue ?? "".ToUpper())
                     || (r.ReceivedByUser.Email.ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
                     )))
