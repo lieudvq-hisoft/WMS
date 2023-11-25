@@ -21,7 +21,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Staff")]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<ActionResult> Create([FromBody] ReceiptCreateModel model)
         {
             var result = await _receiptService.Create(model);

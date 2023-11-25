@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Confluent.Kafka;
 using Data.Common.PaginationModel;
 using Data.DataAccess;
 using Data.Entities;
@@ -19,16 +20,19 @@ public interface IReceiptService
     Task<ResultModel> GetReceiptPending(PagingParam<ReceiptSortCriteria> paginationModel, ReceiptSearchModel model);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> Complete(ReceiptCompleteModel model);
+
 }
 public class ReceiptService : IReceiptService
 {
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IProducer<Null, string> _producer;
 
-    public ReceiptService(AppDbContext dbContext, IMapper mapper)
+    public ReceiptService(AppDbContext dbContext, IMapper mapper, IProducer<Null, string> producer)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _producer = producer;
     }
 
     public async Task<ResultModel> Complete(ReceiptCompleteModel model)
@@ -130,6 +134,15 @@ public class ReceiptService : IReceiptService
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = data.Id;
+
+            var userReceiveNotice = _dbContext.User.Include(_ => _.UserRoles).ThenInclude(_ => _.Role)
+                .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName == "ADMIN") && _.IsActive && !_.IsDeleted)
+                .Select(_ => _.Id).ToList();
+
+            var kafkaModel = new KafkaModel { UserReceiveNotice = userReceiveNotice, Payload = data };
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(kafkaModel);
+            await _producer.ProduceAsync("receipt-create-new", new Message<Null, string> { Value = json });
+
         }
         catch (Exception ex)
         {
