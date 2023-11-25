@@ -135,11 +135,12 @@ public class ReceiptService : IReceiptService
             result.Succeed = true;
             result.Data = data.Id;
 
+            var receipt = _dbContext.Receipt.Include(_ => _.Product).Where(_ => _.Id == data.Id).FirstOrDefault();
             var userReceiveNotice = _dbContext.User.Include(_ => _.UserRoles).ThenInclude(_ => _.Role)
                 .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName == "ADMIN") && _.IsActive && !_.IsDeleted)
                 .Select(_ => _.Id).ToList();
 
-            var kafkaModel = new KafkaModel { UserReceiveNotice = userReceiveNotice, Payload = data };
+            var kafkaModel = new KafkaModel { UserReceiveNotice = userReceiveNotice, Payload = receipt! };
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(kafkaModel);
             await _producer.ProduceAsync("receipt-create-new", new Message<Null, string> { Value = json });
 
