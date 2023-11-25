@@ -140,7 +140,7 @@ public class ReceiptService : IReceiptService
                 .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName == "ADMIN") && _.IsActive && !_.IsDeleted)
                 .Select(_ => _.Id).ToList();
 
-            var kafkaModel = new KafkaModel { UserReceiveNotice = userReceiveNotice, Payload = receipt! };
+            var kafkaModel = new KafkaModel { UserReceiveNotice = userReceiveNotice, Payload = _mapper.Map<Receipt, ReceiptModel>(receipt!) };
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(kafkaModel);
             await _producer.ProduceAsync("receipt-create-new", new Message<Null, string> { Value = json });
 
