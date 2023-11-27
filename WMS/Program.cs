@@ -24,7 +24,7 @@ builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowAnyOrigin()
-        .WithOrigins("*"
+        .WithOrigins("http://localhost:3000", "https://wms.hisoft.vn", "https://khoserver.vercel"
         );
 }));
 
