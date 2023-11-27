@@ -20,7 +20,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<ActionResult> Create([FromBody] LocationCreateModel model)
         {
             var result = await _locationService.Create(model);
@@ -29,7 +29,7 @@ namespace WMS.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<ActionResult> Update([FromBody] LocationUpdateModel model)
         {
             var result = await _locationService.Update(model);
