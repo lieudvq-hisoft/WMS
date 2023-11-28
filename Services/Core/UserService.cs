@@ -601,10 +601,12 @@ public class UserService : IUserService
             var role = _dbContext.UserRoles.Where(s => s.UserId == id).FirstOrDefault();
             if (role != null)
             {
-                var data = _dbContext.Role.Where(s => s.Id == role.RoleId).FirstOrDefault();
+                var roleID = role.RoleId;
+                var data = _dbContext.Roles.Where(s => s.Id == roleID).FirstOrDefault();
 
                 if (data != null)
-                {
+                {   
+                    
                     result.Data = data;
                     result.Succeed = true;
                 }
