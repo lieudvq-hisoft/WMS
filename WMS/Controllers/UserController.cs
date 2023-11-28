@@ -148,7 +148,6 @@ public class UserController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = "Admin")]
     [HttpGet("UsersRole/{id}")]
     public async Task<ActionResult> GetUserRole(Guid id)
     {
