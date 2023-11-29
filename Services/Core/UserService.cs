@@ -2,6 +2,7 @@
 using Confluent.Kafka;
 using Data.Common.PaginationModel;
 using Data.DataAccess;
+using Data.DataAccess.Constant;
 using Data.Entities;
 using Data.Enums;
 using Data.Model;
@@ -33,6 +34,7 @@ public interface IUserService
     Task<ResultModel> AssignRole(AssignRoleModel model);
     Task<ResultModel> UnassignRole(AssignRoleModel model);
     Task<ResultModel> GetRoleOfUser(Guid userId);
+    Task<ResultModel> GetUserRole(Guid userId);
     Task<ResultModel> GetUsersInRole(String name);
     Task<ResultModel> Profile(Guid id);
 }
@@ -590,6 +592,42 @@ public class UserService : IUserService
             result.ErrorMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
         }
         return result;
+    }
+    public async Task<ResultModel> GetUserRole(Guid id)
+    {
+        ResultModel result = new ResultModel();
+        try
+        {
+            var role = _dbContext.UserRoles.Where(s => s.UserId == id).FirstOrDefault();
+            if (role != null)
+            {
+                var roleID = role.RoleId;
+                var data = _dbContext.Roles.Where(s => s.Id == roleID).FirstOrDefault();
+
+                if (data != null)
+                {   
+                    
+                    result.Data = data;
+                    result.Succeed = true;
+                }
+                else
+                {
+                    result.ErrorMessage = "Role" + ErrorMessage.ID_NOT_EXISTED;
+                    result.Succeed = false;
+                }
+            }
+            else
+            {
+                result.ErrorMessage = "UserRole" + ErrorMessage.ID_NOT_EXISTED;
+                result.Succeed = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+
     }
 
     private async Task<Token> GetAccessToken(User user, List<string> role)
