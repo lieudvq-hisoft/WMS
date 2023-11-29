@@ -97,6 +97,7 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<ReceiptInventory> ReceiptInventory { get; set; }
     public DbSet<Inventory> Inventory { get; set; }
     public DbSet<Location> Location { get; set; }
+    public DbSet<InventoryLocation> InventoryLocation { get; set; }
     public DbSet<Rack> Rack { get; set; }
     public DbSet<RackLevel> RackLevel { get; set; }
     public DbSet<PickingRequest> PickingRequest { get; set; }

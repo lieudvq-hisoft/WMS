@@ -74,7 +74,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("Inventories/{id}")]
-        [Authorize(Roles = "Manager")]
+        //[Authorize(Roles = "Manager")]
         public async Task<ActionResult> GetInventories(Guid id)
         {
             var result = await _productService.GetInventories(id);

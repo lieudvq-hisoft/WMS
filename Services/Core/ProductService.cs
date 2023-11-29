@@ -173,7 +173,34 @@ public class ProductService : IProductService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Product.Include(_ => _.Inventories).ThenInclude(_ => _.Location).ThenInclude(_ => _.RackLevel).ThenInclude(_ => _.Rack)
+            var data = _dbContext.Product.Include(_ => _.Inventories)
+                .ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location).ThenInclude(_ => _.RackLevel).ThenInclude(_ => _.Rack)
+                .Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Product not exists";
+                result.Succeed = false;
+                return result;
+            }
+            var inventories = data.Inventories.Where(_ => _.QuantityOnHand > 0 && !_.IsDeleted).OrderBy(_ => _.DateCreated).AsQueryable();
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<InventoryModel>(inventories);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetInventoryLocation(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Product.Include(_ => _.Inventories)
+                .ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location).ThenInclude(_ => _.RackLevel).ThenInclude(_ => _.Rack)
                 .Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
             if (data == null)
             {

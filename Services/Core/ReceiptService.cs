@@ -74,24 +74,37 @@ public class ReceiptService : IReceiptService
                 Note = "",
                 Quantity = receipt.Quantity,
             };
-            var inventory = receipt.Product.Inventories.Where(_ => _.LocationId == model.LocationId).FirstOrDefault();
-            if(inventory == null)
+            var inventory = receipt.Product.Inventories.Where(_ => !_.IsDeleted).FirstOrDefault();
+            if (inventory == null)
             {
                 var inventoryAddNew = new Inventory
                 {
-                    LocationId = model.LocationId,
                     ProductId = receipt.ProductId,
                     Note = "",
                     QuantityOnHand = receipt.Quantity,
                 };
                 _dbContext.Inventory.Add(inventoryAddNew);
-                receiptInventory.InventoryId = inventoryAddNew.Id;
-            }else
-            {
-                inventory.QuantityOnHand += receiptInventory.Quantity;
-                inventory.DateUpdated = DateTime.Now;
-                receiptInventory.InventoryId = inventory.Id;
+                inventory = inventoryAddNew;
             }
+            receiptInventory.InventoryId = inventory.Id;
+            var inventoryLocation = _dbContext.InventoryLocation.Include(_ => _.Inventory)
+                .Where(_ => _.Inventory.ProductId == receipt.ProductId && _.LocationId == model.LocationId && !_.IsDeleted).FirstOrDefault();
+
+            if(inventoryLocation == null)
+            {
+                var inventoryLocationAddNew = new InventoryLocation
+                {
+                    LocationId = model.LocationId,
+                    InventoryId = inventory.Id,
+                };
+
+                _dbContext.InventoryLocation.Add(inventoryLocationAddNew);
+                inventoryLocation = inventoryLocationAddNew;
+            }
+            inventory.QuantityOnHand += receiptInventory.Quantity;
+            inventory.DateUpdated = DateTime.Now;
+            receiptInventory.InventoryId = inventory.Id;
+
             _dbContext.ReceiptInventory.Add(receiptInventory);
             receipt.Status = ReceiptStatus.Completed;
             receipt.DateUpdated = DateTime.Now;
