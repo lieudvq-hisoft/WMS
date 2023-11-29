@@ -12,19 +12,22 @@ namespace Data.Models
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
 
-        //public List<InventoryForLocation> Inventories { get; set; }
+        public List<InventoryLocationPrivateModel> InventoryLocations { get; set; }
     }
 
-    //public class InventoryForLocation
-    //{
-    //    public Guid Id { get; set; }
-    //    public string Note { get; set; }
-    //    public int QuantityOnHand { get; set; } = 0;
-    //    public DateTime DateCreated { get; set; }
-    //    public DateTime DateUpdated { get; set; }
-    //    public virtual ProductModel Product { get; set; }
+    public class InventoryPrivateModel
+    {
+        public Guid Id { get; set; }
+        public string Note { get; set; }
+        public int QuantityOnHand { get; set; } = 0;
+        public ProductModel Product { get; set; }
 
-    //}
+    }
+
+    public class InventoryLocationPrivateModel
+    {
+        public InventoryPrivateModel Inventory { get; set; }
+    }
 
     public class LocationCreateModel
     {
