@@ -598,6 +598,19 @@ public class UserService : IUserService
         ResultModel result = new ResultModel();
         try
         {
+            var user = _dbContext.Users.Include(_ => _.UserRoles).ThenInclude(_ => _.Role).Where(_ => _.Id == userId && !_.IsDeleted).FirstOrDefault();
+            if (user == null)
+            {
+                result.ErrorMessage = "User not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (!user.IsActive)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "User has been deactivated";
+                return result;
+            }
             var role = _dbContext.UserRoles.Where(s => s.UserId == userId).FirstOrDefault();
             if (role != null)
             {
