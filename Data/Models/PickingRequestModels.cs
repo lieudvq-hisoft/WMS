@@ -48,5 +48,14 @@ namespace Data.Models
     {
         public string? SearchValue { get; set; } = "";
     }
+
+    public class DailyReportPickingRequest
+    {
+        public DateTime Date { get; set; }
+        public int TotalPickingRequestCompleted { get; set; }
+        public int TotalPickingRequestPending { get; set; }
+        //public List<ReceiptReport> ReceiptCompleted { get; set; }
+        //public List<ReceiptReport> ReceiptPending { get; set; }
+    }
 }
 

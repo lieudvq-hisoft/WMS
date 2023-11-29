@@ -68,6 +68,33 @@ namespace Services.Utils
                 File.Delete(filePath);
             }
         }
+
+        public static (int position, DateTime[] days) GetWeekInfo()
+        {
+            var today = DateTime.Today;
+            var dayOfWeek = (int)today.DayOfWeek;
+
+            var days = new DateTime[7];
+            for (int i = 0; i < 7; i++)
+            {
+                days[i] = today.AddDays(-dayOfWeek + i);
+            }
+
+            return (dayOfWeek, days);
+        }
+
+        public static List<DateTime> Get7DaysWithToday()
+        {
+            var today = DateTime.Today;
+            var dates = new List<DateTime>();
+
+            for (int i = 0; i < 7; i++)
+            {
+                dates.Insert(0, today.AddDays(-i));
+            }
+
+            return dates;
+        }
     }
 }
 

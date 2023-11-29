@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Confluent.Kafka;
 using Data.Common.PaginationModel;
 using Data.DataAccess;
@@ -20,7 +21,7 @@ public interface IReceiptService
     Task<ResultModel> GetReceiptPending(PagingParam<ReceiptSortCriteria> paginationModel, ReceiptSearchModel model);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> Complete(ReceiptCompleteModel model);
-
+    Task<ResultModel> GetWeeklyReport();
 }
 public class ReceiptService : IReceiptService
 {
@@ -241,6 +242,46 @@ public class ReceiptService : IReceiptService
             paging.Data = viewModels;
             result.Data = paging;
             result.Succeed = true;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetWeeklyReport()
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var days = MyFunction.Get7DaysWithToday();
+            days.Reverse();
+            var reports = new List<DailyReport>();
+            foreach (var day in days)
+            {
+                var receiptCompleted = _dbContext.Receipt
+                    .Where(_ =>
+                        new DateTime(_.DateCreated.Year, _.DateCreated.Month, _.DateCreated.Day) == day
+                        && _.Status == ReceiptStatus.Completed
+                        && !_.IsDeleted).ToList();
+                var receiptPending = _dbContext.Receipt
+                    .Where(_ =>
+                        new DateTime(_.DateCreated.Year, _.DateCreated.Month, _.DateCreated.Day) == day
+                        && _.Status == ReceiptStatus.Pending
+                        && !_.IsDeleted).ToList();
+
+                var report = new DailyReport()
+                {
+                    Date = day,
+                    TotalReceiptCompleted = receiptCompleted.Count(),
+                    TotalReceiptPending = receiptPending.Count(),
+                };
+                reports.Add(report);
+            }
+            result.Succeed = true;
+            result.Data = reports;
         }
         catch (Exception ex)
         {

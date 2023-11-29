@@ -73,6 +73,15 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpGet("WeeklyReport")]
+        //[Authorize(Roles = "Staff")]
+        public async Task<ActionResult> GetWeeklyReport()
+        {
+            var result = await _receiptService.GetWeeklyReport();
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }
 

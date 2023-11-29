@@ -23,6 +23,7 @@ namespace Services.Mapping
             CreateMap<ReceiptCreateModel, Receipt>();
             CreateMap<ReceiptUpdateModel, Receipt>();
             CreateMap<ReceiptModel, Receipt>().ReverseMap();
+            CreateMap<Receipt, ReceiptReport>().ReverseMap();
 
             CreateMap<ProductCreateModel, Product>();
             CreateMap<ProductUpdateModel, Product>();
