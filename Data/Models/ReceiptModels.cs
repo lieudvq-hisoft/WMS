@@ -48,5 +48,30 @@ namespace Data.Models
     {
         public string? SearchValue { get; set; } = "";
     }
+
+    public class ReceiptReport
+    {
+        public Guid Id { get; set; }
+        //public Supplier Supplier { get; set; }
+        //public UserModel ReceivedByUser { get; set; }
+        //public ProductModel Product { get; set; }
+
+        public int Quantity { get; set; }
+        public string? Note { get; set; }
+        public ReceiptStatus status { get; set; }
+        public ReceiptType Type { get; set; }
+        public double? CostPrice { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
+    }
+
+    public class DailyReport
+    {
+        public DateTime Date { get; set; }
+        public int TotalReceiptCompleted { get; set; }
+        public int TotalReceiptPending { get; set; }
+        //public List<ReceiptReport> ReceiptCompleted { get; set; }
+        //public List<ReceiptReport> ReceiptPending { get; set; }
+    }
 }
 

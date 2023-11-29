@@ -18,6 +18,7 @@ public interface IPickingRequestService
     Task<ResultModel> Get(PagingParam<PickingRequestSortCriteria> paginationModel, PickingRequestSearchModel model);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> Complete(PickingRequestCompleteModel model);
+    Task<ResultModel> GetWeeklyReport();
 }
 public class PickingRequestService : IPickingRequestService
 {
@@ -260,4 +261,44 @@ public class PickingRequestService : IPickingRequestService
         }
         return result;
     }
+    public async Task<ResultModel> GetWeeklyReport()
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var days = MyFunction.Get7DaysWithToday();
+            days.Reverse();
+            var reports = new List<DailyReportPickingRequest>();
+            foreach (var day in days)
+            {
+                var pickingRequestCompleted = _dbContext.PickingRequest
+                    .Where(_ =>
+                        new DateTime(_.DateCreated.Year, _.DateCreated.Month, _.DateCreated.Day) == day
+                        && _.Status == PickingRequestStatus.Completed
+                        && !_.IsDeleted).ToList();
+                var pickingRequestPending = _dbContext.PickingRequest
+                    .Where(_ =>
+                        new DateTime(_.DateCreated.Year, _.DateCreated.Month, _.DateCreated.Day) == day
+                        && _.Status == PickingRequestStatus.Pending
+                        && !_.IsDeleted).ToList();
+
+                var report = new DailyReportPickingRequest()
+                {
+                    Date = day,
+                    TotalPickingRequestCompleted = pickingRequestCompleted.Count(),
+                    TotalPickingRequestPending = pickingRequestPending.Count(),
+                };
+                reports.Add(report);
+            }
+            result.Succeed = true;
+            result.Data = reports;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
 }
