@@ -69,7 +69,9 @@ namespace Data.Models
     {
         public DateTime Date { get; set; }
         public int TotalReceiptCompleted { get; set; }
+        public int TotalQuantityOfReceiptCompleted { get; set; }
         public int TotalReceiptPending { get; set; }
+        public int TotalQuantityOfReceiptPending { get; set; }
         //public List<ReceiptReport> ReceiptCompleted { get; set; }
         //public List<ReceiptReport> ReceiptPending { get; set; }
     }
