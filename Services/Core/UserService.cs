@@ -593,12 +593,12 @@ public class UserService : IUserService
         }
         return result;
     }
-    public async Task<ResultModel> GetUserRole(Guid id)
+    public async Task<ResultModel> GetUserRole(Guid userId)
     {
         ResultModel result = new ResultModel();
         try
         {
-            var role = _dbContext.UserRoles.Where(s => s.UserId == id).FirstOrDefault();
+            var role = _dbContext.UserRoles.Where(s => s.UserId == userId).FirstOrDefault();
             if (role != null)
             {
                 var roleID = role.RoleId;
