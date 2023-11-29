@@ -147,4 +147,13 @@ public class UserController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+    [Authorize(AuthenticationSchemes = "Bearer")]
+    [HttpGet("UsersRole/{id}")]
+    public async Task<ActionResult> GetUserRole(Guid id)
+    {
+        var result = await _userService.GetUserRole(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
 }
