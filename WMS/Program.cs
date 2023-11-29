@@ -1,4 +1,5 @@
 using Data.Models;
+using Microsoft.Extensions.FileProviders;
 using WMS.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,9 +56,10 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseStaticFiles();
-
-app.MapControllers();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory() + "/" + "wwwroot")
+});
 
 app.MapControllers();
 

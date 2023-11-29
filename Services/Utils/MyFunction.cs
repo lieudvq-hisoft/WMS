@@ -1,6 +1,9 @@
 ﻿using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
+using Data.Model;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Services.Utils
 {
@@ -35,6 +38,35 @@ namespace Services.Utils
         public static TimeSpan TimespanCalculate(DateTime dateTime)
         {
             return dateTime - DateTime.Now;
+        }
+
+        public static string uploadImage(IFormFile file, string path)
+        {
+
+            if (!Directory.Exists(path))
+            { 
+                Directory.CreateDirectory(path);
+            }
+            var extension = Path.GetExtension(file.FileName);
+
+            var imageName = DateTime.Now.ToBinary() + Path.GetFileName(file.FileName);
+
+            string filePath = Path.Combine(path, imageName);
+
+            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                file.CopyToAsync(fileStream);
+            }
+            
+            return filePath.Split("/app/wwwroot")[1];
+        }
+
+        public static void deleteImage(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
         }
     }
 }
