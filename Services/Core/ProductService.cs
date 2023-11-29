@@ -342,6 +342,7 @@ public class ProductService : IProductService
                     product.Images = new List<string>();
                 }
                 product.Images.Add(MyFunction.uploadImage(model.File, dirPath));
+                product.DateUpdated = DateTime.Now;
                 await _dbContext.SaveChangesAsync();
                 result.Data = product.Images;
                 result.Succeed = true;
@@ -377,6 +378,7 @@ public class ProductService : IProductService
                 }
                 MyFunction.deleteImage(dirPath + model.Path);
                 product.Images.Remove(model.Path);
+                product.DateUpdated = DateTime.Now;
                 await _dbContext.SaveChangesAsync();
                 result.Data = product.Images;
                 result.Succeed = true;
