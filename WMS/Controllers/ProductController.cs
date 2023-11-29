@@ -108,6 +108,22 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpPost("UploadImg")]
+        public async Task<ActionResult> UploadImg([FromForm] UploadImgModel model)
+        {
+            var result = await _productService.UploadImg(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpDelete("DeleteImg")]
+        public async Task<ActionResult> DeleteImg([FromForm] DeleteImgModel model)
+        {
+            var result = await _productService.DeleteImg(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }
 

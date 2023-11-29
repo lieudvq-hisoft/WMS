@@ -9,7 +9,7 @@ public class Product : BaseEntity
     public double? SalePrice { get; set; }
     public string? SerialNumber { get; set; }
     public string? InternalCode { get; set; }
-    public string? Image { get; set; }
+    public List<string>? Images { get; set; }
     public virtual ICollection<Inventory> Inventories { get; set; }
     public virtual ICollection<PickingRequest> PickingRequests { get; set; }
 }

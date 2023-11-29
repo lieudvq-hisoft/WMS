@@ -23,6 +23,9 @@ public interface IProductService
     Task<ResultModel> GetPickingRequestPending(Guid id);
     Task<ResultModel> GetBarcode(Guid id);
     Task<ResultModel> GetDetail(Guid id);
+    Task<ResultModel> UploadImg(UploadImgModel model);
+    Task<ResultModel> DeleteImg(DeleteImgModel model);
+
 }
 public class ProductService : IProductService
 {
@@ -312,6 +315,72 @@ public class ProductService : IProductService
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = _mapper.Map<Product, ProductModel>(data);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UploadImg(UploadImgModel model)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var product = _dbContext.Product.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (product == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Product not found";
+            }
+            else
+            {
+                string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "product");
+                if (product.Images == null)
+                {
+                    product.Images = new List<string>();
+                }
+                product.Images.Add(MyFunction.uploadImage(model.File, dirPath));
+                await _dbContext.SaveChangesAsync();
+                result.Data = product.Images;
+                result.Succeed = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+
+        return result;
+    }
+
+    public async Task<ResultModel> DeleteImg(DeleteImgModel model)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var product = _dbContext.Product.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (product == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Product not found";
+            }
+            else
+            {
+                string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                if (product.Images == null || !product.Images.Contains(model.Path))
+                {
+                    result.ErrorMessage = "Image does not exist";
+                    result.Succeed = false;
+                    return result;
+                }
+                MyFunction.deleteImage(dirPath + model.Path);
+                product.Images.Remove(model.Path);
+                await _dbContext.SaveChangesAsync();
+                result.Data = product.Images;
+                result.Succeed = true;
+            }
         }
         catch (Exception ex)
         {
