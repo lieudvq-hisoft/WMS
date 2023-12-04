@@ -92,7 +92,8 @@ public class LocationService : ILocationService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Location.Include(_ => _.InventoryLocations).ThenInclude(_ => _.Inventory).ThenInclude(_ => _.Product)
+            var data = _dbContext.Location
+                .Include(_ => _.InventoryLocations).ThenInclude(_ => _.Inventory).ThenInclude(_ => _.Product)
                 .Include(_ => _.RackLevel).Where(delegate (Location l)
             {
                 if (

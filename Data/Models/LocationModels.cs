@@ -19,7 +19,8 @@ namespace Data.Models
     {
         public Guid Id { get; set; }
         public string Note { get; set; }
-        public int QuantityOnHand { get; set; } = 0;
+        public string SerialCode { get; set; }
+        public bool IsAvailable { get; set; }
         public ProductModel Product { get; set; }
 
     }

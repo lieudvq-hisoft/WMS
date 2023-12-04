@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WMS.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231204070531_serialHandel")]
+    partial class serialHandel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,7 +223,6 @@ namespace WMS.Migrations
                         .HasColumnType("text[]");
 
                     b.Property<string>("InternalCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
@@ -229,11 +231,14 @@ namespace WMS.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<string>("Prefix")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<double?>("SalePrice")
                         .HasColumnType("double precision");
 
                     b.Property<string>("SerialNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -582,8 +587,8 @@ namespace WMS.Migrations
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "8a12fe29-7fe8-41f3-9af2-54b1ca8d4207",
                             CurrenNoticeCount = 0,
-                            DateCreated = new DateTime(2023, 12, 4, 14, 12, 45, 598, DateTimeKind.Local).AddTicks(3750),
-                            DateUpdated = new DateTime(2023, 12, 4, 14, 12, 45, 598, DateTimeKind.Local).AddTicks(3750),
+                            DateCreated = new DateTime(2023, 12, 4, 14, 5, 31, 702, DateTimeKind.Local).AddTicks(6400),
+                            DateUpdated = new DateTime(2023, 12, 4, 14, 5, 31, 702, DateTimeKind.Local).AddTicks(6400),
                             Email = "lieudvq0302@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "System",

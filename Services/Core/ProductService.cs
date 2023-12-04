@@ -173,8 +173,8 @@ public class ProductService : IProductService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Product.Include(_ => _.Inventories)
-                .ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location).ThenInclude(_ => _.RackLevel).ThenInclude(_ => _.Rack)
+            var data = _dbContext.Product
+                .Include(_ => _.Inventories).ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location).ThenInclude(_ => _.RackLevel).ThenInclude(_ => _.Rack)
                 .Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
             if (data == null)
             {
@@ -182,9 +182,9 @@ public class ProductService : IProductService
                 result.Succeed = false;
                 return result;
             }
-            var inventories = data.Inventories.Where(_ => _.QuantityOnHand > 0 && !_.IsDeleted).OrderBy(_ => _.DateCreated).AsQueryable();
+            var inventories = data.Inventories.Where(_ => _.IsAvailable && !_.IsDeleted).OrderBy(_ => _.DateCreated).AsQueryable();
             result.Succeed = true;
-            result.Data = _mapper.ProjectTo<InventoryModel>(inventories);
+            result.Data = _mapper.ProjectTo<InventoryFPModel>(inventories);
         }
         catch (Exception ex)
         {
