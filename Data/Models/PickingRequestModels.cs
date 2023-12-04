@@ -35,13 +35,13 @@ namespace Data.Models
     public class PickingRequestInventory
     {
         public Guid InventoryId { get; set; }
-        public int Quantity { get; set; }
+        //public int Quantity { get; set; }
     }
 
     public class PickingRequestCompleteModel
     {
         public Guid Id { get; set; }
-        public List<PickingRequestInventory> pickingRequestInventories { get; set; }
+        public List<Guid> ListInventoryId { get; set; }
     }
 
     public class PickingRequestSearchModel

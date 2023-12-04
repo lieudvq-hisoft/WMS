@@ -18,6 +18,30 @@ namespace Data.Models
         public DateTime DateUpdated { get; set; }
     }
 
+    public class InventoryFPModel
+    {
+        public Guid Id { get; set; }
+        public string Note { get; set; }
+        public string SerialCode { get; set; }
+        public bool IsAvailable { get; set; }
+        public List<InventoryLocationFPModel> InventoryLocations { get; set; }
+
+    }
+
+    public class InventoryLocationFPModel
+    {
+        public LocationFPModel Location { get; set; }
+    }
+
+    public class LocationFPModel
+    {
+        public Guid Id { get; set; }
+        public RackLevelModel RackLevel { get; set; }
+        public string Name { get; set; }
+        public string? Description { get; set; }
+        public int SectionNumber { get; set; }
+    }
+
     public class ProductCreateModel
     {
         public string? Name { get; set; }

@@ -68,44 +68,64 @@ public class ReceiptService : IReceiptService
                 return result;
             }
 
-            var receiptInventory = new ReceiptInventory
+            for (int i = 0; i < receipt.Quantity; i++)
             {
-                ReceiptId = receipt.Id,
-                Note = "",
-                Quantity = receipt.Quantity,
-            };
-            var inventory = receipt.Product.Inventories.Where(_ => !_.IsDeleted).FirstOrDefault();
-            if (inventory == null)
-            {
-                var inventoryAddNew = new Inventory
+                var inventory = new Inventory
                 {
                     ProductId = receipt.ProductId,
-                    Note = "",
-                    QuantityOnHand = receipt.Quantity,
+                    QuantityOnHand = 1,
+                    SerialCode = receipt.Product.SerialNumber + DateTime.Now.ToBinary(),
                 };
-                _dbContext.Inventory.Add(inventoryAddNew);
-                inventory = inventoryAddNew;
-            }
-            receiptInventory.InventoryId = inventory.Id;
-            var inventoryLocation = _dbContext.InventoryLocation.Include(_ => _.Inventory)
-                .Where(_ => _.Inventory.ProductId == receipt.ProductId && _.LocationId == model.LocationId && !_.IsDeleted).FirstOrDefault();
 
-            if(inventoryLocation == null)
-            {
-                var inventoryLocationAddNew = new InventoryLocation
+                _dbContext.Add(inventory);
+
+                var inventoryLocation = new InventoryLocation
                 {
-                    LocationId = model.LocationId,
                     InventoryId = inventory.Id,
+                    LocationId = location.Id,
                 };
 
-                _dbContext.InventoryLocation.Add(inventoryLocationAddNew);
-                inventoryLocation = inventoryLocationAddNew;
+                _dbContext.Add(inventoryLocation);
             }
-            inventory.QuantityOnHand += receiptInventory.Quantity;
-            inventory.DateUpdated = DateTime.Now;
-            receiptInventory.InventoryId = inventory.Id;
 
-            _dbContext.ReceiptInventory.Add(receiptInventory);
+            //var receiptInventory = new ReceiptInventory
+            //{
+            //    ReceiptId = receipt.Id,
+            //    Note = "",
+            //    Quantity = receipt.Quantity,
+            //};
+            //var inventory = receipt.Product.Inventories.Where(_ => !_.IsDeleted).FirstOrDefault();
+            //if (inventory == null)
+            //{
+            //    var inventoryAddNew = new Inventory
+            //    {
+            //        ProductId = receipt.ProductId,
+            //        Note = "",
+            //        QuantityOnHand = receipt.Quantity,
+            //    };
+            //    _dbContext.Inventory.Add(inventoryAddNew);
+            //    inventory = inventoryAddNew;
+            //}
+            //receiptInventory.InventoryId = inventory.Id;
+            //var inventoryLocation = _dbContext.InventoryLocation.Include(_ => _.Inventory)
+            //    .Where(_ => _.Inventory.ProductId == receipt.ProductId && _.LocationId == model.LocationId && !_.IsDeleted).FirstOrDefault();
+
+            //if(inventoryLocation == null)
+            //{
+            //    var inventoryLocationAddNew = new InventoryLocation
+            //    {
+            //        LocationId = model.LocationId,
+            //        InventoryId = inventory.Id,
+            //    };
+
+            //    _dbContext.InventoryLocation.Add(inventoryLocationAddNew);
+            //    inventoryLocation = inventoryLocationAddNew;
+            //}
+            //inventory.QuantityOnHand += receiptInventory.Quantity;
+            //inventory.DateUpdated = DateTime.Now;
+            //receiptInventory.InventoryId = inventory.Id;
+
+            //_dbContext.ReceiptInventory.Add(receiptInventory);
             receipt.Status = ReceiptStatus.Completed;
             receipt.DateUpdated = DateTime.Now;
             _dbContext.Receipt.Update(receipt);

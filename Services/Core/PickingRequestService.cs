@@ -8,6 +8,7 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Services.Utils;
+using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Services.Core;
 
@@ -38,7 +39,9 @@ public class PickingRequestService : IPickingRequestService
         var transaction = _dbContext.Database.BeginTransaction();
         try
         {
-            var pickingRequest = _dbContext.PickingRequest.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            var pickingRequest = _dbContext.PickingRequest
+                .Include(_ => _.Product).ThenInclude(_ => _.Inventories)
+                .Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
             if (pickingRequest == null)
             {
                 result.ErrorMessage = "Picking request not exists";
@@ -51,49 +54,32 @@ public class PickingRequestService : IPickingRequestService
                 result.Succeed = false;
                 return result;
             }
-            if (model.pickingRequestInventories.Any())
+
+            var inventories = pickingRequest.Product.Inventories.Where(_ => _.IsAvailable && !_.IsDeleted);
+            if (inventories.Count() < pickingRequest.Quantity)
             {
-                foreach (var pickingRequestInventory in model.pickingRequestInventories)
-                {
-                    var inventoryCheck = _dbContext.Inventory.Where(_ => _.Id == pickingRequestInventory.InventoryId && !_.IsDeleted).FirstOrDefault();
-                    if(inventoryCheck == null)
-                    {
-                        result.ErrorMessage = "Inventory not exists with Id: " + pickingRequestInventory.InventoryId;
-                        result.Succeed = false;
-                        await transaction.RollbackAsync();
-                        return result;
-                    }
-                    if(inventoryCheck.QuantityOnHand < pickingRequestInventory.Quantity)
-                    {
-                        result.ErrorMessage = "Out of stock inventory with Id: " + pickingRequestInventory.InventoryId;
-                        result.Succeed = false;
-                        await transaction.RollbackAsync();
-                        return result;
-                    }
-                    inventoryCheck.QuantityOnHand -= pickingRequestInventory.Quantity;
-                    inventoryCheck.DateUpdated = DateTime.Now;
-                    _dbContext.Inventory.Update(inventoryCheck);
-                    var pickingRequestInventoryAdd = new Data.Entities.PickingRequestInventory
-                    {
-                        InventoryId = inventoryCheck.Id,
-                        PickingRequestId = pickingRequest.Id,
-                        Quantity = pickingRequestInventory.Quantity,
-                    };
-                    _dbContext.PickingRequestInventory.Add(pickingRequestInventoryAdd);
-                }
-            }
-            var pickingRequestAfterCheck = _dbContext.PickingRequest.Include(_ => _.PickingRequestInventories).Where(_ => _.Id == pickingRequest.Id && !_.IsDeleted).FirstOrDefault();
-            var quantityAfterCheck = 0;
-            foreach (var item in pickingRequestAfterCheck!.PickingRequestInventories)
-            {
-                quantityAfterCheck += item.Quantity;
-            }
-            if(quantityAfterCheck != pickingRequest.Quantity)
-            {
-                result.ErrorMessage = "Error";
+                result.ErrorMessage = "Out of stock";
                 result.Succeed = false;
-                await transaction.RollbackAsync();
                 return result;
+            }
+            if (inventories.Select(_ => _.Id).Intersect(model.ListInventoryId).Count() != model.ListInventoryId.Count())
+            {
+                result.ErrorMessage = "In the inventory list, there is inventory that does not exist corresponding to the product";
+                result.Succeed = false;
+                return result;
+            }
+            foreach (var inventory in inventories)
+            {
+                var pickingRequestInventoryAdd = new Data.Entities.PickingRequestInventory
+                {
+                    InventoryId = inventory.Id,
+                    PickingRequestId = pickingRequest.Id,
+                };
+                _dbContext.PickingRequestInventory.Add(pickingRequestInventoryAdd);
+
+                inventory.IsAvailable = false;
+                inventory.DateUpdated = DateTime.Now;
+                _dbContext.Inventory.Update(inventory);
             }
             pickingRequest.Status = PickingRequestStatus.Completed;
             pickingRequest.DateUpdated = DateTime.Now;
@@ -132,16 +118,8 @@ public class PickingRequestService : IPickingRequestService
                 return result;
             }
             //check inventory
-            var inventories = product.Inventories.Where(_ => _.QuantityOnHand > 0 && !_.IsDeleted);
-            var totalInventory = 0;
-            if (inventories.Any())
-            {
-                foreach (var item in inventories)
-                {
-                    totalInventory += item.QuantityOnHand;
-                }
-            }
-            if(totalInventory < model.Quantity)
+            var inventories = product.Inventories.Where(_ => _.IsAvailable && !_.IsDeleted).ToList();
+            if(inventories.Count() < model.Quantity)
             {
                 result.ErrorMessage = "Out of stock";
                 result.Succeed = false;

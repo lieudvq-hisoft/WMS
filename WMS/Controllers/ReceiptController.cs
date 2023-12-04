@@ -48,7 +48,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "Staff")]
         public async Task<ActionResult> Get([FromQuery] PagingParam<ReceiptSortCriteria> paginationModel, [FromQuery] ReceiptSearchModel searchModel)
         {
             var result = await _receiptService.Get(paginationModel, searchModel);

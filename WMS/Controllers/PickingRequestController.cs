@@ -20,7 +20,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Manager,Staff")]
+        //[Authorize(Roles = "Manager,Staff")]
         public async Task<ActionResult> Create([FromBody] PickingRequestCreateModel model)
         {
             var result = await _pickingRequestService.Create(model);
@@ -29,7 +29,7 @@ namespace WMS.Controllers
         }
 
         [HttpPost("Complete")]
-        [Authorize(Roles = "Manager,Staff")]
+        //[Authorize(Roles = "Manager,Staff")]
         public async Task<ActionResult> Complete([FromBody] PickingRequestCompleteModel model)
         {
             var result = await _pickingRequestService.Complete(model);
@@ -47,7 +47,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Manager,Staff")]
+        //[Authorize(Roles = "Manager,Staff")]
         public async Task<ActionResult> Get([FromQuery] PagingParam<PickingRequestSortCriteria> paginationModel, [FromQuery] PickingRequestSearchModel searchModel)
         {
             var result = await _pickingRequestService.Get(paginationModel, searchModel);
