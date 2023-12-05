@@ -1,7 +1,4 @@
-﻿using System.Drawing;
-using System.Drawing.Imaging;
-using AutoMapper;
-using BarcodeLib;
+﻿using AutoMapper;
 using Data.Common.PaginationModel;
 using Data.DataAccess;
 using Data.Entities;
@@ -138,25 +135,8 @@ public class LocationService : ILocationService
                 result.Succeed = false;
                 return result;
             }
-            Barcode barcode = new BarcodeLib.Barcode()
-            {
-                // Use the minimum bar width of 1 pixel. Setting this causes
-                // BarcodeLib to ignore the Width property and create the minimum-width
-                // barcode.
-                BarWidth = 1,
-            };
-            barcode.IncludeLabel = true;
-            barcode.Alignment = AlignmentPositions.CENTER;
-            int minWidth = Math.Max(100, barcode.EncodedValue.Length);
-            Image barcodeImage = barcode.Encode(BarcodeLib.TYPE.CODE128, data.Id.ToString(), minWidth, 200);
-            using (MemoryStream stream = new MemoryStream())
-            {
-
-                barcodeImage.Save(stream, ImageFormat.Png);
-                result.Succeed = true;
-                result.Data = MyFunction.GenerateBarcode(data.Id.ToString());
-            }
-
+            result.Succeed = true;
+            result.Data = MyFunction.GenerateBarcode(data.Id.ToString());
         }
         catch (Exception ex)
         {
