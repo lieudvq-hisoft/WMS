@@ -101,7 +101,7 @@ namespace Services.Utils
             return dates;
         }
 
-        public static byte[] GenerateBarcode(string content, BarcodeLib.TYPE barcodeType = BarcodeLib.TYPE.CODE128, int width = 550, int height = 200)
+        public static byte[] GenerateBarcode(string content, BarcodeLib.TYPE barcodeType = BarcodeLib.TYPE.CODE128, int width = 700, int height = 200)
         {
             Barcode barcode = new Barcode();
             barcode.IncludeLabel = true;

@@ -136,7 +136,7 @@ public class LocationService : ILocationService
                 return result;
             }
             result.Succeed = true;
-            result.Data = MyFunction.GenerateBarcode(data.Id.ToString(), width: 600);
+            result.Data = MyFunction.GenerateBarcode(data.Id.ToString(), width: 700);
         }
         catch (Exception ex)
         {
