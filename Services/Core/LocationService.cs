@@ -19,6 +19,7 @@ public interface ILocationService
     Task<ResultModel> Get(PagingParam<LocationSortCriteria> paginationModel, LocationSearchModel model);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetBarcode(Guid id);
+    Task<ResultModel> GetQrcode(Guid id);
     Task<ResultModel> GetDetail(Guid id);
 }
 public class LocationService : ILocationService
@@ -134,13 +135,31 @@ public class LocationService : ILocationService
                 result.Succeed = false;
                 return result;
             }
-            byte[] QRCode = null;
-            QRCodeGenerator qRCodeGenerator = new QRCodeGenerator();
-            QRCodeData dataQr = qRCodeGenerator.CreateQrCode(id.ToString(), QRCodeGenerator.ECCLevel.Q);
-            BitmapByteQRCode bitmap = new BitmapByteQRCode(dataQr);
-            QRCode = bitmap.GetGraphic(20);
             result.Succeed = true;
-            result.Data = QRCode;
+            result.Data = MyFunction.GenerateBarcode(data.Id.ToString(), width: 600);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetQrcode(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Location.Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Location not exists";
+                result.Succeed = false;
+                return result;
+            }
+            result.Succeed = true;
+            result.Data = MyFunction.GenerateQrcode(data.Id.ToString());
         }
         catch (Exception ex)
         {
