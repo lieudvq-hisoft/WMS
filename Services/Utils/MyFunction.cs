@@ -101,7 +101,7 @@ namespace Services.Utils
             return dates;
         }
 
-        public static byte[] GenerateBarcode(string content, BarcodeLib.TYPE barcodeType = BarcodeLib.TYPE.CODE128, int width = 500, int height = 200)
+        public static byte[] GenerateBarcode(string content, BarcodeLib.TYPE barcodeType = BarcodeLib.TYPE.CODE128)
         {
             Barcode barcode = new BarcodeLib.Barcode()
             {
@@ -113,7 +113,7 @@ namespace Services.Utils
             barcode.IncludeLabel = true;
             barcode.Alignment = AlignmentPositions.CENTER;
             int minWidth = Math.Max(100, barcode.EncodedValue.Length);
-            Image barcodeImage = barcode.Encode(BarcodeLib.TYPE.CODE128, content, minWidth, height);
+            Image barcodeImage = barcode.Encode(BarcodeLib.TYPE.CODE128, content, minWidth, 200);
             using (MemoryStream stream = new MemoryStream())
             {
 
