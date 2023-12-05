@@ -101,13 +101,19 @@ namespace Services.Utils
             return dates;
         }
 
-        public static byte[] GenerateBarcode(string content, BarcodeLib.TYPE barcodeType = BarcodeLib.TYPE.CODE128, int width = 800, int height = 200)
+        public static byte[] GenerateBarcode(string content, BarcodeLib.TYPE barcodeType = BarcodeLib.TYPE.CODE128, int width = 500, int height = 200)
         {
-            Barcode barcode = new Barcode();
+            Barcode barcode = new BarcodeLib.Barcode()
+            {
+                // Use the minimum bar width of 1 pixel. Setting this causes
+                // BarcodeLib to ignore the Width property and create the minimum-width
+                // barcode.
+                BarWidth = 1,
+            };
             barcode.IncludeLabel = true;
             barcode.Alignment = AlignmentPositions.CENTER;
-
-            Image barcodeImage = barcode.Encode(BarcodeLib.TYPE.CODE128, content, width, height);
+            int minWidth = Math.Max(100, barcode.EncodedValue.Length);
+            Image barcodeImage = barcode.Encode(BarcodeLib.TYPE.CODE128, content, minWidth, height);
             using (MemoryStream stream = new MemoryStream())
             {
 
