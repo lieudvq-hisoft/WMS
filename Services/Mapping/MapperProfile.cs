@@ -34,13 +34,16 @@ namespace Services.Mapping
             CreateMap<LocationModel, Location>().ReverseMap();
             CreateMap<InventoryLocation, InventoryLocationModel>();
             CreateMap<InventoryLocation, InventoryLocationFPModel>().ReverseMap();
+            CreateMap<InventoryLocation, InventoryLocationFIModel>().ReverseMap();
             CreateMap<LocationFPModel, Location>().ReverseMap();
+            CreateMap<LocationFIModel, Location>().ReverseMap();
 
             CreateMap<PickingRequestCreateModel, PickingRequest>();
             CreateMap<PickingRequestUpdateModel, PickingRequest>();
             CreateMap<PickingRequestModel, PickingRequest>().ReverseMap();
 
             CreateMap<Inventory, InventoryModel>();
+            CreateMap<Inventory, InventoryFIModel>();
             CreateMap<InventoryLocation, InventoryLocationPrivateModel>();
             CreateMap<Inventory, InventoryPrivateModel>();
             CreateMap<Inventory, InventoryFPModel>().ReverseMap();

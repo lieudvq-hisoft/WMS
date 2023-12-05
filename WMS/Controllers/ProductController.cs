@@ -55,6 +55,15 @@ namespace WMS.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("Qrcode/{id}")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<ActionResult> GetQrcode(Guid id)
+        {
+            var result = await _productService.GetQrcode(id);
+            if (result.Succeed) return File((byte[])result.Data, "image/png");
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("Barcode/{id}")]
         //[Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetBarcode(Guid id)
