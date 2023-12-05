@@ -2,6 +2,10 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
+
+RUN apt-get update && apt-get --fix-broken install -y \
+	libgdiplus
+
 EXPOSE 80
 EXPOSE 443 
 

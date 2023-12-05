@@ -8,7 +8,12 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using QRCoder;
+using BarcodeLib;
 using Services.Utils;
+using System.Drawing.Imaging;
+using System.Drawing;
+using System.IO;
+
 namespace Services.Core;
 
 public interface IProductService
@@ -21,6 +26,7 @@ public interface IProductService
     Task<ResultModel> GetInventories(Guid id);
     Task<ResultModel> GetPickingRequestCompleted(Guid id);
     Task<ResultModel> GetPickingRequestPending(Guid id);
+    Task<ResultModel> GetQrcode(Guid id);
     Task<ResultModel> GetBarcode(Guid id);
     Task<ResultModel> GetDetail(Guid id);
     Task<ResultModel> UploadImg(UploadImgModel model);
@@ -116,6 +122,29 @@ public class ProductService : IProductService
         return result;
     }
 
+    public async Task<ResultModel> GetQrcode(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Product.Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Product not exists";
+                result.Succeed = false;
+                return result;
+            }
+            result.Succeed = true;
+            result.Data = MyFunction.GenerateQrcode(data.Id.ToString());
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
     public async Task<ResultModel> GetBarcode(Guid id)
     {
         var result = new ResultModel();
@@ -129,13 +158,8 @@ public class ProductService : IProductService
                 result.Succeed = false;
                 return result;
             }
-            byte[] QRCode = null;
-            QRCodeGenerator qRCodeGenerator = new QRCodeGenerator();
-            QRCodeData dataQr = qRCodeGenerator.CreateQrCode(id.ToString(), QRCodeGenerator.ECCLevel.Q);
-            BitmapByteQRCode bitmap = new BitmapByteQRCode(dataQr);
-            QRCode = bitmap.GetGraphic(20);
             result.Succeed = true;
-            result.Data = QRCode;
+            result.Data = MyFunction.GenerateBarcode(content: data.Id.ToString());
         }
         catch (Exception ex)
         {

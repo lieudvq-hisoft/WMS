@@ -60,6 +60,7 @@ public static class StartupExtension
         services.AddScoped<IReceiptService, ReceiptService>();
         services.AddScoped<ISupplierService, SupplierService>();
         services.AddScoped<ILocationService, LocationService>();
+        services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<IPickingRequestService, PickingRequestService>();
         services.AddScoped<IRackService, RackService>();
         services.AddScoped<IRackLevelService, RackLevelService>();

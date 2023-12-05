@@ -1,9 +1,14 @@
-﻿using System.Security.Claims;
+﻿using System.Drawing;
+using System.Drawing.Imaging;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
+using BarcodeLib;
 using Data.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using QRCoder;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Services.Utils
 {
@@ -94,6 +99,31 @@ namespace Services.Utils
             }
 
             return dates;
+        }
+
+        public static byte[] GenerateBarcode(string content, BarcodeLib.TYPE barcodeType = BarcodeLib.TYPE.CODE128, int width = 550, int height = 200)
+        {
+            Barcode barcode = new Barcode();
+            barcode.IncludeLabel = true;
+            barcode.Alignment = AlignmentPositions.CENTER;
+
+            Image barcodeImage = barcode.Encode(BarcodeLib.TYPE.CODE128, content, width, height);
+            using (MemoryStream stream = new MemoryStream())
+            {
+
+                barcodeImage.Save(stream, ImageFormat.Png);
+                return stream.ToArray();
+            }
+        }
+
+        public static byte[] GenerateQrcode(string content)
+        {
+            byte[] QRCode = null;
+            QRCodeGenerator qRCodeGenerator = new QRCodeGenerator();
+            QRCodeData dataQr = qRCodeGenerator.CreateQrCode(content, QRCodeGenerator.ECCLevel.Q);
+            BitmapByteQRCode bitmap = new BitmapByteQRCode(dataQr);
+            QRCode = bitmap.GetGraphic(20);
+            return QRCode;
         }
     }
 }
