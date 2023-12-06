@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Data.DataAccess;
+using Data.Entities;
 using Data.Model;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ public interface IInventoryService
 {
     Task<ResultModel> GetBarcode(Guid id);
     Task<ResultModel> GetDetail(Guid id);
+    Task<ResultModel> UpdateLocation(UpdateLocationModel model);
 }
 public class InventoryService : IInventoryService
 {
@@ -72,4 +74,46 @@ public class InventoryService : IInventoryService
         return result;
     }
 
+    public async Task<ResultModel> UpdateLocation(UpdateLocationModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var inventory = _dbContext.Inventory.Include(_ => _.InventoryLocations).Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (inventory == null)
+            {
+                result.ErrorMessage = "Inventory not exists";
+                result.Succeed = false;
+                return result;
+            }
+
+            var location = _dbContext.Location.Where(_ => _.Id == model.LocationId && !_.IsDeleted).FirstOrDefault();
+            if (location == null)
+            {
+                result.ErrorMessage = "Location not exists";
+                result.Succeed = false;
+                return result;
+            }
+
+            if (inventory.InventoryLocations.Any(_ => _.LocationId == location.Id && !_.IsDeleted))
+            {
+                result.ErrorMessage = "Inventory already exists at this location";
+                result.Succeed = false;
+                return result;
+            }
+
+            _dbContext.InventoryLocation.RemoveRange(inventory.InventoryLocations);
+            var inventoryLocation = new InventoryLocation { InventoryId = inventory.Id, LocationId = location.Id };
+            _dbContext.Add(inventoryLocation);
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<InventoryLocationFIModel>(inventoryLocation);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
 }
