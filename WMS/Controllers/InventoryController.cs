@@ -37,6 +37,14 @@ namespace WMS.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpPut("Location")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<ActionResult> UpdateLocation(UpdateLocationModel model)
+        {
+            var result = await _inventoryService.UpdateLocation(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }
 

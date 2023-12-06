@@ -47,5 +47,11 @@ namespace Data.Models
         public DateTime DateUpdated { get; set; }
     }
 
+    public class UpdateLocationModel
+    {
+        public Guid Id { get; set; }
+        public Guid LocationId { get; set; }
+    }
+
 }
 
