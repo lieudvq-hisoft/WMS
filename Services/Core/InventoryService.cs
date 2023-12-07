@@ -96,14 +96,15 @@ public class InventoryService : IInventoryService
                 return result;
             }
 
-            if (inventory.InventoryLocations.Any(_ => _.LocationId == location.Id && !_.IsDeleted))
+            var inventoryLocationCheck = _dbContext.InventoryLocation.Where(_ => _.LocationId == location.Id && _.InventoryId == inventory.Id && !_.IsDeleted).FirstOrDefault();
+            if (inventoryLocationCheck != null)
             {
                 result.ErrorMessage = "Inventory already exists at this location";
                 result.Succeed = false;
                 return result;
             }
 
-            _dbContext.InventoryLocation.RemoveRange(inventory.InventoryLocations);
+            _dbContext.InventoryLocation.Remove(inventoryLocationCheck!);
             var inventoryLocation = new InventoryLocation { InventoryId = inventory.Id, LocationId = location.Id };
             _dbContext.Add(inventoryLocation);
             _dbContext.SaveChanges();
