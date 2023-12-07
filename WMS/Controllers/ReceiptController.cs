@@ -57,7 +57,7 @@ namespace WMS.Controllers
         }
 
         [HttpGet("Pending")]
-        [Authorize(Roles = "Admin,Staff")]
+        //[Authorize(Roles = "Admin,Staff")]
         public async Task<ActionResult> GetReceiptPending([FromQuery] PagingParam<ReceiptSortCriteria> paginationModel, [FromQuery] ReceiptSearchModel searchModel)
         {
             var result = await _receiptService.GetReceiptPending(paginationModel, searchModel);
