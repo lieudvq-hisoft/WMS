@@ -101,6 +101,7 @@ public class ProductService : IProductService
             {
                 if (
                     (MyFunction.ConvertToUnSign(p.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    || (p.SerialNumber.ToUpper().Contains(model.SearchValue ?? "".ToUpper()))
                     )
                     return true;
                 else
