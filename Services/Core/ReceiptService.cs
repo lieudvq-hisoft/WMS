@@ -22,6 +22,8 @@ public interface IReceiptService
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> Complete(ReceiptCompleteModel model);
     Task<ResultModel> GetWeeklyReport();
+    Task<ResultModel> GetDetail(Guid id);
+
 }
 public class ReceiptService : IReceiptService
 {
@@ -336,6 +338,29 @@ public class ReceiptService : IReceiptService
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = _mapper.Map<Receipt, ReceiptModel>(data);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetDetail(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Receipt.Include(_ => _.Product).Where(_ => _.Id == id).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Receipt not exists";
+                result.Succeed = false;
+                return result;
+            }
+            result.Succeed = true;
+            result.Data = _mapper.Map<ReceiptModel>(data);
         }
         catch (Exception ex)
         {

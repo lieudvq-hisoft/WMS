@@ -82,6 +82,15 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpGet("Detail/{id}")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<ActionResult> GetDetail(Guid id)
+        {
+            var result = await _receiptService.GetDetail(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }
 
