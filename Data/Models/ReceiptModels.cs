@@ -13,7 +13,7 @@ namespace Data.Models
 
         public int Quantity { get; set; }
         public string? Note { get; set; }
-        public ReceiptStatus status { get; set; }
+        public ReceiptStatus Status { get; set; }
         public ReceiptType Type { get; set; }
         public double? CostPrice { get; set; }
         public DateTime DateCreated { get; set; }
