@@ -175,7 +175,7 @@ public class LocationService : ILocationService
         try
         {
             var data = _dbContext.Location.Include(_ => _.InventoryLocations).ThenInclude(_ => _.Inventory).ThenInclude(_ => _.Product)
-                .Include(_ => _.RackLevel).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+                .Include(_ => _.RackLevel).ThenInclude(_ => _.Rack).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
             if (data == null)
             {
                 result.ErrorMessage = "Location not exists";
