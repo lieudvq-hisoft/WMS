@@ -262,30 +262,18 @@ public class ReceiptService : IReceiptService
                         new DateTime(_.DateCreated.Year, _.DateCreated.Month, _.DateCreated.Day) == day
                         && _.Status == ReceiptStatus.Completed
                         && !_.IsDeleted).ToList();
-                var totalQuantityReceiptCompleted = 0;
-                foreach (var item in receiptCompleted)
-                {
-                    totalQuantityReceiptCompleted += item.Quantity;
-                }
-
                 var receiptPending = _dbContext.Receipt
                     .Where(_ =>
                         new DateTime(_.DateCreated.Year, _.DateCreated.Month, _.DateCreated.Day) == day
                         && _.Status == ReceiptStatus.Pending
                         && !_.IsDeleted).ToList();
-                var totalQuantityReceiptPending = 0;
-                foreach (var item in receiptPending)
-                {
-                    totalQuantityReceiptPending += item.Quantity;
-                }
-
                 var report = new DailyReport()
                 {
                     Date = day,
                     TotalCompleted = receiptCompleted.Count(),
-                    TotalQuantityCompleted = totalQuantityReceiptCompleted,
+                    TotalQuantityCompleted = receiptCompleted.Sum(_ => _.Quantity),
                     TotalPending = receiptPending.Count(),
-                    TotalQuantityPending = totalQuantityReceiptPending,
+                    TotalQuantityPending = receiptPending.Sum(_ => _.Quantity),
                 };
                 reports.Add(report);
             }
