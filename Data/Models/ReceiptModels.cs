@@ -68,12 +68,10 @@ namespace Data.Models
     public class DailyReport
     {
         public DateTime Date { get; set; }
-        public int TotalReceiptCompleted { get; set; }
-        public int TotalQuantityOfReceiptCompleted { get; set; }
-        public int TotalReceiptPending { get; set; }
-        public int TotalQuantityOfReceiptPending { get; set; }
-        //public List<ReceiptReport> ReceiptCompleted { get; set; }
-        //public List<ReceiptReport> ReceiptPending { get; set; }
+        public int TotalCompleted { get; set; }
+        public int TotalQuantityCompleted { get; set; }
+        public int TotalPending { get; set; }
+        public int TotalQuantityPending { get; set; }
     }
 }
 

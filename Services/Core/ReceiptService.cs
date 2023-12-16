@@ -282,10 +282,10 @@ public class ReceiptService : IReceiptService
                 var report = new DailyReport()
                 {
                     Date = day,
-                    TotalReceiptCompleted = receiptCompleted.Count(),
-                    TotalQuantityOfReceiptCompleted = totalQuantityReceiptCompleted,
-                    TotalReceiptPending = receiptPending.Count(),
-                    TotalQuantityOfReceiptPending = totalQuantityReceiptPending,
+                    TotalCompleted = receiptCompleted.Count(),
+                    TotalQuantityCompleted = totalQuantityReceiptCompleted,
+                    TotalPending = receiptPending.Count(),
+                    TotalQuantityPending = totalQuantityReceiptPending,
                 };
                 reports.Add(report);
             }
