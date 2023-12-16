@@ -64,6 +64,7 @@ public static class StartupExtension
         services.AddScoped<IPickingRequestService, PickingRequestService>();
         services.AddScoped<IRackService, RackService>();
         services.AddScoped<IRackLevelService, RackLevelService>();
+        services.AddScoped<IReportService, ReportService>();
 
         services.AddSingleton<IProducer<Null, string>>(sp =>
             new ProducerBuilder<Null, string>(new ProducerConfig
