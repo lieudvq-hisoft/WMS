@@ -133,6 +133,14 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpGet("Report/Inventory")]
+        public async Task<ActionResult> GetReportInventory()
+        {
+            var result = await _productService.GetReportInventory();
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }
 

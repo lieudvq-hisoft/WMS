@@ -31,6 +31,8 @@ public interface IProductService
     Task<ResultModel> GetDetail(Guid id);
     Task<ResultModel> UploadImg(UploadImgModel model);
     Task<ResultModel> DeleteImg(DeleteImgModel model);
+    Task<ResultModel> GetReportInventory();
+
 
 }
 public class ProductService : IProductService
@@ -435,6 +437,28 @@ public class ProductService : IProductService
                 result.Data = product.Images;
                 result.Succeed = true;
             }
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetReportInventory()
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Product
+                .Include(_ => _.Inventories).Where(_ => !_.IsDeleted).Select(_ => new ProductInventoryModel
+                { SerialNumber = _.SerialNumber,
+                  Name = _.Name,
+                  totalInventory = _.Inventories.Where(i => i.IsAvailable).Count()
+                }).ToList();
+            result.Succeed = true;
+            result.Data = data;
         }
         catch (Exception ex)
         {
