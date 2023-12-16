@@ -18,6 +18,13 @@ namespace Data.Models
         public DateTime DateUpdated { get; set; }
     }
 
+    public class ProductInventoryModel
+    {
+        public string? Name { get; set; }
+        public string? SerialNumber { get; set; }
+        public int totalInventory { get; set; }
+    }
+
     public class InventoryFPModel
     {
         public Guid Id { get; set; }
