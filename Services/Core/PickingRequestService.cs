@@ -275,10 +275,10 @@ public class PickingRequestService : IPickingRequestService
                 var report = new DailyReportPickingRequest()
                 {
                     Date = day,
-                    TotalPickingRequestCompleted = pickingRequestCompleted.Count(),
-                    TotalQuantityPickingRequestCompleted = totalPickingRequestCompleted,
-                    TotalPickingRequestPending = pickingRequestPending.Count(),
-                    TotalQuantityPickingRequestPending = totalPickingRequestPending
+                    TotalCompleted = pickingRequestCompleted.Count(),
+                    TotalQuantityCompleted = totalPickingRequestCompleted,
+                    TotalPending = pickingRequestPending.Count(),
+                    TotalQuantityPending = totalPickingRequestPending
                 };
                 reports.Add(report);
             }

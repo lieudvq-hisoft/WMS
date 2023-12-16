@@ -52,12 +52,10 @@ namespace Data.Models
     public class DailyReportPickingRequest
     {
         public DateTime Date { get; set; }
-        public int TotalPickingRequestCompleted { get; set; }
-        public int TotalQuantityPickingRequestCompleted { get; set; }
-        public int TotalPickingRequestPending { get; set; }
-        public int TotalQuantityPickingRequestPending { get; set; }
-        //public List<ReceiptReport> ReceiptCompleted { get; set; }
-        //public List<ReceiptReport> ReceiptPending { get; set; }
+        public int TotalCompleted { get; set; }
+        public int TotalQuantityCompleted { get; set; }
+        public int TotalPending { get; set; }
+        public int TotalQuantityPending { get; set; }
     }
 }
 
