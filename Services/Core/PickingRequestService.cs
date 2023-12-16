@@ -255,30 +255,18 @@ public class PickingRequestService : IPickingRequestService
                         new DateTime(_.DateCreated.Year, _.DateCreated.Month, _.DateCreated.Day) == day
                         && _.Status == PickingRequestStatus.Completed
                         && !_.IsDeleted).ToList();
-                var totalPickingRequestCompleted = 0;
-                foreach (var item in pickingRequestCompleted)
-                {
-                    totalPickingRequestCompleted += item.Quantity;
-                }
-
                 var pickingRequestPending = _dbContext.PickingRequest
                     .Where(_ =>
                         new DateTime(_.DateCreated.Year, _.DateCreated.Month, _.DateCreated.Day) == day
                         && _.Status == PickingRequestStatus.Pending
                         && !_.IsDeleted).ToList();
-                var totalPickingRequestPending = 0;
-                foreach (var item in pickingRequestPending)
-                {
-                    totalPickingRequestPending += item.Quantity;
-                }
-
                 var report = new DailyReportPickingRequest()
                 {
                     Date = day,
                     TotalCompleted = pickingRequestCompleted.Count(),
-                    TotalQuantityCompleted = totalPickingRequestCompleted,
+                    TotalQuantityCompleted = pickingRequestCompleted.Sum(_ => _.Quantity),
                     TotalPending = pickingRequestPending.Count(),
-                    TotalQuantityPending = totalPickingRequestPending
+                    TotalQuantityPending = pickingRequestPending.Sum(_ => _.Quantity)
                 };
                 reports.Add(report);
             }

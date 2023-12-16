@@ -47,10 +47,10 @@ public class ReportService : IReportService
             result.Succeed = true;
             result.Data = new ReportOfMonthModel
             {
-                ReceiptCompleted = receipts.Where(_ => _.Status == ReceiptStatus.Completed).Count(),
-                ReceiptPending = receipts.Where(_ => _.Status == ReceiptStatus.Pending).Count(),
-                PickingRequestCompleted = pickingRequests.Where(_ => _.Status == PickingRequestStatus.Completed).Count(),
-                PickingRequestPending = pickingRequests.Where(_ => _.Status == PickingRequestStatus.Pending).Count()
+                ReceiptCompleted = receipts.Where(_ => _.Status == ReceiptStatus.Completed).Sum(_ => _.Quantity),
+                ReceiptPending = receipts.Where(_ => _.Status == ReceiptStatus.Pending).Sum(_ => _.Quantity),
+                PickingRequestCompleted = pickingRequests.Where(_ => _.Status == PickingRequestStatus.Completed).Sum(_ => _.Quantity),
+                PickingRequestPending = pickingRequests.Where(_ => _.Status == PickingRequestStatus.Pending).Sum(_ => _.Quantity)
             };
         }
         catch (Exception ex)
