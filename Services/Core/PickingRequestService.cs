@@ -62,7 +62,7 @@ public class PickingRequestService : IPickingRequestService
                 result.Succeed = false;
                 return result;
             }
-            if (inventories.Select(_ => _.Id).Intersect(model.ListInventoryId).Count() != model.ListInventoryId.Count())
+            if (inventories.Select(_ => _.Id).Intersect(model.ListInventoryId).Count() != pickingRequest.Quantity)
             {
                 result.ErrorMessage = "In the inventory list, there is inventory that does not exist corresponding to the product";
                 result.Succeed = false;
