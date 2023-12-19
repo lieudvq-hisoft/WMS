@@ -125,7 +125,7 @@ public class PickingRequestService : IPickingRequestService
                 result.Succeed = false;
                 return result;
             }
-            //end check inventory
+            //end check inventory 
 
             var data = _mapper.Map<PickingRequestCreateModel, PickingRequest>(model);
             _dbContext.PickingRequest.Add(data);
