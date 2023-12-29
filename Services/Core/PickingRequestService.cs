@@ -62,15 +62,15 @@ public class PickingRequestService : IPickingRequestService
                 result.Succeed = false;
                 return result;
             }
-            if (inventories.Select(_ => _.Id).Intersect(model.ListInventoryId).Count() != pickingRequest.Quantity)
+            var list = inventories.Where(_ => model.ListInventoryId.Contains(_.Id));
+            if (list.Count() != pickingRequest.Quantity)
             {
                 result.ErrorMessage = "In the inventory list, there is inventory that does not exist corresponding to the product";
                 result.Succeed = false;
                 return result;
             }
-            for (int i = 0; i < pickingRequest.Quantity; i++)
+            foreach (var inventory in list)
             {
-                var inventory = inventories.ElementAt(i);
                 var pickingRequestInventoryAdd = new Data.Entities.PickingRequestInventory
                 {
                     InventoryId = inventory.Id,
