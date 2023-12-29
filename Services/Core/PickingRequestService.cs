@@ -68,8 +68,9 @@ public class PickingRequestService : IPickingRequestService
                 result.Succeed = false;
                 return result;
             }
-            foreach (var inventory in inventories)
+            for (int i = 0; i < pickingRequest.Quantity; i++)
             {
+                var inventory = inventories.ElementAt(i);
                 var pickingRequestInventoryAdd = new Data.Entities.PickingRequestInventory
                 {
                     InventoryId = inventory.Id,
