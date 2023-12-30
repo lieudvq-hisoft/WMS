@@ -23,6 +23,7 @@ public interface IReceiptService
     Task<ResultModel> Complete(ReceiptCompleteModel model);
     Task<ResultModel> GetWeeklyReport();
     Task<ResultModel> GetDetail(Guid id);
+    Task<ResultModel> GetCompleted(PagingParam<ReceiptSortCriteria> paginationModel, ReceiptCompletedSearchModel model);
 
 }
 public class ReceiptService : IReceiptService
@@ -349,6 +350,60 @@ public class ReceiptService : IReceiptService
             }
             result.Succeed = true;
             result.Data = _mapper.Map<ReceiptModel>(data);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetCompleted(PagingParam<ReceiptSortCriteria> paginationModel, ReceiptCompletedSearchModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Receipt
+                .Include(_ => _.Product).ThenInclude(_ => _.Inventories).ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location)
+                .Include(_ => _.ReceivedByUser).Include(_ => _.Supplier).Where(delegate (Receipt r)
+            {
+                if (
+                    (MyFunction.ConvertToUnSign(r.Supplier.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    ||
+                    (MyFunction.ConvertToUnSign(r.Product.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    ||
+                    (MyFunction.ConvertToUnSign(r.Product.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    || (r.Supplier.Phone.ToUpper().Contains(model.SearchValue ?? "".ToUpper())
+                    || (r.ReceivedByUser.Email.ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
+                    || (r.Product.SerialNumber.Trim().ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
+                    ))))
+                    return true;
+                else
+                    return false;
+            }).AsQueryable();
+            data = data.Where(_ => _.Status == ReceiptStatus.Completed && !_.IsDeleted);
+            if (model.DateCompleted != null)
+            {
+                data = data.Where(_ =>
+                _.DateUpdated.Year == model.DateCompleted.Value.Year &&
+                _.DateCreated.Month == model.DateCompleted.Value.Month &&
+                _.DateUpdated.Day == model.DateCompleted.Value.Day);
+            }
+            if (model.DateCreated != null)
+            {
+                data = data.Where(_ =>
+                _.DateCreated.Year == model.DateCreated.Value.Year &&
+                _.DateCreated.Month == model.DateCreated.Value.Month &&
+                _.DateCreated.Day == model.DateCreated.Value.Day);
+            }
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, data.Count());
+            var receipts = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            receipts = receipts.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<ReceiptCompletedModel>(receipts);
+            paging.Data = viewModels;
+            result.Data = paging;
+            result.Succeed = true;
         }
         catch (Exception ex)
         {
