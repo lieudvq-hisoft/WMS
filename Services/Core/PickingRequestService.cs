@@ -294,10 +294,13 @@ public class PickingRequestService : IPickingRequestService
                 .Include(_ => _.SentByUser).Where(delegate (PickingRequest p)
             {
                 if (
+                    (MyFunction.ConvertToUnSign(p.Note ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    ||
                     (MyFunction.ConvertToUnSign(p.Product.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
                     || (p.SentByUser.UserName.ToUpper().Contains(model.SearchValue ?? "".ToUpper())
                     || (p.SentByUser.Email.ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
-                    )))
+                    || (p.Product.SerialNumber.Trim().ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
+                    ))))
                     return true;
                 else
                     return false;

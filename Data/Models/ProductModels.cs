@@ -85,7 +85,7 @@ namespace Data.Models
         public string Path { get; set; }
     }
 
-    public class ProductPickingRequestCompletedModel : ProductModel
+    public class ProductCompletedModel : ProductModel
     {
         public List<InventoryFPModel>? Inventories { get; set; }
 
