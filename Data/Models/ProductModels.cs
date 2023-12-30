@@ -84,5 +84,11 @@ namespace Data.Models
         public Guid Id { get; set; }
         public string Path { get; set; }
     }
+
+    public class ProductPickingRequestCompletedModel : ProductModel
+    {
+        public List<InventoryFPModel>? Inventories { get; set; }
+
+    }
 }
 

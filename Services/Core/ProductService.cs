@@ -7,12 +7,7 @@ using Data.Model;
 using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
-using QRCoder;
-using BarcodeLib;
 using Services.Utils;
-using System.Drawing.Imaging;
-using System.Drawing;
-using System.IO;
 
 namespace Services.Core;
 
