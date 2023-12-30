@@ -57,5 +57,24 @@ namespace Data.Models
         public int TotalPending { get; set; }
         public int TotalQuantityPending { get; set; }
     }
+
+    public class PickingRequestCompletedModel
+    {
+        public Guid Id { get; set; }
+        public UserModel SentByUser { get; set; }
+        public ProductPickingRequestCompletedModel Product { get; set; }
+        public string? Note { get; set; }
+        public int Quantity { get; set; }
+        public PickingRequestStatus Status { get; set; }
+        public PickingRequestType Type { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
+    }
+
+    public class PickingRequestCompleteSearchModel : PickingRequestSearchModel
+    {
+        public DateTime? DateCreated { get; set; }
+        public DateTime? DateCompleted { get; set; }
+    }
 }
 

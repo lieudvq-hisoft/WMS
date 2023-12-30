@@ -72,6 +72,15 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpGet("Completed")]
+        //[Authorize(Roles = "Staff")]
+        public async Task<ActionResult> GetCompleted([FromQuery] PagingParam<PickingRequestSortCriteria> paginationModel, [FromQuery] PickingRequestCompleteSearchModel searchModel)
+        {
+            var result = await _pickingRequestService.GetCompleted(paginationModel, searchModel);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }
 

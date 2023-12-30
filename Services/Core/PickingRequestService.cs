@@ -8,7 +8,6 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Services.Utils;
-using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Services.Core;
 
@@ -20,6 +19,8 @@ public interface IPickingRequestService
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> Complete(PickingRequestCompleteModel model);
     Task<ResultModel> GetWeeklyReport();
+    Task<ResultModel> GetCompleted(PagingParam<PickingRequestSortCriteria> paginationModel, PickingRequestCompleteSearchModel model);
+
 }
 public class PickingRequestService : IPickingRequestService
 {
@@ -240,6 +241,7 @@ public class PickingRequestService : IPickingRequestService
         }
         return result;
     }
+
     public async Task<ResultModel> GetWeeklyReport()
     {
         var result = new ResultModel();
@@ -281,4 +283,52 @@ public class PickingRequestService : IPickingRequestService
         return result;
     }
 
+    public async Task<ResultModel> GetCompleted(PagingParam<PickingRequestSortCriteria> paginationModel, PickingRequestCompleteSearchModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.PickingRequest
+                .Include(_ => _.Product).ThenInclude(_ => _.Inventories).ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location)
+                .Include(_ => _.SentByUser).Where(delegate (PickingRequest p)
+            {
+                if (
+                    (MyFunction.ConvertToUnSign(p.Product.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    || (p.SentByUser.UserName.ToUpper().Contains(model.SearchValue ?? "".ToUpper())
+                    || (p.SentByUser.Email.ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
+                    )))
+                    return true;
+                else
+                    return false;
+            }).AsQueryable();
+            data = data.Where(_ => _.Status == PickingRequestStatus.Completed && !_.IsDeleted);
+            if(model.DateCompleted != null)
+            {
+                data = data.Where(_ => 
+                _.DateUpdated.Year == model.DateCompleted.Value.Year &&
+                _.DateCreated.Month == model.DateCompleted.Value.Month &&
+                _.DateUpdated.Day == model.DateCompleted.Value.Day);
+            }
+            if (model.DateCreated != null)
+            {
+                data = data.Where(_ =>
+                _.DateCreated.Year == model.DateCreated.Value.Year &&
+                _.DateCreated.Month == model.DateCreated.Value.Month &&
+                _.DateCreated.Day == model.DateCreated.Value.Day);
+            }
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, data.Count());
+            var pickingRequests = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            pickingRequests = pickingRequests.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<PickingRequestCompletedModel>(pickingRequests);
+            paging.Data = viewModels;
+            result.Data = paging;
+            result.Succeed = true;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
 }
