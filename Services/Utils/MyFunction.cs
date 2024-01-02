@@ -45,7 +45,7 @@ namespace Services.Utils
             return dateTime - DateTime.Now;
         }
 
-        public static string uploadImage(IFormFile file, string path)
+        public static async Task<string> uploadImageAsync(IFormFile file, string path)
         {
 
             if (!Directory.Exists(path))
@@ -60,7 +60,7 @@ namespace Services.Utils
 
             using (Stream fileStream = new FileStream(filePath, FileMode.Create))
             {
-                file.CopyToAsync(fileStream);
+                await file.CopyToAsync(fileStream);
             }
             
             return filePath.Split("/app/wwwroot")[1];

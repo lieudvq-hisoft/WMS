@@ -390,7 +390,7 @@ public class ProductService : IProductService
                 {
                     product.Images = new List<string>();
                 }
-                product.Images.Add(MyFunction.uploadImage(model.File, dirPath));
+                product.Images.Add(await MyFunction.uploadImageAsync(model.File, dirPath));
                 product.DateUpdated = DateTime.Now;
                 await _dbContext.SaveChangesAsync();
                 result.Data = product.Images;
