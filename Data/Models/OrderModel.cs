@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Entities;
 using Data.Enums;
+using Data.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace Data.Models
@@ -10,7 +11,7 @@ namespace Data.Models
     {
         public Guid Id { get; set; }
         public Guid SentBy { get; set; }
-        public User? SentByUser { get; set; }
+        public UserModel? SentByUser { get; set; }
         public string? Note { get; set; }
         public OrderStatus Status { get; set; }
         public List<string>? Files { get; set; }
@@ -20,13 +21,36 @@ namespace Data.Models
 
     public class OrderModel : OrderInnerModel
     {
-        public List<PickingRequestModel> PickingRequests { get; set; }
+        public List<PickingRequestInnerOrderModel> PickingRequests { get; set; }
+    }
+
+    public class OrderSearchModel
+    {
+        public string? SearchValue { get; set; } = "";
     }
 
     public class OrderCreateModel
     {
         public string? Note { get; set; }
         public List<PickingRequestInnerCreateModel>? PickingRequests { get; set; }
+    }
+
+    public class OrderUpdateModel
+    {
+        public Guid Id { get; set; }
+        public string? Note { get; set; }
+    }
+
+    public class UploadFileModel
+    {
+        public Guid Id { get; set; }
+        public IFormFile File { get; set; }
+    }
+
+    public class FileModel
+    {
+        public Guid Id { get; set; }
+        public string Path { get; set; }
     }
 
 }

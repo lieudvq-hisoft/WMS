@@ -11,4 +11,6 @@ public class Order : BaseEntity
     public string? Note { get; set; }
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
     public List<string>? Files { get; set; }
+    public virtual ICollection<PickingRequest> PickingRequests { get; set; }
+
 }

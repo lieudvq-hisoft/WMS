@@ -127,7 +127,7 @@ namespace WMS.Controllers
         }
 
         [HttpDelete("DeleteImg")]
-        public async Task<ActionResult> DeleteImg([FromForm] DeleteImgModel model)
+        public async Task<ActionResult> DeleteImg([FromBody] DeleteImgModel model)
         {
             var result = await _productService.DeleteImg(model);
             if (result.Succeed) return Ok(result.Data);

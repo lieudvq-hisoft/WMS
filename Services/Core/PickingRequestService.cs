@@ -177,6 +177,7 @@ public class PickingRequestService : IPickingRequestService
         {
             var data = _dbContext.PickingRequest.Include(_ => _.Product)
                 .Include(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser)
+                .Include(_ => _.Order).ThenInclude(_ => _.SentByUser)
                 .Where(delegate (PickingRequest p)
             {
                 if (
@@ -292,6 +293,7 @@ public class PickingRequestService : IPickingRequestService
         try
         {
             var data = _dbContext.PickingRequest
+                .Include(_ => _.Order).ThenInclude(_ => _.SentByUser)
                 .Include(_ => _.Product).ThenInclude(_ => _.Inventories).ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location)
                 .Include(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser).Where(delegate (PickingRequest p)
             {

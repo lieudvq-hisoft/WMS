@@ -64,6 +64,12 @@ public enum RackLevelSortCriteria
 
 }
 
+public enum OrderSortCriteria
+{
+    DateCreated
+
+}
+
 public enum InboundProductSortCriteria
 {
     DateCreated

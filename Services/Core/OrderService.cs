@@ -8,23 +8,18 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Services.Utils;
-using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Services.Core;
 
 public interface IOrderService
 {
     Task<ResultModel> Create(OrderCreateModel model, Guid userId);
-    Task<ResultModel> Update(ProductUpdateModel model);
-    Task<ResultModel> Get(PagingParam<ProductSortCriteria> paginationModel, ProductSearchModel model);
+    Task<ResultModel> Update(OrderUpdateModel model);
+    Task<ResultModel> Get(PagingParam<OrderSortCriteria> paginationModel, OrderSearchModel model);
     Task<ResultModel> Delete(Guid id);
-    Task<ResultModel> GetInventories(Guid id);
-    Task<ResultModel> GetPickingRequestCompleted(Guid id);
-    Task<ResultModel> GetPickingRequestPending(Guid id);
-    Task<ResultModel> GetDetail(Guid id);
-    Task<ResultModel> UploadImg(UploadImgModel model);
-    Task<ResultModel> DeleteImg(DeleteImgModel model);
-
+    Task<ResultModel> UploadFile(UploadFileModel model);
+    Task<ResultModel> DeleteFile(FileModel model);
+    Task<ResultModel> DownloadFile(FileModel model);
 }
 public class OrderService : IOrderService
 {
@@ -51,6 +46,24 @@ public class OrderService : IOrderService
 
             if (model.PickingRequests!.Any())
             {
+                foreach (var item in model.PickingRequests!)
+                {
+                    var product = _dbContext.Product.Where(_ => _.Id == item.ProductId && !_.IsDeleted).FirstOrDefault();
+                    if(product == null)
+                    {
+                        result.ErrorMessage = "Product not exists with productId = " + item.ProductId.ToString();
+                        result.Succeed = false;
+                        await transaction.RollbackAsync();
+                        return result;
+                    }
+                    if(item.Quantity <= 0)
+                    {
+                        result.ErrorMessage = "Picking request quantity than 0";
+                        result.Succeed = false;
+                        await transaction.RollbackAsync();
+                        return result;
+                    }
+                }
                 var pickingRequests = _mapper.Map<List<PickingRequestInnerCreateModel>, List<PickingRequest>>(model.PickingRequests!)
                     .Select(item =>
                     {
@@ -79,19 +92,25 @@ public class OrderService : IOrderService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Product.Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
-            if (data == null)
+            var order = _dbContext.Order.Include(_ => _.PickingRequests).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            if (order == null)
             {
-                result.ErrorMessage = "Product not exists";
+                result.ErrorMessage = "Order not exists";
                 result.Succeed = false;
                 return result;
             }
-            data.IsDeleted = true;
-            data.DateUpdated = DateTime.Now;
-            _dbContext.Product.Update(data);
-            await _dbContext.SaveChangesAsync();
-            result.Succeed = true;
-            result.Data = data.Id;
+            if (!order.PickingRequests.Any(_ => !_.IsDeleted))
+            {
+                order.IsDeleted = true;
+                order.DateUpdated = DateTime.Now;
+                _dbContext.Order.Update(order);
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = order.Id;
+            }else
+            {
+                result.ErrorMessage = "Order cannot be deleted because it is related to an existing picking request";
+            }
 
         }
         catch (Exception ex)
@@ -101,17 +120,50 @@ public class OrderService : IOrderService
         return result;
     }
 
-    public async Task<ResultModel> Get(PagingParam<ProductSortCriteria> paginationModel, ProductSearchModel model)
+    public async Task<ResultModel> Update(OrderUpdateModel model)
     {
         var result = new ResultModel();
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Product.Where(delegate (Product p)
+            var order = _dbContext.Order.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (order == null)
+            {
+                result.ErrorMessage = "Order not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (model.Note != null)
+            {
+                order.Note = model.Note;
+            }
+            order.DateUpdated = DateTime.Now;
+            _dbContext.Order.Update(order);
+            await _dbContext.SaveChangesAsync();
+            result.Succeed = true;
+            result.Data = order.Id;
+
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> Get(PagingParam<OrderSortCriteria> paginationModel, OrderSearchModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Order
+                .Include(_ => _.SentByUser)
+                .Include(_ => _.PickingRequests).ThenInclude(_ => _.Product)
+                .Where(delegate (Order o)
             {
                 if (
-                    (MyFunction.ConvertToUnSign(p.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
-                    || (p.SerialNumber.ToUpper().Contains(model.SearchValue ?? "".ToUpper()))
+                    (MyFunction.ConvertToUnSign(o.SentByUser.UserName ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
                     )
                     return true;
                 else
@@ -119,215 +171,12 @@ public class OrderService : IOrderService
             }).AsQueryable();
             data = data.Where(_ => !_.IsDeleted);
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, data.Count());
-            var products = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
-            products = products.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
-            var viewModels = _mapper.ProjectTo<ProductModel>(products);
+            var orders = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            orders = orders.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<OrderModel>(orders);
             paging.Data = viewModels;
             result.Data = paging;
             result.Succeed = true;
-        }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        }
-        return result;
-    }
-
-    public async Task<ResultModel> GetQrcode(Guid id)
-    {
-        var result = new ResultModel();
-        result.Succeed = false;
-        try
-        {
-            var data = _dbContext.Product.Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
-            if (data == null)
-            {
-                result.ErrorMessage = "Product not exists";
-                result.Succeed = false;
-                return result;
-            }
-            result.Succeed = true;
-            result.Data = MyFunction.GenerateQrcode(data.Id.ToString());
-        }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        }
-        return result;
-    }
-
-    public async Task<ResultModel> GetBarcode(Guid id)
-    {
-        var result = new ResultModel();
-        result.Succeed = false;
-        try
-        {
-            var data = _dbContext.Product.Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
-            if (data == null)
-            {
-                result.ErrorMessage = "Product not exists";
-                result.Succeed = false;
-                return result;
-            }
-            result.Succeed = true;
-            result.Data = MyFunction.GenerateBarcode(content: data.Id.ToString());
-        }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        }
-        return result;
-    }
-
-    public async Task<ResultModel> GetDetail(Guid id)
-    {
-        var result = new ResultModel();
-        result.Succeed = false;
-        try
-        {
-            var data = _dbContext.Product.Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
-            if (data == null)
-            {
-                result.ErrorMessage = "Product not exists";
-                result.Succeed = false;
-                return result;
-            }
-            result.Succeed = true;
-            result.Data = _mapper.Map<ProductModel>(data);
-        }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        }
-        return result;
-    }
-
-    public async Task<ResultModel> GetInventories(Guid id)
-    {
-        var result = new ResultModel();
-        result.Succeed = false;
-        try
-        {
-            var data = _dbContext.Product
-                .Include(_ => _.Inventories).ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location).ThenInclude(_ => _.RackLevel).ThenInclude(_ => _.Rack)
-                .Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
-            if (data == null)
-            {
-                result.ErrorMessage = "Product not exists";
-                result.Succeed = false;
-                return result;
-            }
-            var inventories = data.Inventories.Where(_ => _.IsAvailable && !_.IsDeleted).OrderBy(_ => _.DateCreated).AsQueryable();
-            result.Succeed = true;
-            result.Data = _mapper.ProjectTo<InventoryFPModel>(inventories);
-        }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        }
-        return result;
-    }
-
-    public async Task<ResultModel> GetInventoryLocation(Guid id)
-    {
-        var result = new ResultModel();
-        result.Succeed = false;
-        try
-        {
-            var data = _dbContext.Product.Include(_ => _.Inventories)
-                .ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location).ThenInclude(_ => _.RackLevel).ThenInclude(_ => _.Rack)
-                .Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
-            if (data == null)
-            {
-                result.ErrorMessage = "Product not exists";
-                result.Succeed = false;
-                return result;
-            }
-            var inventories = data.Inventories.Where(_ => _.QuantityOnHand > 0 && !_.IsDeleted).OrderBy(_ => _.DateCreated).AsQueryable();
-            result.Succeed = true;
-            result.Data = _mapper.ProjectTo<InventoryModel>(inventories);
-        }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        }
-        return result;
-    }
-
-    public async Task<ResultModel> GetInventoryQuantity(Guid id)
-    {
-        var result = new ResultModel();
-        result.Succeed = false;
-        try
-        {
-            var data = _dbContext.Product.Include(_ => _.Inventories).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
-            if (data == null)
-            {
-                result.ErrorMessage = "Product not exists";
-                result.Succeed = false;
-                return result;
-            }
-            var quantity = 0;
-            foreach (var item in data.Inventories)
-            {
-                if(item.QuantityOnHand > 0)
-                {
-                    quantity += item.QuantityOnHand;
-                }
-            }
-            result.Succeed = true;
-            result.Data = quantity;
-
-        }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        }
-        return result;
-    }
-
-    public async Task<ResultModel> GetPickingRequestCompleted(Guid id)
-    {
-        var result = new ResultModel();
-        result.Succeed = false;
-        try
-        {
-            var data = _dbContext.Product.Include(_ => _.PickingRequests).ThenInclude(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
-            if (data == null)
-            {
-                result.ErrorMessage = "Product not exists";
-                result.Succeed = false;
-                return result;
-            }
-            var pickingRequests = data.PickingRequests.Where(_ => _.Status == PickingRequestStatus.Completed && !_.IsDeleted).AsQueryable();
-            result.Succeed = true;
-            result.Data = _mapper.ProjectTo<PickingRequestModel>(pickingRequests);
-
-        }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        }
-        return result;
-    }
-
-    public async Task<ResultModel> GetPickingRequestPending(Guid id)
-    {
-        var result = new ResultModel();
-        result.Succeed = false;
-        try
-        {
-            var data = _dbContext.Product.Include(_ => _.PickingRequests).ThenInclude(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
-            if (data == null)
-            {
-                result.ErrorMessage = "Product not exists";
-                result.Succeed = false;
-                return result;
-            }
-            var pickingRequests = data.PickingRequests.Where(_ => _.Status == PickingRequestStatus.Pending && !_.IsDeleted).AsQueryable();
-            result.Succeed = true;
-            result.Data = _mapper.ProjectTo<PickingRequestModel>(pickingRequests);
-
         }
         catch (Exception ex)
         {
@@ -385,28 +234,28 @@ public class OrderService : IOrderService
         return result;
     }
 
-    public async Task<ResultModel> UploadImg(UploadImgModel model)
+    public async Task<ResultModel> UploadFile(UploadFileModel model)
     {
         var result = new ResultModel();
         try
         {
-            var product = _dbContext.Product.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
-            if (product == null)
+            var order = _dbContext.Order.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (order == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Product not found";
+                result.ErrorMessage = "Order not found";
             }
             else
             {
-                string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "product");
-                if (product.Images == null)
+                string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "document", "order", order.Id.ToString());
+                if (order.Files == null)
                 {
-                    product.Images = new List<string>();
+                    order.Files = new List<string>();
                 }
-                product.Images.Add(await MyFunction.uploadImageAsync(model.File, dirPath));
-                product.DateUpdated = DateTime.Now;
+                order.Files.Add(await MyFunction.uploadFileAsync(model.File, dirPath, "/app/document"));
+                order.DateUpdated = DateTime.Now;
                 await _dbContext.SaveChangesAsync();
-                result.Data = product.Images;
+                result.Data = order.Files;
                 result.Succeed = true;
             }
         }
@@ -418,31 +267,31 @@ public class OrderService : IOrderService
         return result;
     }
 
-    public async Task<ResultModel> DeleteImg(DeleteImgModel model)
+    public async Task<ResultModel> DeleteFile(FileModel model)
     {
         var result = new ResultModel();
         try
         {
-            var product = _dbContext.Product.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
-            if (product == null)
+            var order = _dbContext.Order.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (order == null)
             {
                 result.Succeed = false;
-                result.ErrorMessage = "Product not found";
+                result.ErrorMessage = "Order not found";
             }
             else
             {
-                string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                if (product.Images == null || !product.Images.Contains(model.Path))
+                string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "document");
+                if (order.Files == null || !order.Files.Contains(model.Path))
                 {
-                    result.ErrorMessage = "Image does not exist";
+                    result.ErrorMessage = "File does not exist";
                     result.Succeed = false;
                     return result;
                 }
-                MyFunction.deleteImage(dirPath + model.Path);
-                product.Images.Remove(model.Path);
-                product.DateUpdated = DateTime.Now;
+                MyFunction.deleteFile(dirPath + model.Path);
+                order.Files.Remove(model.Path);
+                order.DateUpdated = DateTime.Now;
                 await _dbContext.SaveChangesAsync();
-                result.Data = product.Images;
+                result.Data = order.Files;
                 result.Succeed = true;
             }
         }
@@ -453,20 +302,29 @@ public class OrderService : IOrderService
         return result;
     }
 
-    public async Task<ResultModel> GetReportInventory()
+    public async Task<ResultModel> DownloadFile(FileModel model)
     {
         var result = new ResultModel();
-        result.Succeed = false;
         try
         {
-            var data = _dbContext.Product
-                .Include(_ => _.Inventories).Where(_ => !_.IsDeleted).Select(_ => new ProductInventoryModel
-                { SerialNumber = _.SerialNumber,
-                  Name = _.Name,
-                  totalInventory = _.Inventories.Where(i => i.IsAvailable).Count()
-                }).ToList();
-            result.Succeed = true;
-            result.Data = data;
+            var order = _dbContext.Order.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (order == null)
+            {
+                result.Succeed = false;
+                result.ErrorMessage = "Order not found";
+            }
+            else
+            {
+                string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "document");
+                if (order.Files == null || !order.Files.Contains(model.Path))
+                {
+                    result.ErrorMessage = "File does not exist";
+                    result.Succeed = false;
+                    return result;
+                }
+                result.Data = await MyFunction.downloadFile(dirPath + model.Path);
+                result.Succeed = true;
+            }
         }
         catch (Exception ex)
         {
@@ -474,4 +332,5 @@ public class OrderService : IOrderService
         }
         return result;
     }
+
 }

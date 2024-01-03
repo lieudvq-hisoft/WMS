@@ -390,7 +390,7 @@ public class ProductService : IProductService
                 {
                     product.Images = new List<string>();
                 }
-                product.Images.Add(await MyFunction.uploadImageAsync(model.File, dirPath));
+                product.Images.Add(await MyFunction.uploadFileAsync(model.File, dirPath, "/app/wwwroot"));
                 product.DateUpdated = DateTime.Now;
                 await _dbContext.SaveChangesAsync();
                 result.Data = product.Images;
@@ -425,7 +425,7 @@ public class ProductService : IProductService
                     result.Succeed = false;
                     return result;
                 }
-                MyFunction.deleteImage(dirPath + model.Path);
+                MyFunction.deleteFile(dirPath + model.Path);
                 product.Images.Remove(model.Path);
                 product.DateUpdated = DateTime.Now;
                 await _dbContext.SaveChangesAsync();
