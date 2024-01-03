@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using BarcodeLib;
 using Data.Model;
+using Data.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using QRCoder;
@@ -66,7 +67,7 @@ namespace Services.Utils
             return filePath.Split("/app/wwwroot")[1];
         }
 
-        public static async Task<string> uploadDocumentAsync(IFormFile file, string path)
+        public static async Task<string> uploadFileAsync(IFormFile file, string path, string splitString)
         {
 
             if (!Directory.Exists(path))
@@ -84,16 +85,26 @@ namespace Services.Utils
                 await file.CopyToAsync(fileStream);
             }
 
-            return filePath.Split("/app/document")[1];
+            return filePath.Split(splitString)[1];
         }
 
-        public static void deleteImage(string filePath)
+        public static void deleteFile(string filePath)
         {
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
             }
         }
+
+        public static async Task<FileEModel> downloadFile(string filePath)
+        {
+            var result = new FileEModel();
+            result.Content = File.ReadAllBytes(filePath);
+            result.Extension = Path.GetExtension(filePath);
+            return result;
+        }
+
+
 
         public static (int position, DateTime[] days) GetWeekInfo()
         {
