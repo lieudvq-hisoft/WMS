@@ -106,6 +106,14 @@ public enum ReceiptStatus
     Cancel = 3,
 }
 
+public enum OrderStatus
+{
+    Pending = 0,
+    Processing = 1,
+    Completed = 2,
+    Cancel = 3,
+}
+
 public enum InventoryType
 {
     In = 0,

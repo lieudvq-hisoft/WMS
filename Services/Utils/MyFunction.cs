@@ -66,6 +66,27 @@ namespace Services.Utils
             return filePath.Split("/app/wwwroot")[1];
         }
 
+        public static async Task<string> uploadDocumentAsync(IFormFile file, string path)
+        {
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            var extension = Path.GetExtension(file.FileName);
+
+            var imageName = DateTime.Now.ToBinary() + Path.GetFileName(file.FileName);
+
+            string filePath = Path.Combine(path, imageName);
+
+            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            return filePath.Split("/app/document")[1];
+        }
+
         public static void deleteImage(string filePath)
         {
             if (File.Exists(filePath))

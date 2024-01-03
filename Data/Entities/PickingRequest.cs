@@ -5,9 +5,9 @@ namespace Data.Entities;
 
 public class PickingRequest : BaseEntity
 {
-    public Guid SentBy { get; set; }
-    [ForeignKey("SentBy")]
-    public virtual User? SentByUser { get; set; }
+    public Guid OrderId { get; set; }
+    [ForeignKey("OrderId")]
+    public virtual Order? Order { get; set; }
 
     public Guid ProductId { get; set; }
     [ForeignKey("ProductId")]
@@ -18,4 +18,6 @@ public class PickingRequest : BaseEntity
     public PickingRequestStatus Status { get; set; } = PickingRequestStatus.Pending;
     public PickingRequestType Type { get; set; } = PickingRequestType.Outbound;
     public virtual ICollection<PickingRequestInventory> PickingRequestInventories { get; set; }
+    public virtual ICollection<PickingRequestUser> PickingRequestUsers { get; set; }
+
 }

@@ -102,4 +102,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<RackLevel> RackLevel { get; set; }
     public DbSet<PickingRequest> PickingRequest { get; set; }
     public DbSet<PickingRequestInventory> PickingRequestInventory { get; set; }
+    public DbSet<PickingRequestUser> PickingRequestUser { get; set; }
+    public DbSet<Order> Order { get; set; }
 }

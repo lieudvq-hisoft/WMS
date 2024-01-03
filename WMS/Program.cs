@@ -1,4 +1,5 @@
 using Data.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.FileProviders;
 using WMS.Extensions;
 
@@ -30,7 +31,6 @@ builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 }));
 
 builder.Services.AddSignalR();
-
 
 var app = builder.Build();
 

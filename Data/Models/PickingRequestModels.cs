@@ -7,7 +7,7 @@ namespace Data.Models
 	public class PickingRequestModel
     {   
         public Guid Id { get; set; }
-        public UserModel SentByUser { get; set; }
+        public OrderInnerModel Order { get; set; }
         public ProductModel Product { get; set; }
         public string? Note { get; set; }
         public int Quantity { get; set; }
@@ -19,7 +19,14 @@ namespace Data.Models
 
     public class PickingRequestCreateModel
     {
-        public Guid SentBy { get; set; }
+        public Guid OrderId { get; set; }
+        public Guid ProductId { get; set; }
+        public string? Note { get; set; }
+        public int Quantity { get; set; }
+    }
+
+    public class PickingRequestInnerCreateModel
+    {
         public Guid ProductId { get; set; }
         public string? Note { get; set; }
         public int Quantity { get; set; }
@@ -61,7 +68,7 @@ namespace Data.Models
     public class PickingRequestCompletedModel
     {
         public Guid Id { get; set; }
-        public UserModel SentByUser { get; set; }
+        public OrderInnerModel Order { get; set; }
         public ProductCompletedModel Product { get; set; }
         public string? Note { get; set; }
         public int Quantity { get; set; }

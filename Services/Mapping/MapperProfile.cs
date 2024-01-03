@@ -43,6 +43,7 @@ namespace Services.Mapping
             CreateMap<LocationFIModel, Location>().ReverseMap();
 
             CreateMap<PickingRequestCreateModel, PickingRequest>();
+            CreateMap<PickingRequestInnerCreateModel, PickingRequest>();
             CreateMap<PickingRequestUpdateModel, PickingRequest>();
             CreateMap<PickingRequestModel, PickingRequest>().ReverseMap();
             CreateMap<PickingRequestCompletedModel, PickingRequest>().ReverseMap();
@@ -61,6 +62,10 @@ namespace Services.Mapping
             CreateMap<RackLevelCreateModel, RackLevel>();
             CreateMap<RackLevelUpdateModel, RackLevel>();
             CreateMap<RackLevelModel, RackLevel>().ReverseMap();
+
+            CreateMap<Order, OrderInnerModel>().ReverseMap();
+            CreateMap<Order, OrderModel>().ReverseMap();
+            CreateMap<Order, OrderCreateModel>().ReverseMap();
         }
     }
 }

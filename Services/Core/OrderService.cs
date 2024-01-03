@@ -8,54 +8,67 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Services.Utils;
+using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Services.Core;
 
-public interface IProductService
+public interface IOrderService
 {
-    Task<ResultModel> Create(ProductCreateModel model);
+    Task<ResultModel> Create(OrderCreateModel model, Guid userId);
     Task<ResultModel> Update(ProductUpdateModel model);
     Task<ResultModel> Get(PagingParam<ProductSortCriteria> paginationModel, ProductSearchModel model);
     Task<ResultModel> Delete(Guid id);
-    Task<ResultModel> GetInventoryQuantity(Guid id);
     Task<ResultModel> GetInventories(Guid id);
     Task<ResultModel> GetPickingRequestCompleted(Guid id);
     Task<ResultModel> GetPickingRequestPending(Guid id);
-    Task<ResultModel> GetQrcode(Guid id);
-    Task<ResultModel> GetBarcode(Guid id);
     Task<ResultModel> GetDetail(Guid id);
     Task<ResultModel> UploadImg(UploadImgModel model);
     Task<ResultModel> DeleteImg(DeleteImgModel model);
-    Task<ResultModel> GetReportInventory();
-
 
 }
-public class ProductService : IProductService
+public class OrderService : IOrderService
 {
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
 
-    public ProductService(AppDbContext dbContext, IMapper mapper)
+    public OrderService(AppDbContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;
     }
 
-    public async Task<ResultModel> Create(ProductCreateModel model)
+    public async Task<ResultModel> Create(OrderCreateModel model, Guid userId)
     {
         var result = new ResultModel();
         result.Succeed = false;
+        var transaction = _dbContext.Database.BeginTransaction();
         try
         {
-            var data = _mapper.Map<ProductCreateModel, Product>(model);
-            _dbContext.Product.Add(data);
-            await _dbContext.SaveChangesAsync();
+            var order = _mapper.Map<OrderCreateModel, Order>(model);
+            order.Files = new List<string>();
+            order.SentBy = userId;
+            _dbContext.Order.Add(order);
+
+            if (model.PickingRequests!.Any())
+            {
+                var pickingRequests = _mapper.Map<List<PickingRequestInnerCreateModel>, List<PickingRequest>>(model.PickingRequests!)
+                    .Select(item =>
+                    {
+                        item.OrderId = order.Id;
+                        return item;
+                    });
+                _dbContext.PickingRequest.AddRange(pickingRequests);
+            }
+            _dbContext.SaveChanges();
             result.Succeed = true;
-            result.Data = data.Id;
+            result.Data = order.Id;
+            await transaction.CommitAsync();
+
         }
         catch (Exception ex)
         {
             result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+            await transaction.RollbackAsync();
         }
         return result;
     }
