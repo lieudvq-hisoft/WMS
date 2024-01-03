@@ -105,10 +105,10 @@ public class PickingRequestService : IPickingRequestService
         result.Succeed = false;
         try
         {
-            var sentBy = _dbContext.User.Where(_ => _.Id == model.SentBy && !_.IsDeleted).FirstOrDefault();
-            if (sentBy == null)
+            var order = _dbContext.User.Where(_ => _.Id == model.OrderId && !_.IsDeleted).FirstOrDefault();
+            if (order == null)
             {
-                result.ErrorMessage = "User not exists";
+                result.ErrorMessage = "Order not exists";
                 result.Succeed = false;
                 return result;
             }
@@ -175,12 +175,14 @@ public class PickingRequestService : IPickingRequestService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.PickingRequest.Include(_ => _.Product).Include(_ => _.SentByUser).Where(delegate (PickingRequest p)
+            var data = _dbContext.PickingRequest.Include(_ => _.Product)
+                .Include(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser)
+                .Where(delegate (PickingRequest p)
             {
                 if (
                     (MyFunction.ConvertToUnSign(p.Note ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
-                    || (p.SentByUser.UserName.ToUpper().Contains(model.SearchValue ?? "".ToUpper())
-                    || (p.SentByUser.Email.ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
+                    || (p.PickingRequestUsers.FirstOrDefault()!.ReceivedByUser!.UserName!.ToUpper().Contains(model.SearchValue ?? "".ToUpper())
+                    || (p.PickingRequestUsers.FirstOrDefault()!.ReceivedByUser.Email!.ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
                     )))
                     return true;
                 else
@@ -291,14 +293,14 @@ public class PickingRequestService : IPickingRequestService
         {
             var data = _dbContext.PickingRequest
                 .Include(_ => _.Product).ThenInclude(_ => _.Inventories).ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location)
-                .Include(_ => _.SentByUser).Where(delegate (PickingRequest p)
+                .Include(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser).Where(delegate (PickingRequest p)
             {
                 if (
                     (MyFunction.ConvertToUnSign(p.Note ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
                     ||
                     (MyFunction.ConvertToUnSign(p.Product.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
-                    || (p.SentByUser.UserName.ToUpper().Contains(model.SearchValue ?? "".ToUpper())
-                    || (p.SentByUser.Email.ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
+                    || (p.PickingRequestUsers.FirstOrDefault()!.ReceivedByUser!.UserName!.ToUpper().Contains(model.SearchValue ?? "".ToUpper())
+                    || (p.PickingRequestUsers.FirstOrDefault()!.ReceivedByUser!.Email!.ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
                     || (p.Product.SerialNumber.Trim().ToUpper().Contains(Uri.UnescapeDataString(model.SearchValue ?? "").ToUpper())
                     ))))
                     return true;

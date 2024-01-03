@@ -16,4 +16,9 @@ public class User : IdentityUser<Guid>
     public DateTime DateUpdated { get; set; } = DateTime.Now;
 
     public virtual ICollection<UserRole> UserRoles { get; set; }
+
+    public static implicit operator User(Guid v)
+    {
+        throw new NotImplementedException();
+    }
 }
