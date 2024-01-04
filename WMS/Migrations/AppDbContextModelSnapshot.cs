@@ -58,7 +58,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Inventory");
+                    b.ToTable("Inventory", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.InventoryLocation", b =>
@@ -88,7 +88,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("InventoryLocation");
+                    b.ToTable("InventoryLocation", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Location", b =>
@@ -123,7 +123,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("RackLevelId");
 
-                    b.ToTable("Location");
+                    b.ToTable("Location", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Order", b =>
@@ -157,7 +157,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("SentBy");
 
-                    b.ToTable("Order");
+                    b.ToTable("Order", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.PickingRequest", b =>
@@ -199,7 +199,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("PickingRequest");
+                    b.ToTable("PickingRequest", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.PickingRequestInventory", b =>
@@ -232,7 +232,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("PickingRequestId");
 
-                    b.ToTable("PickingRequestInventory");
+                    b.ToTable("PickingRequestInventory", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.PickingRequestUser", b =>
@@ -262,7 +262,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("ReceivedBy");
 
-                    b.ToTable("PickingRequestUser");
+                    b.ToTable("PickingRequestUser", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Product", b =>
@@ -302,7 +302,7 @@ namespace WMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Rack", b =>
@@ -331,7 +331,7 @@ namespace WMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Rack");
+                    b.ToTable("Rack", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.RackLevel", b =>
@@ -362,7 +362,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("RackId");
 
-                    b.ToTable("RackLevel");
+                    b.ToTable("RackLevel", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Receipt", b =>
@@ -412,7 +412,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("Receipt");
+                    b.ToTable("Receipt", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ReceiptInventory", b =>
@@ -448,7 +448,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("ReceiptId");
 
-                    b.ToTable("ReceiptInventory");
+                    b.ToTable("ReceiptInventory", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Role", b =>
@@ -542,7 +542,7 @@ namespace WMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Supplier");
+                    b.ToTable("Supplier", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.User", b =>
