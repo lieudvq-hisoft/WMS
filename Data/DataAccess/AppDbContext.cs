@@ -85,6 +85,12 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
                 UserId = Guid.Parse("c48fa0b7-47e0-4af2-bb56-3db9e29a7e8b"),
                 RoleId = Guid.Parse("003f7676-1d91-4143-9bfd-7a6c17c156fe"),
             });
+        modelBuilder.Entity<InventoryThreshold>().HasData(
+            new InventoryThreshold{
+                Id = Guid.Parse("003f7676-1d91-4143-9bfd-7a6c17c156fe"),
+                ThresholdQuantity = 2,
+                CronExpression = "20 16 * * *",
+            });
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
   
     }
@@ -104,4 +110,5 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<PickingRequestInventory> PickingRequestInventory { get; set; }
     public DbSet<PickingRequestUser> PickingRequestUser { get; set; }
     public DbSet<Order> Order { get; set; }
+    public DbSet<InventoryThreshold> InventoryThresholds { get; set; }
 }
