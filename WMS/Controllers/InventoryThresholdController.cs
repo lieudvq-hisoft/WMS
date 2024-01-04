@@ -1,18 +1,13 @@
-﻿using Confluent.Kafka;
-using Data.Common.PaginationModel;
-using Data.Enums;
-using Data.Model;
-using Data.Models;
+﻿using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Core;
-using Services.Utils;
 
 namespace WMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class InventoryThresholdController : ControllerBase
     {
         private readonly IInventoryThresholdService _inventoryThresholdService;
