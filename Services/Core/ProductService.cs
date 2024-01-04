@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Confluent.Kafka;
 using Data.Common.PaginationModel;
 using Data.DataAccess;
 using Data.Entities;
@@ -8,6 +9,7 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Services.Utils;
+using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Services.Core;
 
@@ -27,18 +29,20 @@ public interface IProductService
     Task<ResultModel> UploadImg(UploadImgModel model);
     Task<ResultModel> DeleteImg(DeleteImgModel model);
     Task<ResultModel> GetReportInventory();
-
-
+    void InventoryThresholdWarning();
 }
 public class ProductService : IProductService
 {
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IProducer<Null, string> _producer;
 
-    public ProductService(AppDbContext dbContext, IMapper mapper)
+    public ProductService(AppDbContext dbContext, IMapper mapper, IProducer<Null, string> producer
+        )
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _producer = producer;
     }
 
     public async Task<ResultModel> Create(ProductCreateModel model)
@@ -460,5 +464,33 @@ public class ProductService : IProductService
             result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
         }
         return result;
+    }
+
+    public async void InventoryThresholdWarning()
+    {
+        try
+        {
+            var products = _dbContext.Product.Include(_ => _.Inventories).Where(_ => !_.IsDeleted).ToList();
+            if (products.Any())
+            {
+                var userReceiveNotice = _dbContext.User.Include(_ => _.UserRoles).ThenInclude(_ => _.Role)
+                    .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName == "ADMIN") && _.IsActive && !_.IsDeleted)
+                    .Select(_ => _.Id).ToList();
+                foreach (var product in products)
+                {
+                    var inventories = product.Inventories.Where(_ => _.IsAvailable && !_.IsDeleted).ToList();
+                    if (inventories.Count() <= 2)
+                    {
+                        var kafkaModel = new KafkaModel { UserReceiveNotice = userReceiveNotice, Payload = _mapper.Map<Product, ProductModel>(product) };
+                        var json = Newtonsoft.Json.JsonConvert.SerializeObject(kafkaModel);
+                        await _producer.ProduceAsync("inventory-threshold-warning", new Message<Null, string> { Value = json });
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
     }
 }

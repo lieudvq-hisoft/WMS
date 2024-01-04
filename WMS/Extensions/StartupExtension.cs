@@ -15,6 +15,8 @@ using Services.Core;
 using Confluent.Kafka;
 using Hangfire;
 using Hangfire.PostgreSql;
+using Services.Hangfire;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace WMS.Extensions;
 
@@ -27,7 +29,7 @@ public static class StartupExtension
         {
             opt.UseNpgsql(configuration.GetConnectionString("Dev"),
                 b => b.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name));
-        });
+        }, ServiceLifetime.Singleton);
     }
 
     public static void ApplyPendingMigrations(this IServiceProvider provider)
@@ -58,7 +60,7 @@ public static class StartupExtension
         services.AddScoped<IMailService, MailService>();
         services.AddScoped<IRoleService, RoleService>();
 
-        services.AddScoped<IProductService, ProductService>();
+        services.AddSingleton<IProductService, ProductService>();
         services.AddScoped<IReceiptService, ReceiptService>();
         services.AddScoped<ISupplierService, SupplierService>();
         services.AddScoped<ILocationService, LocationService>();
@@ -68,7 +70,9 @@ public static class StartupExtension
         services.AddScoped<IRackLevelService, RackLevelService>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IOrderService, OrderService>();
-        services.AddScoped<IHangfireServices, HangfireServices>();
+        services.AddSingleton<IHangfireServices, HangfireServices>();
+        services.AddHostedService<HangfireJob>();
+
 
         services.AddSingleton<IProducer<Null, string>>(sp =>
             new ProducerBuilder<Null, string>(new ProducerConfig
