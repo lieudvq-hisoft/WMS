@@ -53,5 +53,10 @@ namespace Data.Models
         public string Path { get; set; }
     }
 
+    public class OrderCompleteModel
+    {
+        public Guid Id { get; set; }
+    }
+
 }
 
