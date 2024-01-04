@@ -13,6 +13,8 @@ using System.Text.Json;
 using Services.Mapping;
 using Services.Core;
 using Confluent.Kafka;
+using Hangfire;
+using Hangfire.PostgreSql;
 
 namespace WMS.Extensions;
 
@@ -66,6 +68,7 @@ public static class StartupExtension
         services.AddScoped<IRackLevelService, RackLevelService>();
         services.AddScoped<IReportService, ReportService>();
         services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IHangfireServices, HangfireServices>();
 
         services.AddSingleton<IProducer<Null, string>>(sp =>
             new ProducerBuilder<Null, string>(new ProducerConfig
@@ -214,5 +217,24 @@ public static class StartupExtension
         services.AddControllersWithViews().AddNewtonsoftJson(options =>
         options.SerializerSettings.Converters.Add(new StringEnumConverter()));
         services.AddSwaggerGenNewtonsoftSupport();
+    }
+
+    public static void ConfigHangFire(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(_ =>
+        {
+            _.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseStorage(new PostgreSqlStorage(configuration.GetConnectionString("HangfireConnection"),
+                new PostgreSqlStorageOptions
+                {
+                    UseNativeDatabaseTransactions = true,
+                    InvisibilityTimeout = TimeSpan.FromMinutes(10),
+                }
+                ));
+        });
+        services.AddHangfireServer(_ => _.WorkerCount = 2);
+        //Hangfire's default worker count is 20, which opens 20 connections simultaneously.
     }
 }

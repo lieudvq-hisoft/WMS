@@ -1,5 +1,6 @@
 using Data.Models;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Hangfire;
+using HangfireBasicAuthenticationFilter;
 using Microsoft.Extensions.FileProviders;
 using WMS.Extensions;
 
@@ -18,6 +19,7 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 
 builder.Services.AddBussinessService(builder.Configuration);
 builder.Services.ConfigureSwagger();
+builder.Services.ConfigHangFire(builder.Configuration);
 builder.Services.AddJWTAuthentication(builder.Configuration["Jwt:Key"], builder.Configuration["Jwt:Issuer"]);
 
 builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
@@ -64,6 +66,21 @@ app.UseStaticFiles(new StaticFileOptions
 app.MapControllers();
 
 app.Services.ApplyPendingMigrations();
+
+// config hangfire
+app.UseHangfireDashboard("/hangfire", new DashboardOptions()
+{
+    AppPath = null,
+    DashboardTitle = "Hangfire CMS",
+    Authorization = new[]
+    {
+        new HangfireCustomBasicAuthenticationFilter
+        {
+            User = "admin",
+            Pass = "password123@"
+        }
+    }
+});
 
 app.UseForwardedHeaders();
 
