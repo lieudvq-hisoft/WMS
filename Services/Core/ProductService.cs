@@ -471,6 +471,7 @@ public class ProductService : IProductService
         try
         {
             var products = _dbContext.Product.Include(_ => _.Inventories).Where(_ => !_.IsDeleted).ToList();
+            var inventoryThreshold = _dbContext.InventoryThresholds.FirstOrDefault();
             if (products.Any())
             {
                 var userReceiveNotice = _dbContext.User.Include(_ => _.UserRoles).ThenInclude(_ => _.Role)
@@ -479,7 +480,7 @@ public class ProductService : IProductService
                 foreach (var product in products)
                 {
                     var inventories = product.Inventories.Where(_ => _.IsAvailable && !_.IsDeleted).ToList();
-                    if (inventories.Count() <= 2)
+                    if (inventories.Count() <= inventoryThreshold!.ThresholdQuantity)
                     {
                         var kafkaModel = new KafkaModel { UserReceiveNotice = userReceiveNotice, Payload = _mapper.Map<Product, ProductModel>(product) };
                         var json = Newtonsoft.Json.JsonConvert.SerializeObject(kafkaModel);
