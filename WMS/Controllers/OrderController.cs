@@ -29,11 +29,27 @@ namespace WMS.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("Detail/{id}")]
+        public async Task<ActionResult> GetDetail(Guid id)
+        {
+            var result = await _orderService.GetDetail(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpPost]
         //[Authorize(Roles = "Manager")]
         public async Task<ActionResult> Create([FromBody] OrderCreateModel model)
         {
             var result = await _orderService.Create(model, Guid.Parse(User.GetId()));
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpPost("Complete")]
+        public async Task<ActionResult> Complete([FromBody] OrderCompleteModel model)
+        {
+            var result = await _orderService.Complete(model);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }

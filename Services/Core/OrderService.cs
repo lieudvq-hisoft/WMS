@@ -14,8 +14,10 @@ namespace Services.Core;
 public interface IOrderService
 {
     Task<ResultModel> Create(OrderCreateModel model, Guid userId);
+    Task<ResultModel> Complete(OrderCompleteModel model);
     Task<ResultModel> Update(OrderUpdateModel model);
     Task<ResultModel> Get(PagingParam<OrderSortCriteria> paginationModel, OrderSearchModel model);
+    Task<ResultModel> GetDetail(Guid id);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> UploadFile(UploadFileModel model);
     Task<ResultModel> DeleteFile(FileModel model);
@@ -82,6 +84,46 @@ public class OrderService : IOrderService
         {
             result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
             await transaction.RollbackAsync();
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> Complete(OrderCompleteModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var order = _dbContext.Order.Include(_ => _.PickingRequests).Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (order == null)
+            {
+                result.ErrorMessage = "Order not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (order.Status == OrderStatus.Completed)
+            {
+                result.ErrorMessage = "Order is completed";
+                result.Succeed = false;
+                return result;
+            }
+            if (!order.PickingRequests.Any(_ => _.Status != PickingRequestStatus.Completed && !_.IsDeleted))
+            {
+                order.Status = OrderStatus.Completed;
+                order.DateUpdated = DateTime.Now;
+                _dbContext.Order.Update(order);
+                await _dbContext.SaveChangesAsync();
+                result.Succeed = true;
+                result.Data = order.Id;
+            }
+            else
+            {
+                result.ErrorMessage = "Order cannot be completed because it is related to an existing picking request pending";
+            }
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
         }
         return result;
     }
@@ -185,47 +227,23 @@ public class OrderService : IOrderService
         return result;
     }
 
-    public async Task<ResultModel> Update(ProductUpdateModel model)
+    public async Task<ResultModel> GetDetail(Guid id)
     {
         var result = new ResultModel();
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Product.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            var data = _dbContext.Order
+                .Include(_ => _.PickingRequests).ThenInclude(_ => _.Product)
+                .Include(_ => _.SentByUser).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
             if (data == null)
             {
-                result.ErrorMessage = "Product not exists";
+                result.ErrorMessage = "Order not exists";
                 result.Succeed = false;
                 return result;
             }
-            if (model.Name != null)
-            {
-                data!.Name = model.Name;
-            }
-
-            if (model.Description != null)
-            {
-                data!.Description = model.Description;
-            }
-
-            if (model.SalePrice != null)
-            {
-                data!.SalePrice = model.SalePrice;
-            }
-
-            if (model.SerialNumber != null)
-            {
-                data!.SerialNumber = model.SerialNumber;
-            }
-            if (model.InternalCode != null)
-            {
-                data!.InternalCode = model.InternalCode;
-            }
-            data!.DateUpdated = DateTime.Now;
-            _dbContext.Product.Update(data);
-            await _dbContext.SaveChangesAsync();
             result.Succeed = true;
-            result.Data = _mapper.Map<Product, ProductModel>(data);
+            result.Data = _mapper.Map<OrderModel>(data);
         }
         catch (Exception ex)
         {
