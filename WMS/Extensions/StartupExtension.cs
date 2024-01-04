@@ -72,6 +72,7 @@ public static class StartupExtension
         services.AddScoped<IOrderService, OrderService>();
         services.AddSingleton<IHangfireServices, HangfireServices>();
         services.AddHostedService<HangfireJob>();
+        services.AddSingleton<IInventoryThresholdService, InventoryThresholdService>();
 
 
         services.AddSingleton<IProducer<Null, string>>(sp =>

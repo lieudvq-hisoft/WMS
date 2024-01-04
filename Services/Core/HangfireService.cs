@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using Data.DataAccess;
+using Hangfire;
 
 namespace Services.Core
 {
@@ -11,22 +12,26 @@ namespace Services.Core
     {
         private readonly IRecurringJobManager _recurringJob;
         private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly AppDbContext _dbContext;
         public HangfireServices(
             IRecurringJobManager recurringJobManager,
-            IBackgroundJobClient backgroundJobClient
+            IBackgroundJobClient backgroundJobClient,
+            AppDbContext dbContext
             )
         {
             _recurringJob = recurringJobManager;
             _backgroundJobClient = backgroundJobClient;
+            _dbContext = dbContext;
         }
 
         [Obsolete]
         public void InventoryThresholdWarning()
         {
+            var inventoryThreshold = _dbContext.InventoryThresholds.FirstOrDefault();
             _recurringJob.AddOrUpdate<IProductService>(
                 recurringJobId: "InventoryThresholdWarning",
                 methodCall: (_) => _.InventoryThresholdWarning(),
-                cronExpression: () => "10 15 * * *",
+                cronExpression: () => inventoryThreshold!.CronExpression != null ? inventoryThreshold.CronExpression : "10 15 * * *",
                 timeZone: TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")
             );
         }

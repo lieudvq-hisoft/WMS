@@ -67,6 +67,10 @@ namespace Services.Mapping
             CreateMap<Order, OrderInnerModel>().ReverseMap();
             CreateMap<Order, OrderModel>().ReverseMap();
             CreateMap<Order, OrderCreateModel>().ReverseMap();
+
+            CreateMap<InventoryThreshold, InventoryThresholdModel>().ReverseMap();
+            CreateMap<InventoryThreshold, InventoryThresholdCreateModel>().ReverseMap();
+
         }
     }
 }
