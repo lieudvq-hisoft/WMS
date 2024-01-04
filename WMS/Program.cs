@@ -34,7 +34,7 @@ builder.Services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
 
 builder.Services.AddSignalR();
 
-var app = builder.Build();
+    var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {

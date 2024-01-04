@@ -4,7 +4,7 @@ namespace Services.Core
 {
     public interface IHangfireServices
     {
-        string InventoryThresholdWarning(Guid productId, TimeSpan timeSpan);
+        void InventoryThresholdWarning();
         void DeleteJobClient(string jobId);
     }
     public class HangfireServices : IHangfireServices
@@ -20,10 +20,15 @@ namespace Services.Core
             _backgroundJobClient = backgroundJobClient;
         }
 
-        public string InventoryThresholdWarning(Guid blogTrId, TimeSpan timeSpan)
+        [Obsolete]
+        public void InventoryThresholdWarning()
         {
-            var jobId = _backgroundJobClient.Schedule<IProductService>(methodCall: (_) => _.GetInventories(blogTrId), delay: timeSpan);
-            return jobId;
+            _recurringJob.AddOrUpdate<IProductService>(
+                recurringJobId: "InventoryThresholdWarning",
+                methodCall: (_) => _.InventoryThresholdWarning(),
+                cronExpression: () => "10 15 * * *",
+                timeZone: TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")
+            );
         }
 
         public void DeleteJobClient(string jobId)

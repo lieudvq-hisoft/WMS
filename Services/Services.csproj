@@ -29,5 +29,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\" />
+    <Folder Include="Hangfire\" />
   </ItemGroup>
 </Project>
