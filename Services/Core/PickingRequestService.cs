@@ -175,7 +175,7 @@ public class PickingRequestService : IPickingRequestService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.PickingRequest.Include(_ => _.Product)
+            var data = _dbContext.PickingRequest.Include(_ => _.Product).ThenInclude(_ => _.Inventories)
                 .Include(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser)
                 .Include(_ => _.Order).ThenInclude(_ => _.SentByUser)
                 .Where(delegate (PickingRequest p)
