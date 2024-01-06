@@ -29,7 +29,10 @@ namespace Services.Mapping
 
             CreateMap<ProductCreateModel, Product>();
             CreateMap<ProductUpdateModel, Product>();
-            CreateMap<ProductModel, Product>().ReverseMap();
+            CreateMap<ProductModel, Product>();
+            CreateMap<Product, ProductModel>()
+                .ForMember(dest => dest.TotalInventory,
+                   opt => opt.MapFrom(src => src.Inventories.Where(_ => _.IsAvailable).Count()));
             CreateMap<ProductCompletedModel, Product>().ReverseMap();
 
 

@@ -98,7 +98,7 @@ public class ProductService : IProductService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Product.Where(delegate (Product p)
+            var data = _dbContext.Product.Include(_ => _.Inventories).Where(delegate (Product p)
             {
                 if (
                     (MyFunction.ConvertToUnSign(p.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
