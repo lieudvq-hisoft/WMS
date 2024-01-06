@@ -16,6 +16,7 @@ namespace Data.Models
         public List<string>? Images { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
+        public int TotalInventory { get; set; }
     }
 
     public class ProductInventoryModel
