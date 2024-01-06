@@ -94,7 +94,7 @@ public class LocationService : ILocationService
         try
         {
             var data = _dbContext.Location
-                .Include(_ => _.InventoryLocations).ThenInclude(_ => _.Inventory).ThenInclude(_ => _.Product)
+                .Include(_ => _.InventoryLocations).ThenInclude(_ => _.Inventory).ThenInclude(_ => _.Product).ThenInclude(_ => _.Inventories)
                 .Include(_ => _.RackLevel).Where(delegate (Location l)
             {
                 if (
@@ -174,7 +174,7 @@ public class LocationService : ILocationService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Location.Include(_ => _.InventoryLocations).ThenInclude(_ => _.Inventory).ThenInclude(_ => _.Product)
+            var data = _dbContext.Location.Include(_ => _.InventoryLocations).ThenInclude(_ => _.Inventory).ThenInclude(_ => _.Product).ThenInclude(_ => _.Inventories)
                 .Include(_ => _.RackLevel).ThenInclude(_ => _.Rack).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
             if (data == null)
             {

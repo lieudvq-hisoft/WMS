@@ -133,7 +133,7 @@ public class ReceiptService : IReceiptService
             result.Succeed = true;
             result.Data = data.Id;
 
-            var receipt = _dbContext.Receipt.Include(_ => _.Product).Where(_ => _.Id == data.Id).FirstOrDefault();
+            var receipt = _dbContext.Receipt.Include(_ => _.Product).ThenInclude(_ => _.Inventories).Where(_ => _.Id == data.Id).FirstOrDefault();
             var userReceiveNotice = _dbContext.User.Include(_ => _.UserRoles).ThenInclude(_ => _.Role)
                 .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName == "ADMIN") && _.IsActive && !_.IsDeleted)
                 .Select(_ => _.Id).ToList();
@@ -183,7 +183,7 @@ public class ReceiptService : IReceiptService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Receipt.Include(_ => _.Product).Include(_ => _.ReceivedByUser).Include(_ => _.Supplier).Where(delegate (Receipt r)
+            var data = _dbContext.Receipt.Include(_ => _.Product).ThenInclude(_ => _.Inventories).Include(_ => _.ReceivedByUser).Include(_ => _.Supplier).Where(delegate (Receipt r)
             {
                 if (
                     (MyFunction.ConvertToUnSign(r.Supplier.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
@@ -218,7 +218,7 @@ public class ReceiptService : IReceiptService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Receipt.Include(_ => _.Product).Include(_ => _.ReceivedByUser).Include(_ => _.Supplier).Where(delegate (Receipt r)
+            var data = _dbContext.Receipt.Include(_ => _.Product).ThenInclude(_ => _.Inventories).Include(_ => _.ReceivedByUser).Include(_ => _.Supplier).Where(delegate (Receipt r)
             {
                 if (
                     (MyFunction.ConvertToUnSign(r.Supplier.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
@@ -341,7 +341,7 @@ public class ReceiptService : IReceiptService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Receipt.Include(_ => _.Product).Where(_ => _.Id == id).FirstOrDefault();
+            var data = _dbContext.Receipt.Include(_ => _.Product).ThenInclude(_ => _.Inventories).Where(_ => _.Id == id).FirstOrDefault();
             if (data == null)
             {
                 result.ErrorMessage = "Receipt not exists";
