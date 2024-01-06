@@ -105,7 +105,7 @@ public class PickingRequestService : IPickingRequestService
         result.Succeed = false;
         try
         {
-            var order = _dbContext.User.Where(_ => _.Id == model.OrderId && !_.IsDeleted).FirstOrDefault();
+            var order = _dbContext.Order.Where(_ => _.Id == model.OrderId && !_.IsDeleted).FirstOrDefault();
             if (order == null)
             {
                 result.ErrorMessage = "Order not exists";
