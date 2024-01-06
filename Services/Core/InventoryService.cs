@@ -58,7 +58,7 @@ public class InventoryService : IInventoryService
         try
         {
             var data = _dbContext.Inventory
-                .Include(_ => _.Product)
+                .Include(_ => _.Product).ThenInclude(_ => _.Inventories)
                 .Include(_ => _.InventoryLocations).ThenInclude(_ => _.Location).ThenInclude(_ => _.RackLevel).ThenInclude(_ => _.Rack)
                 .Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
             if (data == null)

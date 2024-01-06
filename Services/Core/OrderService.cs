@@ -234,7 +234,7 @@ public class OrderService : IOrderService
         try
         {
             var data = _dbContext.Order
-                .Include(_ => _.PickingRequests).ThenInclude(_ => _.Product)
+                .Include(_ => _.PickingRequests).ThenInclude(_ => _.Product).ThenInclude(_ => _.Inventories)
                 .Include(_ => _.SentByUser).Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
             if (data == null)
             {
