@@ -5,6 +5,7 @@ using Data.Model;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Services.Utils;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Services.Core;
 
@@ -13,6 +14,8 @@ public interface IInventoryService
     Task<ResultModel> GetBarcode(Guid id);
     Task<ResultModel> GetDetail(Guid id);
     Task<ResultModel> UpdateLocation(UpdateLocationModel model);
+    Task<ResultModel> Update(InventoryUpdateModel model);
+
 }
 public class InventoryService : IInventoryService
 {
@@ -109,6 +112,39 @@ public class InventoryService : IInventoryService
             _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = _mapper.Map<InventoryLocationFIModel>(inventoryLocation);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> Update(InventoryUpdateModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var inventory = _dbContext.Inventory.Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            if (inventory == null)
+            {
+                result.ErrorMessage = "Inventory not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (model.Note != null)
+            {
+                inventory!.Note = model.Note;
+            }
+
+            if (model.Description != null)
+            {
+                inventory!.Description = model.Description;
+            }
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<InventoryModel>(inventory);
         }
         catch (Exception ex)
         {

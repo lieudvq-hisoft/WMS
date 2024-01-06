@@ -9,6 +9,7 @@ public class Inventory : BaseEntity
     [ForeignKey("ProductId")]
     public virtual Product? Product { get; set; }
     public string? Note { get; set; }
+    public string? Description { get; set; }
     public int QuantityOnHand { get; set; } = 0;
     public string SerialCode { get; set; }
     public bool IsAvailable { get; set; } = true;

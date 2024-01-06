@@ -45,6 +45,15 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpPut]
+        //[Authorize(Roles = "Admin")]
+        public async Task<ActionResult> Update(InventoryUpdateModel model)
+        {
+            var result = await _inventoryService.Update(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }
 
