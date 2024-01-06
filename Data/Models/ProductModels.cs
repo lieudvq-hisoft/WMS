@@ -30,6 +30,7 @@ namespace Data.Models
     {
         public Guid Id { get; set; }
         public string Note { get; set; }
+        public string Description { get; set; }
         public string SerialCode { get; set; }
         public bool IsAvailable { get; set; }
         public List<InventoryLocationFPModel> InventoryLocations { get; set; }

@@ -7,6 +7,7 @@ namespace Data.Models
 	{
         public Guid Id { get; set; }
         public string Note { get; set; }
+        public string Description { get; set; }
         public int QuantityOnHand { get; set; } = 0;
         public string SerialCode { get; set; }
         public DateTime DateCreated { get; set; }
@@ -23,12 +24,20 @@ namespace Data.Models
     {
         public Guid Id { get; set; }
         public string Note { get; set; }
+        public string Description { get; set; }
         public int QuantityOnHand { get; set; } = 0;
         public string SerialCode { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
         public ProductModel Product { get; set; }
         public List<InventoryLocationFIModel> InventoryLocations { get; set; }
+    }
+
+    public class InventoryUpdateModel
+    {
+        public Guid Id { get; set; }
+        public string Note { get; set; }
+        public string Description { get; set; }
     }
 
     public class InventoryLocationFIModel
