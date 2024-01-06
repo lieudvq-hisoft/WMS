@@ -201,7 +201,7 @@ public class OrderService : IOrderService
         {
             var data = _dbContext.Order
                 .Include(_ => _.SentByUser)
-                .Include(_ => _.PickingRequests).ThenInclude(_ => _.Product)
+                .Include(_ => _.PickingRequests).ThenInclude(_ => _.Product).ThenInclude(_ => _.Inventories)
                 .Where(delegate (Order o)
             {
                 if (
