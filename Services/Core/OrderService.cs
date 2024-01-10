@@ -38,53 +38,57 @@ public class OrderService : IOrderService
     {
         var result = new ResultModel();
         result.Succeed = false;
-        var transaction = _dbContext.Database.BeginTransaction();
-        try
+        using (var transaction = _dbContext.Database.BeginTransaction())
         {
-            var order = _mapper.Map<OrderCreateModel, Order>(model);
-            order.Files = new List<string>();
-            order.SentBy = userId;
-            _dbContext.Order.Add(order);
-
-            if (model.PickingRequests!.Any())
+            try
             {
-                foreach (var item in model.PickingRequests!)
-                {
-                    var product = _dbContext.Product.Where(_ => _.Id == item.ProductId && !_.IsDeleted).FirstOrDefault();
-                    if(product == null)
-                    {
-                        result.ErrorMessage = "Product not exists with productId = " + item.ProductId.ToString();
-                        result.Succeed = false;
-                        await transaction.RollbackAsync();
-                        return result;
-                    }
-                    if(item.Quantity <= 0)
-                    {
-                        result.ErrorMessage = "Picking request quantity than 0";
-                        result.Succeed = false;
-                        await transaction.RollbackAsync();
-                        return result;
-                    }
-                }
-                var pickingRequests = _mapper.Map<List<PickingRequestInnerCreateModel>, List<PickingRequest>>(model.PickingRequests!)
-                    .Select(item =>
-                    {
-                        item.OrderId = order.Id;
-                        return item;
-                    });
-                _dbContext.PickingRequest.AddRange(pickingRequests);
-            }
-            _dbContext.SaveChanges();
-            result.Succeed = true;
-            result.Data = order.Id;
-            await transaction.CommitAsync();
+                var order = _mapper.Map<OrderCreateModel, Order>(model);
+                order.Files = new List<string>();
+                order.SentBy = userId;
+                _dbContext.Order.Add(order);
 
+                if (model.PickingRequests!.Any())
+                {
+                    foreach (var item in model.PickingRequests!)
+                    {
+                        var product = _dbContext.Product.Where(_ => _.Id == item.ProductId && !_.IsDeleted).FirstOrDefault();
+                        if (product == null)
+                        {
+                            result.ErrorMessage = "Product not exists with productId = " + item.ProductId.ToString();
+                            result.Succeed = false;
+                            await transaction.RollbackAsync();
+                            return result;
+                        }
+                        if (item.Quantity <= 0)
+                        {
+                            result.ErrorMessage = "Picking request quantity than 0";
+                            result.Succeed = false;
+                            await transaction.RollbackAsync();
+                            return result;
+                        }
+                    }
+                    var pickingRequests = _mapper.Map<List<PickingRequestInnerCreateModel>, List<PickingRequest>>(model.PickingRequests!)
+                        .Select(item =>
+                        {
+                            item.OrderId = order.Id;
+                            return item;
+                        });
+                    _dbContext.PickingRequest.AddRange(pickingRequests);
+                }
+                _dbContext.SaveChanges();
+                result.Succeed = true;
+                result.Data = order.Id;
+                await transaction.CommitAsync();
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
         }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            await transaction.RollbackAsync();
-        }
+        //var transaction = _dbContext.Database.BeginTransaction();
+
         return result;
     }
 
