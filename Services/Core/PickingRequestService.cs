@@ -37,64 +37,66 @@ public class PickingRequestService : IPickingRequestService
     {
         var result = new ResultModel();
         result.Succeed = false;
-        var transaction = _dbContext.Database.BeginTransaction();
-        try
+        using (var transaction = _dbContext.Database.BeginTransaction())
         {
-            var pickingRequest = _dbContext.PickingRequest
-                .Include(_ => _.Product).ThenInclude(_ => _.Inventories)
-                .Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
-            if (pickingRequest == null)
+            try
             {
-                result.ErrorMessage = "Picking request not exists";
-                result.Succeed = false;
-                return result;
-            }
-            if (pickingRequest.Status == PickingRequestStatus.Completed)
-            {
-                result.ErrorMessage = "Picking request is completed";
-                result.Succeed = false;
-                return result;
-            }
-
-            var inventories = pickingRequest.Product.Inventories.Where(_ => _.IsAvailable && !_.IsDeleted);
-            if (inventories.Count() < pickingRequest.Quantity)
-            {
-                result.ErrorMessage = "Out of stock";
-                result.Succeed = false;
-                return result;
-            }
-            var list = inventories.Where(_ => model.ListInventoryId.Contains(_.Id));
-            if (list.Count() != pickingRequest.Quantity)
-            {
-                result.ErrorMessage = "In the inventory list, there is inventory that does not exist corresponding to the product";
-                result.Succeed = false;
-                return result;
-            }
-            foreach (var inventory in list)
-            {
-                var pickingRequestInventoryAdd = new Data.Entities.PickingRequestInventory
+                var pickingRequest = _dbContext.PickingRequest
+                    .Include(_ => _.Product).ThenInclude(_ => _.Inventories)
+                    .Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+                if (pickingRequest == null)
                 {
-                    InventoryId = inventory.Id,
-                    PickingRequestId = pickingRequest.Id,
-                };
-                _dbContext.PickingRequestInventory.Add(pickingRequestInventoryAdd);
+                    result.ErrorMessage = "Picking request not exists";
+                    result.Succeed = false;
+                    return result;
+                }
+                if (pickingRequest.Status == PickingRequestStatus.Completed)
+                {
+                    result.ErrorMessage = "Picking request is completed";
+                    result.Succeed = false;
+                    return result;
+                }
 
-                inventory.IsAvailable = false;
-                inventory.DateUpdated = DateTime.Now;
-                _dbContext.Inventory.Update(inventory);
+                var inventories = pickingRequest.Product.Inventories.Where(_ => _.IsAvailable && !_.IsDeleted);
+                if (inventories.Count() < pickingRequest.Quantity)
+                {
+                    result.ErrorMessage = "Out of stock";
+                    result.Succeed = false;
+                    return result;
+                }
+                var list = inventories.Where(_ => model.ListInventoryId.Contains(_.Id));
+                if (list.Count() != pickingRequest.Quantity)
+                {
+                    result.ErrorMessage = "In the inventory list, there is inventory that does not exist corresponding to the product";
+                    result.Succeed = false;
+                    return result;
+                }
+                foreach (var inventory in list)
+                {
+                    var pickingRequestInventoryAdd = new Data.Entities.PickingRequestInventory
+                    {
+                        InventoryId = inventory.Id,
+                        PickingRequestId = pickingRequest.Id,
+                    };
+                    _dbContext.PickingRequestInventory.Add(pickingRequestInventoryAdd);
+
+                    inventory.IsAvailable = false;
+                    inventory.DateUpdated = DateTime.Now;
+                    _dbContext.Inventory.Update(inventory);
+                }
+                pickingRequest.Status = PickingRequestStatus.Completed;
+                pickingRequest.DateUpdated = DateTime.Now;
+                _dbContext.PickingRequest.Update(pickingRequest);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                result.Succeed = true;
+                result.Data = pickingRequest.Id;
             }
-            pickingRequest.Status = PickingRequestStatus.Completed;
-            pickingRequest.DateUpdated = DateTime.Now;
-            _dbContext.PickingRequest.Update(pickingRequest);
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-            result.Succeed = true;
-            result.Data = pickingRequest.Id;
-        }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            await transaction.RollbackAsync();
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
         }
         return result;
     }
