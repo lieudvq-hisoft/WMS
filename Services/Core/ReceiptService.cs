@@ -43,65 +43,67 @@ public class ReceiptService : IReceiptService
     {
         var result = new ResultModel();
         result.Succeed = false;
-        var transaction = _dbContext.Database.BeginTransaction();
-        try
+        using (var transaction = _dbContext.Database.BeginTransaction())
         {
-            var receipt = _dbContext.Receipt
-                .Include(_ => _.Product).ThenInclude(_ => _.Inventories)
-                .Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
-            if (receipt == null)
+            try
             {
-                result.ErrorMessage = "Receipt not exists";
-                result.Succeed = false;
-                return result;
-            }
-
-            if (receipt.Status == ReceiptStatus.Completed)
-            {
-                result.ErrorMessage = "Receipt is completed";
-                result.Succeed = false;
-                return result;
-            }
-
-            var location = _dbContext.Location.Where(_ => _.Id == model.LocationId).FirstOrDefault();
-            if (location == null)
-            {
-                result.ErrorMessage = "Location not exists";
-                result.Succeed = false;
-                return result;
-            }
-
-            for (int i = 0; i < receipt.Quantity; i++)
-            {
-                var inventory = new Inventory
+                var receipt = _dbContext.Receipt
+                    .Include(_ => _.Product).ThenInclude(_ => _.Inventories)
+                    .Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+                if (receipt == null)
                 {
-                    ProductId = receipt.ProductId,
-                    QuantityOnHand = 1,
-                    SerialCode = receipt.Product.SerialNumber + DateTime.Now.ToBinary(),
-                };
+                    result.ErrorMessage = "Receipt not exists";
+                    result.Succeed = false;
+                    return result;
+                }
 
-                _dbContext.Add(inventory);
-
-                var inventoryLocation = new InventoryLocation
+                if (receipt.Status == ReceiptStatus.Completed)
                 {
-                    InventoryId = inventory.Id,
-                    LocationId = location.Id,
-                };
+                    result.ErrorMessage = "Receipt is completed";
+                    result.Succeed = false;
+                    return result;
+                }
 
-                _dbContext.Add(inventoryLocation);
+                var location = _dbContext.Location.Where(_ => _.Id == model.LocationId).FirstOrDefault();
+                if (location == null)
+                {
+                    result.ErrorMessage = "Location not exists";
+                    result.Succeed = false;
+                    return result;
+                }
+
+                for (int i = 0; i < receipt.Quantity; i++)
+                {
+                    var inventory = new Inventory
+                    {
+                        ProductId = receipt.ProductId,
+                        QuantityOnHand = 1,
+                        SerialCode = receipt.Product.SerialNumber + DateTime.Now.ToBinary(),
+                    };
+
+                    _dbContext.Add(inventory);
+
+                    var inventoryLocation = new InventoryLocation
+                    {
+                        InventoryId = inventory.Id,
+                        LocationId = location.Id,
+                    };
+
+                    _dbContext.Add(inventoryLocation);
+                }
+                receipt.Status = ReceiptStatus.Completed;
+                receipt.DateUpdated = DateTime.Now;
+                _dbContext.Receipt.Update(receipt);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                result.Succeed = true;
+                result.Data = receipt.Id;
             }
-            receipt.Status = ReceiptStatus.Completed;
-            receipt.DateUpdated = DateTime.Now;
-            _dbContext.Receipt.Update(receipt);
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-            result.Succeed = true;
-            result.Data = receipt.Id;
-        }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            await transaction.RollbackAsync();
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
         }
         return result;
     }
