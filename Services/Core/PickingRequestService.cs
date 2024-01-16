@@ -19,6 +19,7 @@ public interface IPickingRequestService
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> Complete(PickingRequestCompleteModel model);
     Task<ResultModel> GetWeeklyReport();
+    Task<ResultModel> GetDetail(Guid id);
     Task<ResultModel> GetCompleted(PagingParam<PickingRequestSortCriteria> paginationModel, PickingRequestCompleteSearchModel model);
 
 }
@@ -46,7 +47,7 @@ public class PickingRequestService : IPickingRequestService
                     .Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
                 if (pickingRequest == null)
                 {
-                    result.ErrorMessage = "Picking request not exists";
+                    result.ErrorMessage =  "Picking request not exists";
                     result.Succeed = false;
                     return result;
                 }
@@ -163,6 +164,28 @@ public class PickingRequestService : IPickingRequestService
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = data.Id;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+    public async Task<ResultModel> GetDetail(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.PickingRequest.Include(_ => _.Product).ThenInclude(_ => _.Inventories).Where(_ => _.Id == id).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "PickingRequest not exists";
+                result.Succeed = false;
+                return result;
+            }
+            result.Succeed = true;
+            result.Data = _mapper.Map<PickingRequestModel>(data);
         }
         catch (Exception ex)
         {
