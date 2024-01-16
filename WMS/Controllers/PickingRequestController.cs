@@ -54,7 +54,14 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
-
+        [HttpGet("Detail/{id}")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<ActionResult> GetDetail(Guid id)
+        {
+            var result = await _pickingRequestService.GetDetail(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
         [HttpDelete("id")]
         [Authorize(Roles = "Manager,Staff")]
         public async Task<ActionResult> Delete(Guid id)
