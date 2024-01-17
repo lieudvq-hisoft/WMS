@@ -131,7 +131,14 @@ public class SupplierService : ISupplierService
             {
                 data!.Name = model.Name;
             }
-
+            if (model.StaffName != null)
+            {
+                data!.StaffName = model.StaffName;
+            }
+            if (model.Position != null)
+            {
+                data!.Position = model.Position;
+            }
             if (model.Phone != null)
             {
                 data!.Phone = model.Phone;

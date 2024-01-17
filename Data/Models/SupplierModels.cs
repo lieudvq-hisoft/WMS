@@ -9,6 +9,8 @@ namespace Data.Models
     public class SupplierCreateModel
     {
         public string? Name { get; set; }
+        public string? StaffName { get; set; }
+        public string? Position { get; set; }
         public string? Address { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
@@ -19,6 +21,8 @@ namespace Data.Models
     {
         public Guid Id { get; set; }
         public string? Name { get; set; }
+        public string? StaffName { get; set; }
+        public string? Position { get; set; }
         public string? Address { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
