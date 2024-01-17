@@ -1,4 +1,5 @@
 ﻿using Data.DataAccess.Constant;
+using Data.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace Data.Model
@@ -18,6 +19,8 @@ namespace Data.Model
         public string? LastName { get; set; }
         public string Email { get; set; }
         public string? Address { get; set; }
+        public bool? IsActive { get; set; }
+        public UserRole? Role { get; set; }
     }
 
     public class UserCreateModel
