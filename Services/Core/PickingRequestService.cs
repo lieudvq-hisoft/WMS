@@ -154,7 +154,7 @@ public class PickingRequestService : IPickingRequestService
             var data = _dbContext.PickingRequest.Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
             if (data == null)
             {
-                result.ErrorMessage = "Picking request not exists";
+                result.ErrorMessage = "Picking request not exists!";
                 result.Succeed = false;
                 return result;
             }
