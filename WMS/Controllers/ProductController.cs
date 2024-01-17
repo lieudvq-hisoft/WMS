@@ -45,13 +45,7 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
-        [HttpGet]
-        public async Task<ActionResult> GetProductInventory([FromQuery] PagingParam<ProductSortCriteria> paginationModel, [FromQuery] ProductSearchModel searchModel)
-        {
-            var result = await _productService.GetProductInventory(paginationModel, searchModel);
-            if (result.Succeed) return Ok(result.Data);
-            return BadRequest(result.ErrorMessage);
-        }
+ 
         [HttpGet("Detail/{id}")]
         //[Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetDetail(Guid id)
