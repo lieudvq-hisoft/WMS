@@ -18,6 +18,7 @@ public interface IProductService
     Task<ResultModel> Create(ProductCreateModel model);
     Task<ResultModel> Update(ProductUpdateModel model);
     Task<ResultModel> Get(PagingParam<ProductSortCriteria> paginationModel, ProductSearchModel model);
+    Task<ResultModel> GetProductInventory(PagingParam<ProductSortCriteria> paginationModel, ProductSearchModel model);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetInventoryQuantity(Guid id);
     Task<ResultModel> GetInventories(Guid id);
@@ -123,7 +124,37 @@ public class ProductService : IProductService
         }
         return result;
     }
-
+    public async Task<ResultModel> GetProductInventory(PagingParam<ProductSortCriteria> paginationModel, ProductSearchModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.Product.Include(_ => _.Inventories).Where(delegate (Product p)
+            {
+                if (
+                    (MyFunction.ConvertToUnSign(p.Name ?? "").IndexOf(MyFunction.ConvertToUnSign(model.SearchValue ?? ""), StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    || (p.SerialNumber.ToUpper().Contains(model.SearchValue ?? "".ToUpper()))
+                    )
+                    return true;
+                else
+                    return false;
+            }).AsQueryable();
+            data = data.Where(_ => !_.IsDeleted && (_.Inventories.Count > 0));
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, data.Count());
+            var products = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            products = products.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<ProductModel>(products);
+            paging.Data = viewModels;
+            result.Data = paging;
+            result.Succeed = true;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
     public async Task<ResultModel> GetQrcode(Guid id)
     {
         var result = new ResultModel();
