@@ -15,9 +15,26 @@ namespace Data.Models
         public List<InventoryLocationModel> InventoryLocations { get; set; }
     }
 
+    public class InventoryInnerModel
+    {
+        public Guid Id { get; set; }
+        public string Note { get; set; }
+        public string Description { get; set; }
+        public int QuantityOnHand { get; set; } = 0;
+        public string SerialCode { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
+        public List<InventoryLocationInnerModel>? InventoryLocations { get; set; }
+    }
+
+    public class InventoryLocationInnerModel
+    {
+        public LocationInnerModel? Location { get; set; }
+    }
+
     public class InventoryLocationModel
     {
-        public LocationModel Location { get; set; }
+        public LocationModel? Location { get; set; }
     }
 
     public class InventoryFIModel
