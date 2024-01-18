@@ -42,7 +42,7 @@ public class OrderService : IOrderService
         {
             try
             {
-                var order = _mapper.Map<OrderCreateModel, Order>(model);
+                var order = new Order { Note = model.Note };
                 order.Files = new List<string>();
                 order.SentBy = userId;
                 _dbContext.Order.Add(order);
@@ -66,14 +66,10 @@ public class OrderService : IOrderService
                             await transaction.RollbackAsync();
                             return result;
                         }
+                        var pickingRequest = _mapper.Map<PickingRequestInnerCreateModel, PickingRequest>(item);
+                        pickingRequest.OrderId = order.Id;
+                        _dbContext.PickingRequest.Add(pickingRequest);
                     }
-                    var pickingRequests = _mapper.Map<List<PickingRequestInnerCreateModel>, List<PickingRequest>>(model.PickingRequests!)
-                        .Select(item =>
-                        {
-                            item.OrderId = order.Id;
-                            return item;
-                        });
-                    _dbContext.PickingRequest.AddRange(pickingRequests);
                 }
                 _dbContext.SaveChanges();
                 result.Succeed = true;
