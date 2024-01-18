@@ -193,7 +193,7 @@ public class UserService : IUserService
 
             var uses = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             uses = uses.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
-            var viewModels = _mapper.ProjectTo<UserModel>(uses);
+            var viewModels = _mapper.ProjectTo<UserModelDetail>(uses);
             paging.Data = viewModels;
             result.Data = paging;
             result.Succeed = true;
