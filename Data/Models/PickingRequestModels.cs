@@ -8,7 +8,6 @@ namespace Data.Models
 	public class PickingRequestModel
     {   
         public Guid Id { get; set; }
-        public OrderInnerModel Order { get; set; }
         public ProductModel Product { get; set; }
         public string? Note { get; set; }
         public int Quantity { get; set; }
@@ -20,6 +19,8 @@ namespace Data.Models
 
     public class PickingRequestDetailModel : PickingRequestModel
     {
+        public OrderInnerModel? Order { get; set; }
+        public List<PickingRequestInventoryInner>? PickingRequestInventories { get; set; }
         public List<PickingRequestUserInnerModel>? PickingRequestUsers { get; set; }
     }
 
@@ -118,6 +119,11 @@ namespace Data.Models
     {
         public Guid PickingRequestId { get; set; }
         public Guid PickingRequestUserId { get; set; }
+    }
+
+    public class PickingRequestInventoryInner
+    {
+        public InventoryInnerModel? Inventory { get; set; }
     }
 }
 
