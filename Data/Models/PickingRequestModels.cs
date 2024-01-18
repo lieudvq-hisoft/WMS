@@ -18,16 +18,9 @@ namespace Data.Models
         public DateTime DateUpdated { get; set; }
     }
 
-    public class PickingRequestDetailModel
+    public class PickingRequestDetailModel : PickingRequestModel
     {
-        public Guid Id { get; set; }
-        public ProductModel Product { get; set; }
-        public string? Note { get; set; }
-        public int Quantity { get; set; }
-        public PickingRequestStatus Status { get; set; }
-        public PickingRequestType Type { get; set; }
-        public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
+        public ProductCompletedModel? Product { get; set; }
         public List<PickingRequestUserInnerModel>? PickingRequestUsers { get; set; }
     }
 
