@@ -20,7 +20,6 @@ namespace Data.Models
 
     public class PickingRequestDetailModel : PickingRequestModel
     {
-        public ProductCompletedModel? Product { get; set; }
         public List<PickingRequestUserInnerModel>? PickingRequestUsers { get; set; }
     }
 
