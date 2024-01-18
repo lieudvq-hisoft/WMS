@@ -20,7 +20,16 @@ namespace Data.Model
         public string Email { get; set; }
         public string? Address { get; set; }
         public bool? IsActive { get; set; }
+    }
 
+    public class UserModelDetail : UserModel
+    {
+        public List<UserRoleModel> UserRoles { get; set; }
+    }
+
+    public class UserRoleModel
+    {
+        public RoleModel Role { get; set; }
     }
 
     public class UserCreateModel

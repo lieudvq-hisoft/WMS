@@ -12,6 +12,9 @@ namespace Services.Mapping
             CreateMap<UserCreateModel, User>();
             CreateMap<User, UserModel>();
             CreateMap<User, ProfileModel>();
+            CreateMap<User, UserModelDetail>().ReverseMap();
+
+            CreateMap<UserRole, UserRoleModel>().ReverseMap();
 
             CreateMap<RoleCreateModel, Role>();
             CreateMap<Role, RoleModel>();
