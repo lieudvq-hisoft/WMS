@@ -475,7 +475,7 @@ public class ProductService : IProductService
             if (products.Any())
             {
                 var userReceiveNotice = _dbContext.User.Include(_ => _.UserRoles).ThenInclude(_ => _.Role)
-                    .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName == "ADMIN") && _.IsActive && !_.IsDeleted)
+                    .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName != "STAFF") && _.IsActive && !_.IsDeleted)
                     .Select(_ => _.Id).ToList();
                 foreach (var product in products)
                 {
