@@ -49,8 +49,10 @@ namespace Services.Mapping
             CreateMap<PickingRequestInnerCreateModel, PickingRequest>();
             CreateMap<PickingRequestUpdateModel, PickingRequest>();
             CreateMap<PickingRequestModel, PickingRequest>().ReverseMap();
+            CreateMap<PickingRequestDetailModel, PickingRequest>().ReverseMap();
             CreateMap<PickingRequestCompletedModel, PickingRequest>().ReverseMap();
             CreateMap<PickingRequestInnerOrderModel, PickingRequest>().ReverseMap();
+            CreateMap<PickingRequestUserInnerModel, PickingRequestUser>().ReverseMap();
 
 
             CreateMap<Inventory, InventoryModel>();

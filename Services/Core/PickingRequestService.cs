@@ -21,6 +21,8 @@ public interface IPickingRequestService
     Task<ResultModel> GetWeeklyReport();
     Task<ResultModel> GetDetail(Guid id);
     Task<ResultModel> GetCompleted(PagingParam<PickingRequestSortCriteria> paginationModel, PickingRequestCompleteSearchModel model);
+    Task<ResultModel> AssignUser(PickingRequestUserCreateModel model);
+    Task<ResultModel> UnAssignUser(UnAssignModel model);
 
 }
 public class PickingRequestService : IPickingRequestService
@@ -102,6 +104,89 @@ public class PickingRequestService : IPickingRequestService
         return result;
     }
 
+    public async Task<ResultModel> AssignUser(PickingRequestUserCreateModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var pickingRequest = _dbContext.PickingRequest.Include(_ => _.PickingRequestUsers).Where(_ => _.Id == model.PickingRequestId && !_.IsDeleted).FirstOrDefault();
+            var user = _dbContext.User.Where(_ => _.Id == model.ReceivedBy && !_.IsDeleted).FirstOrDefault();
+            if (user == null)
+            {
+                result.ErrorMessage = "User not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (pickingRequest == null)
+            {
+                result.ErrorMessage = "Picking request not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (pickingRequest.Status == PickingRequestStatus.Completed)
+            {
+                result.ErrorMessage = "Picking request is completed";
+                result.Succeed = false;
+                return result;
+            }
+            if(pickingRequest.PickingRequestUsers.Count() != 0)
+            {
+                result.ErrorMessage = "Picking request has been assigned to another user";
+                result.Succeed = false;
+                return result;
+            }
+            var pickingRequestUser = new PickingRequestUser { PickingRequestId = pickingRequest.Id, ReceivedBy = user.Id };
+            _dbContext.PickingRequestUser.Add(pickingRequestUser);
+            await _dbContext.SaveChangesAsync();
+            result.Succeed = true;
+            result.Data = pickingRequestUser.Id;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UnAssignUser(UnAssignModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var pickingRequest = _dbContext.PickingRequest.Where(_ => _.Id == model.PickingRequestId && !_.IsDeleted).FirstOrDefault();
+            if (pickingRequest == null)
+            {
+                result.ErrorMessage = "Picking request not exists";
+                result.Succeed = false;
+                return result;
+            }
+            if (pickingRequest.Status == PickingRequestStatus.Completed)
+            {
+                result.ErrorMessage = "Picking request is completed";
+                result.Succeed = false;
+                return result;
+            }
+            var pickingRequestUser = _dbContext.PickingRequestUser.Where(_ => _.Id == model.PickingRequestUserId).FirstOrDefault();
+            if (pickingRequestUser == null)
+            {
+                result.ErrorMessage = "Picking request user not exists with id: " + model.PickingRequestUserId;
+                result.Succeed = false;
+                return result;
+            }
+            _dbContext.PickingRequestUser.Remove(pickingRequestUser);
+            await _dbContext.SaveChangesAsync();
+            result.Succeed = true;
+            result.Data = pickingRequest.Id;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
     public async Task<ResultModel> Create(PickingRequestCreateModel model)
     {
         var result = new ResultModel();
@@ -177,7 +262,7 @@ public class PickingRequestService : IPickingRequestService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.PickingRequest.Include(_ => _.Product).ThenInclude(_ => _.Inventories).Where(_ => _.Id == id).FirstOrDefault();
+            var data = _dbContext.PickingRequest.Include(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser).Include(_ => _.Product).ThenInclude(_ => _.Inventories).Where(_ => _.Id == id).FirstOrDefault();
             if (data == null)
             {
                 result.ErrorMessage = "PickingRequest not exists";
@@ -185,7 +270,7 @@ public class PickingRequestService : IPickingRequestService
                 return result;
             }
             result.Succeed = true;
-            result.Data = _mapper.Map<PickingRequestModel>(data);
+            result.Data = _mapper.Map<PickingRequestDetailModel>(data);
         }
         catch (Exception ex)
         {
