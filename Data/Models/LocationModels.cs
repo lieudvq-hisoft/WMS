@@ -15,6 +15,17 @@ namespace Data.Models
         public List<InventoryLocationPrivateModel> InventoryLocations { get; set; }
     }
 
+    public class LocationInnerModel
+    {
+        public Guid Id { get; set; }
+        public RackLevelModel RackLevel { get; set; }
+        public string Name { get; set; }
+        public string? Description { get; set; }
+        public int SectionNumber { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
+    }
+
     public class InventoryPrivateModel
     {
         public Guid Id { get; set; }

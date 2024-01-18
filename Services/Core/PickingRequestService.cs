@@ -262,7 +262,10 @@ public class PickingRequestService : IPickingRequestService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.PickingRequest.Include(_ => _.Product).ThenInclude(_ => _.Inventories)
+            var data = _dbContext.PickingRequest
+                .Include(_ => _.Order).ThenInclude(_ => _.SentByUser)
+                .Include(_ => _.Product)
+                .Include(_ => _.PickingRequestInventories).ThenInclude(_ => _.Inventory).ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location)
                 .Include(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser).Where(_ => _.Id == id).FirstOrDefault();
             if (data == null)
             {
@@ -286,7 +289,8 @@ public class PickingRequestService : IPickingRequestService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.PickingRequest.Include(_ => _.Product).ThenInclude(_ => _.Inventories)
+            var data = _dbContext.PickingRequest
+                .Include(_ => _.Product).ThenInclude(_ => _.Inventories)
                 .Include(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser)
                 .Include(_ => _.Order).ThenInclude(_ => _.SentByUser)
                 .Where(delegate (PickingRequest p)
@@ -405,7 +409,7 @@ public class PickingRequestService : IPickingRequestService
         {
             var data = _dbContext.PickingRequest
                 .Include(_ => _.Order).ThenInclude(_ => _.SentByUser)
-                .Include(_ => _.Product).ThenInclude(_ => _.Inventories).ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location)
+                .Include(_ => _.Product).ThenInclude(_ => _.Inventories)
                 .Include(_ => _.PickingRequestUsers).ThenInclude(_ => _.ReceivedByUser).Where(delegate (PickingRequest p)
             {
                 if (
@@ -438,7 +442,7 @@ public class PickingRequestService : IPickingRequestService
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, data.Count());
             var pickingRequests = data.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             pickingRequests = pickingRequests.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
-            var viewModels = _mapper.ProjectTo<PickingRequestCompletedModel>(pickingRequests);
+            var viewModels = _mapper.ProjectTo<PickingRequestModel>(pickingRequests);
             paging.Data = viewModels;
             result.Data = paging;
             result.Succeed = true;

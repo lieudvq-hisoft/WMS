@@ -137,7 +137,7 @@ public class ReceiptService : IReceiptService
 
             var receipt = _dbContext.Receipt.Include(_ => _.Product).ThenInclude(_ => _.Inventories).Where(_ => _.Id == data.Id).FirstOrDefault();
             var userReceiveNotice = _dbContext.User.Include(_ => _.UserRoles).ThenInclude(_ => _.Role)
-                .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName == "ADMIN") && _.IsActive && !_.IsDeleted)
+                .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName == "ADMIN" + "MANAGER" + "STAFF") && _.IsActive && !_.IsDeleted)
                 .Select(_ => _.Id).ToList();
 
             var kafkaModel = new KafkaModel { UserReceiveNotice = userReceiveNotice, Payload = _mapper.Map<Receipt, ReceiptModel>(receipt!) };
