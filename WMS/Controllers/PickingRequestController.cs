@@ -88,6 +88,24 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpPost("Assign/User")]
+        //[Authorize(Roles = "Staff")]
+        public async Task<ActionResult> AssignUser(PickingRequestUserCreateModel model)
+        {
+            var result = await _pickingRequestService.AssignUser(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpPut("UnAssign/User")]
+        //[Authorize(Roles = "Staff")]
+        public async Task<ActionResult> UnAssignUser(UnAssignModel model)
+        {
+            var result = await _pickingRequestService.UnAssignUser(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Data.Entities;
 using Data.Enums;
 using Data.Model;
 
@@ -15,6 +16,11 @@ namespace Data.Models
         public PickingRequestType Type { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
+    }
+
+    public class PickingRequestDetailModel : PickingRequestModel
+    {
+        public List<PickingRequestUserInnerModel>? PickingRequestUsers { get; set; }
     }
 
     public class PickingRequestInnerOrderModel
@@ -94,6 +100,24 @@ namespace Data.Models
     {
         public DateTime? DateCreated { get; set; }
         public DateTime? DateCompleted { get; set; }
+    }
+
+    public class PickingRequestUserCreateModel
+    {
+        public Guid PickingRequestId { get; set; }
+        public Guid ReceivedBy { get; set; }
+    }
+
+    public class PickingRequestUserInnerModel
+    {
+        public Guid Id { get; set; }
+        public UserModel ReceivedByUser { get; set; }
+    }
+
+    public class UnAssignModel
+    {
+        public Guid PickingRequestId { get; set; }
+        public Guid PickingRequestUserId { get; set; }
     }
 }
 
