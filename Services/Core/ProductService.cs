@@ -370,7 +370,7 @@ public class ProductService : IProductService
             result.Data = _mapper.Map<Product, ProductModel>(data);
 
             var userReceiveNotice = _dbContext.User.Include(_ => _.UserRoles).ThenInclude(_ => _.Role)
-                .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName != "STAFF") && _.IsActive && !_.IsDeleted)
+                .Where(_ => _.UserRoles.Any(ur => ur.Role.NormalizedName != "ADMIN") && _.IsActive && !_.IsDeleted)
                 .Select(_ => _.Id).ToList();
             var kafkaModel = new KafkaModel { UserReceiveNotice = userReceiveNotice, Payload = _mapper.Map<Product, ProductModel>(data) };
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(kafkaModel);
