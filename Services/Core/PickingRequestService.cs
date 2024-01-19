@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Confluent.Kafka;
 using Data.Common.PaginationModel;
 using Data.DataAccess;
 using Data.Entities;
@@ -29,11 +30,13 @@ public class PickingRequestService : IPickingRequestService
 {
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IProducer<Null, string> _producer;
 
-    public PickingRequestService(AppDbContext dbContext, IMapper mapper)
+    public PickingRequestService(AppDbContext dbContext, IMapper mapper, IProducer<Null, string> producer)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _producer = producer;
     }
 
     public async Task<ResultModel> Complete(PickingRequestCompleteModel model)
@@ -110,7 +113,10 @@ public class PickingRequestService : IPickingRequestService
         result.Succeed = false;
         try
         {
-            var pickingRequest = _dbContext.PickingRequest.Include(_ => _.PickingRequestUsers).Where(_ => _.Id == model.PickingRequestId && !_.IsDeleted).FirstOrDefault();
+            var pickingRequest = _dbContext.PickingRequest
+                .Include(_ => _.PickingRequestUsers)
+                .Include(_ => _.Product)
+                .Where(_ => _.Id == model.PickingRequestId && !_.IsDeleted).FirstOrDefault();
             var user = _dbContext.User.Where(_ => _.Id == model.ReceivedBy && !_.IsDeleted).FirstOrDefault();
             if (user == null)
             {
@@ -141,6 +147,10 @@ public class PickingRequestService : IPickingRequestService
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = pickingRequestUser.Id;
+
+            var kafkaModel = new KafkaModel { UserReceiveNotice = new List<Guid>() { user.Id}, Payload = _mapper.Map<PickingRequest, PickingRequestModel>(pickingRequest!) };
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(kafkaModel);
+            await _producer.ProduceAsync("pickingrequest-assign-user", new Message<Null, string> { Value = json });
         }
         catch (Exception ex)
         {
