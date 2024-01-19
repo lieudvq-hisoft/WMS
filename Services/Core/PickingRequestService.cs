@@ -48,6 +48,7 @@ public class PickingRequestService : IPickingRequestService
             try
             {
                 var pickingRequest = _dbContext.PickingRequest
+                    .Include(_ => _.Order)
                     .Include(_ => _.Product).ThenInclude(_ => _.Inventories)
                     .Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
                 if (pickingRequest == null)
@@ -97,6 +98,10 @@ public class PickingRequestService : IPickingRequestService
                 await transaction.CommitAsync();
                 result.Succeed = true;
                 result.Data = pickingRequest.Id;
+
+                var kafkaModel = new KafkaModel { UserReceiveNotice = new List<Guid>() { pickingRequest.Order.SentBy }, Payload = _mapper.Map<PickingRequest, PickingRequestModel>(pickingRequest!) };
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(kafkaModel);
+                await _producer.ProduceAsync("pickingrequest-complete", new Message<Null, string> { Value = json });
             }
             catch (Exception ex)
             {
