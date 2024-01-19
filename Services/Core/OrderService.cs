@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Confluent.Kafka;
 using Data.Common.PaginationModel;
 using Data.DataAccess;
 using Data.Entities;
@@ -27,11 +28,13 @@ public class OrderService : IOrderService
 {
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
+    private readonly IProducer<Null, string> _producer;
 
-    public OrderService(AppDbContext dbContext, IMapper mapper)
+    public OrderService(AppDbContext dbContext, IMapper mapper, IProducer<Null, string> producer)
     {
         _dbContext = dbContext;
         _mapper = mapper;
+        _producer = producer;
     }
 
     public async Task<ResultModel> Create(OrderCreateModel model, Guid userId)
@@ -94,7 +97,9 @@ public class OrderService : IOrderService
         result.Succeed = false;
         try
         {
-            var order = _dbContext.Order.Include(_ => _.PickingRequests).Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
+            var order = _dbContext.Order
+                .Include(_ => _.SentByUser)
+                .Include(_ => _.PickingRequests).Where(_ => _.Id == model.Id && !_.IsDeleted).FirstOrDefault();
             if (order == null)
             {
                 result.ErrorMessage = "Order not exists";
@@ -115,6 +120,10 @@ public class OrderService : IOrderService
                 await _dbContext.SaveChangesAsync();
                 result.Succeed = true;
                 result.Data = order.Id;
+
+                var kafkaModel = new KafkaModel { UserReceiveNotice = new List<Guid>() { order.SentBy }, Payload = _mapper.Map<Order, OrderInnerModel>(order!) };
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(kafkaModel);
+                await _producer.ProduceAsync("order-complete", new Message<Null, string> { Value = json });
             }
             else
             {
