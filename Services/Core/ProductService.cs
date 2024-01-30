@@ -9,8 +9,7 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Services.Utils;
-using static Confluent.Kafka.ConfigPropertyNames;
-
+ 
 namespace Services.Core;
 
 public interface IProductService
@@ -199,16 +198,23 @@ public class ProductService : IProductService
         result.Succeed = false;
         try
         {
-            var data = _dbContext.Product
-                .Include(_ => _.Inventories).ThenInclude(_ => _.InventoryLocations).ThenInclude(_ => _.Location).ThenInclude(_ => _.RackLevel).ThenInclude(_ => _.Rack)
-                .Where(_ => _.Id == id && !_.IsDeleted).FirstOrDefault();
+            var query = _dbContext.Product
+                .Where(_ => _.Id == id && !_.IsDeleted)
+                .Include(_ => _.Inventories.Where(i => i.IsAvailable && !i.IsDeleted))
+                .ThenInclude(_ => _.InventoryLocations
+                .Where(il => !il.IsDeleted && !il.Location!.IsDeleted && !il.Location.RackLevel.IsDeleted && !il.Location.RackLevel.Rack.IsDeleted))
+                .ThenInclude(_ => _.Location)
+                .ThenInclude(_ => _!.RackLevel)
+                .ThenInclude(_ => _.Rack);
+            var strings = query.ToQueryString();
+            var data = query.FirstOrDefault();
             if (data == null)
             {
                 result.ErrorMessage = "Product not exists";
                 result.Succeed = false;
                 return result;
             }
-            var inventories = data.Inventories.Where(_ => _.IsAvailable && !_.IsDeleted).OrderBy(_ => _.DateCreated).AsQueryable();
+            var inventories = data.Inventories.OrderBy(_ => _.DateCreated).AsQueryable();
             result.Succeed = true;
             result.Data = _mapper.ProjectTo<InventoryFPModel>(inventories);
         }
