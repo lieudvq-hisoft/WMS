@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using System.ComponentModel.Design;
-using System.Data;
-using System;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using AutoMapper;
@@ -15,6 +12,11 @@ using System.Text;
 using System.Text.Json;
 using Services.Mapping;
 using Services.Core;
+using Confluent.Kafka;
+using Hangfire;
+using Hangfire.PostgreSql;
+using Services.Hangfire;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace WMS.Extensions;
 
@@ -27,7 +29,7 @@ public static class StartupExtension
         {
             opt.UseNpgsql(configuration.GetConnectionString("Dev"),
                 b => b.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name));
-        });
+        }, ServiceLifetime.Singleton);
     }
 
     public static void ApplyPendingMigrations(this IServiceProvider provider)
@@ -55,6 +57,29 @@ public static class StartupExtension
     public static void AddBussinessService(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IMailService, MailService>();
+        services.AddScoped<IRoleService, RoleService>();
+
+        services.AddSingleton<IProductService, ProductService>();
+        services.AddScoped<IReceiptService, ReceiptService>();
+        services.AddScoped<ISupplierService, SupplierService>();
+        services.AddScoped<ILocationService, LocationService>();
+        services.AddScoped<IInventoryService, InventoryService>();
+        services.AddScoped<IPickingRequestService, PickingRequestService>();
+        services.AddScoped<IRackService, RackService>();
+        services.AddScoped<IRackLevelService, RackLevelService>();
+        services.AddScoped<IReportService, ReportService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddSingleton<IHangfireServices, HangfireServices>();
+        services.AddHostedService<HangfireJob>();
+        services.AddSingleton<IInventoryThresholdService, InventoryThresholdService>();
+
+
+        services.AddSingleton<IProducer<Null, string>>(sp =>
+            new ProducerBuilder<Null, string>(new ProducerConfig
+            {
+                BootstrapServers = "192.168.40.81:9092"
+            }).Build());
     }
 
     public static void ConfigIdentityService(this IServiceCollection services)
@@ -197,5 +222,24 @@ public static class StartupExtension
         services.AddControllersWithViews().AddNewtonsoftJson(options =>
         options.SerializerSettings.Converters.Add(new StringEnumConverter()));
         services.AddSwaggerGenNewtonsoftSupport();
+    }
+
+    public static void ConfigHangFire(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(_ =>
+        {
+            _.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseStorage(new PostgreSqlStorage(configuration.GetConnectionString("HangfireConnection"),
+                new PostgreSqlStorageOptions
+                {
+                    UseNativeDatabaseTransactions = true,
+                    InvisibilityTimeout = TimeSpan.FromMinutes(10),
+                }
+                ));
+        });
+        services.AddHangfireServer(_ => _.WorkerCount = 2);
+        //Hangfire's default worker count is 20, which opens 20 connections simultaneously.
     }
 }

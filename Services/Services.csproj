@@ -13,10 +13,22 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
+    <PackageReference Include="MailKit" Version="4.2.0" />
+    <PackageReference Include="Confluent.Kafka" Version="2.3.0" />
+    <PackageReference Include="QRCoder" Version="1.4.3" />
+    <PackageReference Include="BarcodeLib" Version="2.3.0" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Utils\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utils\" />
+    <Folder Include="Hangfire\" />
+  </ItemGroup>
 </Project>
