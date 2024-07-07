@@ -27,13 +27,6 @@ namespace Services.Core
         [Obsolete]
         public void InventoryThresholdWarning()
         {
-            var inventoryThreshold = _dbContext.InventoryThresholds.FirstOrDefault();
-            _recurringJob.AddOrUpdate<IProductService>(
-                recurringJobId: "InventoryThresholdWarning",
-                methodCall: (_) => _.InventoryThresholdWarning(),
-                cronExpression: () => inventoryThreshold!.CronExpression != null ? inventoryThreshold.CronExpression : "10 15 * * *",
-                timeZone: TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time")
-            );
         }
 
         public void DeleteJobClient(string jobId)

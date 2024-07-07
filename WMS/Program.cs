@@ -65,7 +65,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.MapControllers();
 
-app.Services.ApplyPendingMigrations();
+//app.Services.ApplyPendingMigrations();
 
 // config hangfire
 app.UseHangfireDashboard("/hangfire", new DashboardOptions()

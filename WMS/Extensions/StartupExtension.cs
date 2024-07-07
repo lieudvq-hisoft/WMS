@@ -16,7 +16,6 @@ using Confluent.Kafka;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Services.Hangfire;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace WMS.Extensions;
 
@@ -30,18 +29,6 @@ public static class StartupExtension
             opt.UseNpgsql(configuration.GetConnectionString("Dev"),
                 b => b.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name));
         }, ServiceLifetime.Singleton);
-    }
-
-    public static void ApplyPendingMigrations(this IServiceProvider provider)
-    {
-        using var scope = provider.CreateScope();
-        var services = scope.ServiceProvider;
-
-        var context = services.GetRequiredService<AppDbContext>();
-        if (context.Database.GetPendingMigrations().Any())
-        {
-            context.Database.Migrate();
-        }
     }
 
     public static void AddAutoMapper(this IServiceCollection services)
@@ -59,20 +46,8 @@ public static class StartupExtension
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IMailService, MailService>();
         services.AddScoped<IRoleService, RoleService>();
-
-        services.AddSingleton<IProductService, ProductService>();
-        services.AddScoped<IReceiptService, ReceiptService>();
-        services.AddScoped<ISupplierService, SupplierService>();
-        services.AddScoped<ILocationService, LocationService>();
-        services.AddScoped<IInventoryService, InventoryService>();
-        services.AddScoped<IPickingRequestService, PickingRequestService>();
-        services.AddScoped<IRackService, RackService>();
-        services.AddScoped<IRackLevelService, RackLevelService>();
-        services.AddScoped<IReportService, ReportService>();
-        services.AddScoped<IOrderService, OrderService>();
         services.AddSingleton<IHangfireServices, HangfireServices>();
         services.AddHostedService<HangfireJob>();
-        services.AddSingleton<IInventoryThresholdService, InventoryThresholdService>();
 
 
         services.AddSingleton<IProducer<Null, string>>(sp =>
