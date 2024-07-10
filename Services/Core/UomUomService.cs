@@ -35,6 +35,8 @@ public class UomUomService : IUomUomService
         {
             var uomUom = _mapper.Map<UomUomCreate, UomUom>(model);
             _dbContext.UomUom.Add(uomUom);
+            await _dbContext.Entry(uomUom).Reference(u => u.Category).LoadAsync();
+            uomUom.Category.UpdateReferenceUom(uomUom.Id);
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = uomUom.Id;
@@ -61,6 +63,7 @@ public class UomUomService : IUomUomService
             }
             uomUom.UomType = model.UomType.ToString();
             uomUom.WriteDate = DateTime.Now;
+            uomUom.Category.UpdateReferenceUom(uomUom.Id);
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = _mapper.Map<UomUom, UomUomModel>(uomUom);
@@ -86,6 +89,7 @@ public class UomUomService : IUomUomService
                 return result;
             }
             uomUom.Factor = (decimal)model.Factor;
+            uomUom.Category.UpdateReferenceUom(uomUom.Id);
             uomUom.WriteDate = DateTime.Now;
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;

@@ -1,9 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Enums;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Data.Entities
 {
