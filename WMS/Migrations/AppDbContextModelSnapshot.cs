@@ -81,6 +81,93 @@ namespace WMS.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Data.Entities.UomCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("CreateUid")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("WriteDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("WriteUid")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreateUid");
+
+                    b.HasIndex("WriteUid");
+
+                    b.ToTable("UomCategory", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.UomUom", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool?>("Active")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("CreateUid")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Factor")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Rounding")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("UomType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("WriteDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid?>("WriteUid")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("CreateUid");
+
+                    b.HasIndex("WriteUid");
+
+                    b.ToTable("UomUom", null, t =>
+                        {
+                            t.HasCheckConstraint("uom_uom_factor_gt_zero", "\"Factor\" <> 0");
+
+                            t.HasCheckConstraint("uom_uom_factor_reference_is_one", "((\"UomType\" = 'reference' AND \"Factor\" = 1.0) OR (\"UomType\" <> 'reference'))");
+
+                            t.HasCheckConstraint("uom_uom_rounding_gt_zero", "\"Rounding\" > 0");
+                        });
+                });
+
             modelBuilder.Entity("Data.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -182,8 +269,8 @@ namespace WMS.Migrations
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "8a12fe29-7fe8-41f3-9af2-54b1ca8d4207",
                             CurrenNoticeCount = 0,
-                            DateCreated = new DateTime(2024, 7, 7, 15, 4, 10, 478, DateTimeKind.Local).AddTicks(8280),
-                            DateUpdated = new DateTime(2024, 7, 7, 15, 4, 10, 478, DateTimeKind.Local).AddTicks(8280),
+                            DateCreated = new DateTime(2024, 7, 9, 14, 45, 50, 861, DateTimeKind.Local).AddTicks(190),
+                            DateUpdated = new DateTime(2024, 7, 9, 14, 45, 50, 861, DateTimeKind.Local).AddTicks(190),
                             Email = "lieudvq0302@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "System",
@@ -310,6 +397,44 @@ namespace WMS.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.UomCategory", b =>
+                {
+                    b.HasOne("Data.Entities.User", "CreateUser")
+                        .WithMany()
+                        .HasForeignKey("CreateUid");
+
+                    b.HasOne("Data.Entities.User", "WriteUser")
+                        .WithMany()
+                        .HasForeignKey("WriteUid");
+
+                    b.Navigation("CreateUser");
+
+                    b.Navigation("WriteUser");
+                });
+
+            modelBuilder.Entity("Data.Entities.UomUom", b =>
+                {
+                    b.HasOne("Data.Entities.UomCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.User", "CreateUser")
+                        .WithMany()
+                        .HasForeignKey("CreateUid");
+
+                    b.HasOne("Data.Entities.User", "WriteUser")
+                        .WithMany()
+                        .HasForeignKey("WriteUid");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("CreateUser");
+
+                    b.Navigation("WriteUser");
                 });
 
             modelBuilder.Entity("Data.Entities.UserRole", b =>

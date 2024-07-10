@@ -171,6 +171,72 @@ namespace WMS.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UomCategory",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreateUid = table.Column<Guid>(type: "uuid", nullable: true),
+                    WriteUid = table.Column<Guid>(type: "uuid", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    WriteDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UomCategory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UomCategory_AspNetUsers_CreateUid",
+                        column: x => x.CreateUid,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UomCategory_AspNetUsers_WriteUid",
+                        column: x => x.WriteUid,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UomUom",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreateUid = table.Column<Guid>(type: "uuid", nullable: true),
+                    WriteUid = table.Column<Guid>(type: "uuid", nullable: true),
+                    UomType = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Factor = table.Column<decimal>(type: "numeric", nullable: false),
+                    Rounding = table.Column<decimal>(type: "numeric", nullable: false),
+                    Active = table.Column<bool>(type: "boolean", nullable: true),
+                    CreateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    WriteDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UomUom", x => x.Id);
+                    table.CheckConstraint("uom_uom_factor_gt_zero", "\"Factor\" <> 0");
+                    table.CheckConstraint("uom_uom_factor_reference_is_one", "((\"UomType\" = 'reference' AND \"Factor\" = 1.0) OR (\"UomType\" <> 'reference'))");
+                    table.CheckConstraint("uom_uom_rounding_gt_zero", "\"Rounding\" > 0");
+                    table.ForeignKey(
+                        name: "FK_UomUom_AspNetUsers_CreateUid",
+                        column: x => x.CreateUid,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UomUom_AspNetUsers_WriteUid",
+                        column: x => x.WriteUid,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UomUom_UomCategory_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "UomCategory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Description", "IsDeactive", "Name", "NormalizedName" },
@@ -184,7 +250,7 @@ namespace WMS.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "CurrenNoticeCount", "DateCreated", "DateUpdated", "Email", "EmailConfirmed", "FcmToken", "FirstName", "IsActive", "IsDeleted", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserAva", "UserName" },
-                values: new object[] { new Guid("c48fa0b7-47e0-4af2-bb56-3db9e29a7e8b"), 0, null, "8a12fe29-7fe8-41f3-9af2-54b1ca8d4207", 0, new DateTime(2024, 7, 7, 15, 4, 10, 478, DateTimeKind.Local).AddTicks(8280), new DateTime(2024, 7, 7, 15, 4, 10, 478, DateTimeKind.Local).AddTicks(8280), "lieudvq0302@gmail.com", false, null, "System", true, false, "Admin", true, null, "LIEUDVQ0302@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEGAV0YwJmXtNmREj0oD2OX9feN5dC0WIPykTsTLuLhOCpJUPZSBQQww0K/IJ4v7NRw==", "012345609", false, "SMERHXAHGAGZWB7SKS2FZAH3PHQC7WXL", false, null, "admin" });
+                values: new object[] { new Guid("c48fa0b7-47e0-4af2-bb56-3db9e29a7e8b"), 0, null, "8a12fe29-7fe8-41f3-9af2-54b1ca8d4207", 0, new DateTime(2024, 7, 9, 14, 45, 50, 861, DateTimeKind.Local).AddTicks(190), new DateTime(2024, 7, 9, 14, 45, 50, 861, DateTimeKind.Local).AddTicks(190), "lieudvq0302@gmail.com", false, null, "System", true, false, "Admin", true, null, "LIEUDVQ0302@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEGAV0YwJmXtNmREj0oD2OX9feN5dC0WIPykTsTLuLhOCpJUPZSBQQww0K/IJ4v7NRw==", "012345609", false, "SMERHXAHGAGZWB7SKS2FZAH3PHQC7WXL", false, null, "admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -227,6 +293,31 @@ namespace WMS.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UomCategory_CreateUid",
+                table: "UomCategory",
+                column: "CreateUid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UomCategory_WriteUid",
+                table: "UomCategory",
+                column: "WriteUid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UomUom_CategoryId",
+                table: "UomUom",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UomUom_CreateUid",
+                table: "UomUom",
+                column: "CreateUid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UomUom_WriteUid",
+                table: "UomUom",
+                column: "WriteUid");
         }
 
         /// <inheritdoc />
@@ -248,7 +339,13 @@ namespace WMS.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "UomUom");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "UomCategory");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

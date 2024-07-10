@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Reflection;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Data.DataAccess;
 
@@ -12,6 +14,8 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     {
 
     }
+
+    [Obsolete]
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -85,10 +89,22 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
                 UserId = Guid.Parse("c48fa0b7-47e0-4af2-bb56-3db9e29a7e8b"),
                 RoleId = Guid.Parse("003f7676-1d91-4143-9bfd-7a6c17c156fe"),
             });
+
+
+        modelBuilder.Entity<UomUom>(entity =>
+        {
+            entity.HasCheckConstraint("uom_uom_factor_gt_zero", "\"Factor\" <> 0");
+            entity.HasCheckConstraint("uom_uom_factor_reference_is_one", "((\"UomType\" = 'reference' AND \"Factor\" = 1.0) OR (\"UomType\" <> 'reference'))");
+            entity.HasCheckConstraint("uom_uom_rounding_gt_zero", "\"Rounding\" > 0");
+        }); 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
   
     }
     public DbSet<User> User { get; set; }
     public DbSet<UserRole> UserRole { get; set; }
     public DbSet<Role> Role { get; set; }
+
+    public DbSet<UomCategory> UomCategory { get; set; }
+    public DbSet<UomUom> UomUom { get; set; }
+
 }

@@ -46,10 +46,10 @@ public static class StartupExtension
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IMailService, MailService>();
         services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IUomCategoryService, UomCategoryService>();
+        services.AddScoped<IUomUomService, UomUomService>();
         services.AddSingleton<IHangfireServices, HangfireServices>();
         services.AddHostedService<HangfireJob>();
-
-
         services.AddSingleton<IProducer<Null, string>>(sp =>
             new ProducerBuilder<Null, string>(new ProducerConfig
             {
