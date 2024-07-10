@@ -35,8 +35,7 @@ public class UomUomService : IUomUomService
         {
             var uomUom = _mapper.Map<UomUomCreate, UomUom>(model);
             _dbContext.UomUom.Add(uomUom);
-            await _dbContext.Entry(uomUom).Reference(u => u.Category).LoadAsync();
-            uomUom.Category.UpdateReferenceUom(uomUom.Id);
+            //uomUom.Category.UpdateReferenceUom(uomUom.Id);
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = uomUom.Id;
@@ -54,7 +53,7 @@ public class UomUomService : IUomUomService
         result.Succeed = false;
         try
         {
-            var uomUom = _dbContext.UomUom.Include(_ => _.Category).FirstOrDefault(_ => _.Id == model.Id);
+            var uomUom = _dbContext.UomUom.Include(_ => _.Category).ThenInclude(_ => _.UomUoms).FirstOrDefault(_ => _.Id == model.Id);
             if (uomUom == null)
             {
                 result.ErrorMessage = "UomUom not exists";
@@ -81,7 +80,7 @@ public class UomUomService : IUomUomService
         result.Succeed = false;
         try
         {
-            var uomUom = _dbContext.UomUom.Include(_ => _.Category).FirstOrDefault(_ => _.Id == model.Id);
+            var uomUom = _dbContext.UomUom.Include(_ => _.Category).ThenInclude(_ => _.UomUoms).FirstOrDefault(_ => _.Id == model.Id);
             if (uomUom == null)
             {
                 result.ErrorMessage = "UomUom not exists";
