@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Data.Entities
 {
@@ -23,7 +24,7 @@ namespace Data.Entities
             set
             {
                 _uomType = value;
-                ComputeFactor();
+                _onchangeUomType();
             }
         }
         [Required]
@@ -32,6 +33,19 @@ namespace Data.Entities
         [Required]
         [Column(TypeName = "numeric")]
         public decimal Factor { get; set; }
+
+        [NotMapped]
+        public decimal FactorInv => Factor != 0 ? 1 / Factor : 0;
+
+        [NotMapped]
+        public decimal Ratio
+        {
+            get => _computeRatio();
+            set
+            {
+                _setRatio(value);
+            }
+        }
 
         [Required]
         [Column(TypeName = "numeric")]
@@ -53,19 +67,49 @@ namespace Data.Entities
         public virtual User WriteUser { get; set; }
 
         private string _uomType;
-        private void ComputeFactor()
+        private decimal _ratio;
+        private void _onchangeUomType()
         {
-            switch (UomType)
+            if (UomType == "Reference")
             {
-                case "Reference":
-                    Factor = 1;
-                    break;
-                case "Bigger":
-                    Factor = Factor != 0 ? 1 / Factor : 0;
-                    break;
-                default:
-                    Factor = Factor;
-                    break;
+                Factor = 1;
+            }
+            else if (UomType == "Bigger")
+            {
+                Factor = FactorInv != 0 ? 1 / FactorInv : 0;
+            }
+            else
+            {
+                _ratio = Factor;
+            }
+        }
+        private decimal _computeRatio()
+        {
+            if (UomType == "Reference")
+                return 1;
+            else if (UomType == "Bigger")
+                return FactorInv;
+            else
+                return Factor;
+        }
+        private void _setRatio(decimal value)
+        {
+            if (value == 0)
+                throw new ArgumentException("The value of ratio could not be Zero");
+
+            _ratio = value;
+
+            if (UomType == "Reference")
+            {
+                Factor = 1;
+            }
+            else if (UomType == "Bigger")
+            {
+                Factor = 1 / _ratio;
+            }
+            else
+            {
+                Factor = _ratio;
             }
         }
     }

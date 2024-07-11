@@ -24,7 +24,8 @@ namespace Services.Mapping
             CreateMap<UomUom, UomUomCollection>().ReverseMap();
 
             CreateMap<UomUom, UomUomModel>().ReverseMap();
-            CreateMap<UomUom, UomUomCreate>().ReverseMap();
+            CreateMap<UomUomCreate, UomUom>()
+                .ForMember(dest => dest.FactorInv, opt => opt.Ignore());
             CreateMap<UomUom, UomUomUpdateType>().ReverseMap();
             CreateMap<UomUom, UomUomUpdateFactor>().ReverseMap();
         }

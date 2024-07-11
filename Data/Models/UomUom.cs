@@ -11,6 +11,7 @@ namespace Data.Models
         public decimal Factor { get; set; }
         public decimal Rounding { get; set; }
         public bool? Active { get; set; }
+        public decimal Ratio { get; set; }
     }
 
     public class UomUomCreate
