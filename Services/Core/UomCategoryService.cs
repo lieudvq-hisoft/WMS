@@ -3,8 +3,6 @@ using Data.DataAccess;
 using Data.Entities;
 using Data.Model;
 using Data.Models;
-using Data.Utils;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -15,6 +13,7 @@ public interface IUomCategoryService
     Task<ResultModel> Get();
     Task<ResultModel> Create(UomCategoryCreate model);
     Task<ResultModel> GetUomUom(Guid uomCateId);
+    Task<ResultModel> UpdateInfo(UomCategoryUpdate model);
 
 }
 public class UomCategoryService : IUomCategoryService
@@ -75,6 +74,29 @@ public class UomCategoryService : IUomCategoryService
             var data = _mapper.ProjectTo<UomUomCollection>(uomUoms);
             result.Succeed = true;
             result.Data = data;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UpdateInfo(UomCategoryUpdate model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var uomCate = _dbContext.UomCategory.FirstOrDefault(_ => _.Id == model.Id);
+            if (uomCate == null)
+            {
+                throw new Exception("Uom Category not exists");
+            }
+            uomCate.Name = model.Name;
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<UomCategoryModel>(uomCate);
         }
         catch (Exception ex)
         {

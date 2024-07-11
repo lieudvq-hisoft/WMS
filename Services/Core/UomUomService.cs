@@ -13,6 +13,7 @@ public interface IUomUomService
     Task<ResultModel> Create(UomUomCreate model);
     Task<ResultModel> UpdateType(UomUomUpdateType model);
     Task<ResultModel> UpdateFactor(UomUomUpdateFactor model);
+    Task<ResultModel> UpdateInfo(UomUomUpdate model);
 }
 public class UomUomService : IUomUomService
 {
@@ -100,6 +101,40 @@ public class UomUomService : IUomUomService
             }
             result.Succeed = true;
             result.Data = _mapper.Map<UomUom, UomUomModel>(uomUom);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UpdateInfo(UomUomUpdate model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var uomUom = _dbContext.UomUom.FirstOrDefault(_ => _.Id == model.Id);
+            if (uomUom == null)
+            {
+                throw new Exception("UomUom not exists");
+            }
+            if(model.Name != null)
+            {
+                uomUom.Name = model.Name;
+            }
+            if (model.Rounding != null)
+            {
+                uomUom.Rounding = (decimal)model.Rounding;
+            }
+            if (model.Active != null)
+            {
+                uomUom.Active = model.Active;
+            }
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<UomUomModel>(uomUom);
         }
         catch (Exception ex)
         {

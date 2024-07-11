@@ -24,6 +24,14 @@ namespace Data.Models
         public bool? Active { get; set; }
     }
 
+    public class UomUomUpdate
+    {
+        public Guid Id { get; set; }
+        public string? Name { get; set; }
+        public decimal? Rounding { get; set; }
+        public bool? Active { get; set; }
+    }
+
     public class UomUomUpdateType
     {
         public Guid Id { get; set; }

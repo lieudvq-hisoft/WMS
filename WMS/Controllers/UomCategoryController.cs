@@ -1,12 +1,7 @@
-﻿using Confluent.Kafka;
-using Data.Common.PaginationModel;
-using Data.Enums;
-using Data.Model;
+﻿
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Core;
-using Services.Utils;
 
 namespace UomCategory.Controllers;
 
@@ -40,6 +35,14 @@ public class UomCategoryController : ControllerBase
     public async Task<ActionResult> Create(Guid uomCateId)
     {
         var result = await _uomCategoryService.GetUomUom(uomCateId);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [HttpPut("Info")]
+    public async Task<ActionResult> UpdateInfo([FromBody] UomCategoryUpdate model)
+    {
+        var result = await _uomCategoryService.UpdateInfo(model);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }

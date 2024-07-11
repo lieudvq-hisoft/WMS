@@ -43,4 +43,12 @@ public class UomUomController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPut("Info")]
+    public async Task<ActionResult> UpdateInfo([FromBody] UomUomUpdate model)
+    {
+        var result = await _uomUomService.UpdateInfo(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }

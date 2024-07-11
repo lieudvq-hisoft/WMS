@@ -12,6 +12,12 @@ namespace Data.Models
         public string Name { get; set; }
     }
 
+    public class UomCategoryUpdate
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+    }
+
     public class UomUomCollection
     {
         public Guid Id { get; set; }
