@@ -70,11 +70,7 @@ namespace Data.Entities
         private decimal _ratio;
         private void _onchangeUomType()
         {
-            if (UomType == "Reference")
-            {
-                Factor = 1;
-            }
-            else if (UomType == "Bigger")
+            if (UomType == "Bigger")
             {
                 Factor = FactorInv != 0 ? 1 / FactorInv : 0;
             }

@@ -39,6 +39,10 @@ public class UomUomService : IUomUomService
                 throw new Exception("Uom Category not exists");
             }
             var uomUom = _mapper.Map<UomUomCreate, UomUom>(model);
+            if(uomUom.UomType == "Reference")
+            {
+                uomUom.Factor = 1;
+            }
             uomCate.UomUoms.Add(uomUom);
             uomCate.UpdateReferenceUom(uomUom.Id);
             _dbContext.SaveChanges();
@@ -63,15 +67,8 @@ public class UomUomService : IUomUomService
             {
                 throw new Exception("UomUom not exists");
             }
-            if (model.UomType.ToString() == "Reference")
-            {
-                uomUom.Category.UpdateReferenceUom(uomUom.Id);
-                uomUom.UomType = model.UomType.ToString();
-            }else
-            {
-                uomUom.UomType = model.UomType.ToString();
-                uomUom.Category.UpdateReferenceUom(uomUom.Id);
-            }
+            uomUom.UomType = model.UomType.ToString();
+            uomUom.Category.UpdateReferenceUom(uomUom.Id);
             uomUom.WriteDate = DateTime.Now;
             _dbContext.SaveChanges();
             result.Succeed = true;
@@ -90,14 +87,17 @@ public class UomUomService : IUomUomService
         result.Succeed = false;
         try
         {
-            var uomUom = _dbContext.UomUom.Include(_ => _.Category).ThenInclude(_ => _.UomUoms).FirstOrDefault(_ => _.Id == model.Id);
+            var uomUom = _dbContext.UomUom.FirstOrDefault(_ => _.Id == model.Id);
             if (uomUom == null)
             {
                 throw new Exception("UomUom not exists");
             }
-            uomUom.Ratio = (decimal)model.Factor;
-            uomUom.WriteDate = DateTime.Now;
-            _dbContext.SaveChanges();
+            if(uomUom.UomType != "Reference")
+            {
+                uomUom.Ratio = (decimal)model.Factor;
+                uomUom.WriteDate = DateTime.Now;
+                _dbContext.SaveChanges();
+            }
             result.Succeed = true;
             result.Data = _mapper.Map<UomUom, UomUomModel>(uomUom);
         }

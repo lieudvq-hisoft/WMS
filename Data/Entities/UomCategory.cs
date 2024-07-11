@@ -48,7 +48,7 @@ namespace Data.Entities
                     throw new Exception($"UoM category {Name} must have at least one reference unit of measure.");
                 }
 
-                var newReference = UomUoms.FirstOrDefault(uom => uom.UomType != "Reference" && uom.Id == referenceUomId);
+                var newReference = UomUoms.FirstOrDefault(uom => uom.UomType == "Reference" && uom.Id == referenceUomId);
 
                 if (newReference != null)
                 {
@@ -57,6 +57,7 @@ namespace Data.Entities
                         uom.Factor = uom.Factor / (newReference.Factor != 0 ? newReference.Factor : 1);
                         uom.UomType = uom.Factor > 1 ? "Smaller" : "Bigger";
                     }
+                    newReference.Factor = 1;
                 }
             }
         }
