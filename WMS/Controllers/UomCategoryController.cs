@@ -1,4 +1,6 @@
 ﻿
+using Data.Common.PaginationModel;
+using Data.Enums;
 using Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Services.Core;
@@ -16,9 +18,9 @@ public class UomCategoryController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> Get()
+    public async Task<ActionResult> Get([FromQuery] PagingParam<SortCriteria> paginationModel)
     {
-        var result = await _uomCategoryService.Get();
+        var result = await _uomCategoryService.Get(paginationModel);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }

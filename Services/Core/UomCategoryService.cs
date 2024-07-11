@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using Data.Common.PaginationModel;
 using Data.DataAccess;
 using Data.Entities;
+using Data.Enums;
 using Data.Model;
 using Data.Models;
+using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -10,7 +13,7 @@ namespace Services.Core;
 
 public interface IUomCategoryService
 {
-    Task<ResultModel> Get();
+    Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
     Task<ResultModel> Create(UomCategoryCreate model);
     Task<ResultModel> GetUomUom(Guid uomCateId);
     Task<ResultModel> UpdateInfo(UomCategoryUpdate model);
@@ -29,15 +32,19 @@ public class UomCategoryService : IUomCategoryService
         _configuration = configuration;
     }
 
-    public async Task<ResultModel> Get()
+    public async Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel)
     {
         var result = new ResultModel();
         try
         {
             var uomCategories = _dbContext.UomCategory.AsQueryable();
-            var data = _mapper.ProjectTo<UomCategoryModel>(uomCategories);
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, uomCategories.Count());
+            uomCategories = uomCategories.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            uomCategories = uomCategories.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<UomCategoryModel>(uomCategories);
+            paging.Data = viewModels;
             result.Succeed = true;
-            result.Data = data;
+            result.Data = paging;
         }
         catch (Exception ex)
         {

@@ -17,6 +17,11 @@ public enum UserSortCriteria
     Email
 }
 
+public enum SortCriteria
+{
+    Name
+}
+
 public enum UomType
 {
     [EnumMember(Value = "Bigger")]
