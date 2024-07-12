@@ -34,9 +34,9 @@ public class UomCategoryController : ControllerBase
     }
 
     [HttpGet("GetUomUom/{uomCateId}")]
-    public async Task<ActionResult> Create(Guid uomCateId)
+    public async Task<ActionResult> Create([FromQuery] PagingParam<SortCriteria> paginationModel, Guid uomCateId)
     {
-        var result = await _uomCategoryService.GetUomUom(uomCateId);
+        var result = await _uomCategoryService.GetUomUom(paginationModel, uomCateId);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }

@@ -15,7 +15,7 @@ public interface IUomCategoryService
 {
     Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
     Task<ResultModel> Create(UomCategoryCreate model);
-    Task<ResultModel> GetUomUom(Guid uomCateId);
+    Task<ResultModel> GetUomUom(PagingParam<SortCriteria> paginationModel, Guid uomCateId);
     Task<ResultModel> UpdateInfo(UomCategoryUpdate model);
 
 }
@@ -72,15 +72,19 @@ public class UomCategoryService : IUomCategoryService
         return result;
     }
 
-    public async Task<ResultModel> GetUomUom(Guid uomCateId)
+    public async Task<ResultModel> GetUomUom(PagingParam<SortCriteria> paginationModel, Guid uomCateId)
     {
         var result = new ResultModel();
         try
         {
             var uomUoms = _dbContext.UomUom.Where(_ => _.CategoryId == uomCateId).AsQueryable();
-            var data = _mapper.ProjectTo<UomUomCollection>(uomUoms);
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, uomUoms.Count());
+            uomUoms = uomUoms.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            uomUoms = uomUoms.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<UomUomCollection>(uomUoms);
+            paging.Data = viewModels;
             result.Succeed = true;
-            result.Data = data;
+            result.Data = paging;
         }
         catch (Exception ex)
         {
