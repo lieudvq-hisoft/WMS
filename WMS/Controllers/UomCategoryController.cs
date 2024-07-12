@@ -25,6 +25,14 @@ public class UomCategoryController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
+    [HttpGet("Info/{id}")]
+    public async Task<ActionResult> GetInfo(Guid id)
+    {
+        var result = await _uomCategoryService.GetInfo(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] UomCategoryCreate model)
     {
@@ -48,4 +56,5 @@ public class UomCategoryController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
 }

@@ -21,6 +21,7 @@ namespace Services.Mapping
 
             CreateMap<UomCategory, UomCategoryModel>().ReverseMap();
             CreateMap<UomCategory, UomCategoryCreate>().ReverseMap();
+            CreateMap<UomCategory, UomCategoryInfo>().ReverseMap();
             CreateMap<UomUom, UomUomCollection>().ReverseMap();
 
             CreateMap<UomUom, UomUomModel>().ReverseMap();

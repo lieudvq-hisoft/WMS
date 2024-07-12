@@ -10,6 +10,12 @@ namespace Data.Models
         public List<UomUomCollection> UomUoms { get; set; }
     }
 
+    public class UomCategoryInfo
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+    }
+
     public class UomCategoryCreate
     {
         public string Name { get; set; }

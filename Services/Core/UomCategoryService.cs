@@ -17,6 +17,8 @@ public interface IUomCategoryService
     Task<ResultModel> Create(UomCategoryCreate model);
     Task<ResultModel> GetUomUom(PagingParam<SortCriteria> paginationModel, Guid uomCateId);
     Task<ResultModel> UpdateInfo(UomCategoryUpdate model);
+    Task<ResultModel> GetInfo(Guid id);
+
 
 }
 public class UomCategoryService : IUomCategoryService
@@ -108,6 +110,27 @@ public class UomCategoryService : IUomCategoryService
             _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = _mapper.Map<UomCategoryModel>(uomCate);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetInfo(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var uomCate = _dbContext.UomCategory.FirstOrDefault(_ => _.Id == id);
+            if (uomCate == null)
+            {
+                throw new Exception("Uom Category not exists");
+            }
+            result.Succeed = true;
+            result.Data = _mapper.Map<UomCategoryInfo>(uomCate);
         }
         catch (Exception ex)
         {
