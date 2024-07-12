@@ -28,7 +28,7 @@ public static class StartupExtension
         {
             opt.UseNpgsql(configuration.GetConnectionString("Dev"),
                 b => b.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name));
-        }, ServiceLifetime.Singleton);
+        }, ServiceLifetime.Scoped);
     }
 
     public static void AddAutoMapper(this IServiceCollection services)
@@ -48,8 +48,8 @@ public static class StartupExtension
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IUomCategoryService, UomCategoryService>();
         services.AddScoped<IUomUomService, UomUomService>();
-        services.AddSingleton<IHangfireServices, HangfireServices>();
-        services.AddHostedService<HangfireJob>();
+        //services.AddSingleton<IHangfireServices, HangfireServices>();
+        //services.AddHostedService<HangfireJob>();
         services.AddSingleton<IProducer<Null, string>>(sp =>
             new ProducerBuilder<Null, string>(new ProducerConfig
             {
