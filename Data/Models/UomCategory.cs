@@ -30,6 +30,7 @@ namespace Data.Models
     public class UomUomCollection
     {
         public Guid Id { get; set; }
+        public Guid CategoryId { get; set; }
         public string UomType { get; set; }
         public string Name { get; set; }
         public decimal Rounding { get; set; }
