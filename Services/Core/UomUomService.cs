@@ -14,6 +14,7 @@ public interface IUomUomService
     Task<ResultModel> UpdateType(UomUomUpdateType model);
     Task<ResultModel> UpdateFactor(UomUomUpdateFactor model);
     Task<ResultModel> UpdateInfo(UomUomUpdate model);
+    Task<ResultModel> Delete(Guid id);
 }
 public class UomUomService : IUomUomService
 {
@@ -143,4 +144,30 @@ public class UomUomService : IUomUomService
         return result;
     }
 
+    public async Task<ResultModel> Delete(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var uomUom = _dbContext.UomUom.FirstOrDefault(_ => _.Id == id);
+            if (uomUom == null)
+            {
+                throw new Exception("UomUom not exists");
+            }
+            if(uomUom.UomType == "Reference")
+            {
+                throw new Exception("UomUom has type Reference, cannot be deleted!");
+            }
+            _dbContext.Remove(uomUom);
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = "Deleted successfully!";
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
 }
