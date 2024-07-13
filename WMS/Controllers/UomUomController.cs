@@ -12,6 +12,7 @@ namespace UomCategory.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = "Bearer")]
 public class UomUomController : ControllerBase
 {
     private readonly IUomUomService _uomUomService;

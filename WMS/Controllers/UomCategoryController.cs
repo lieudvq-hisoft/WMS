@@ -2,6 +2,7 @@
 using Data.Common.PaginationModel;
 using Data.Enums;
 using Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Core;
 
@@ -9,6 +10,7 @@ namespace UomCategory.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = "Bearer")]
 public class UomCategoryController : ControllerBase
 {
     private readonly IUomCategoryService _uomCategoryService;
