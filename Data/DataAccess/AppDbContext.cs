@@ -96,7 +96,12 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
             entity.HasCheckConstraint("uom_uom_factor_gt_zero", "\"Factor\" <> 0");
             entity.HasCheckConstraint("uom_uom_factor_reference_is_one", "((\"UomType\" = 'reference' AND \"Factor\" = 1.0) OR (\"UomType\" <> 'reference'))");
             entity.HasCheckConstraint("uom_uom_rounding_gt_zero", "\"Rounding\" > 0");
-        }); 
+        });
+        modelBuilder.Entity<UomUom>()
+            .HasOne(r => r.Category)
+            .WithMany(u => u.UomUoms)
+            .HasForeignKey(r => r.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
   
     }

@@ -18,8 +18,7 @@ public interface IUomCategoryService
     Task<ResultModel> GetUomUom(PagingParam<SortCriteria> paginationModel, Guid uomCateId);
     Task<ResultModel> UpdateInfo(UomCategoryUpdate model);
     Task<ResultModel> GetInfo(Guid id);
-
-
+    Task<ResultModel> Delete(Guid id);
 }
 public class UomCategoryService : IUomCategoryService
 {
@@ -131,6 +130,29 @@ public class UomCategoryService : IUomCategoryService
             }
             result.Succeed = true;
             result.Data = _mapper.Map<UomCategoryInfo>(uomCate);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> Delete(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var uomCategory = _dbContext.UomCategory.FirstOrDefault(_ => _.Id == id);
+            if (uomCategory == null)
+            {
+                throw new Exception("Uom Category not exists");
+            }
+            _dbContext.UomCategory.Remove(uomCategory);
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = "Deleted successfully!";
         }
         catch (Exception ex)
         {

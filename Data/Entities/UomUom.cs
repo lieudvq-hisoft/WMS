@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Data.Entities
 {
@@ -66,8 +65,11 @@ namespace Data.Entities
         [ForeignKey("WriteUid")]
         public virtual User WriteUser { get; set; }
 
+        [NotMapped]
         private string _uomType;
+        [NotMapped]
         private decimal _ratio;
+
         private void _onchangeUomType()
         {
             if (UomType == "Bigger")
