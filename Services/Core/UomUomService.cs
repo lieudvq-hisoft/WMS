@@ -157,7 +157,11 @@ public class UomUomService : IUomUomService
             }
             if(uomUom.UomType == "Reference")
             {
-                throw new Exception("UomUom has type Reference, cannot be deleted!");
+                var totalUomUom = _dbContext.UomUom.Count(_ => _.CategoryId == uomUom.CategoryId);
+                if(totalUomUom > 1)
+                {
+                    throw new Exception("UomUom has type Reference, cannot be deleted!");
+                }
             }
             _dbContext.Remove(uomUom);
             _dbContext.SaveChanges();
