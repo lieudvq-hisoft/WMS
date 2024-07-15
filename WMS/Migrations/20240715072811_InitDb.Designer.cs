@@ -3,6 +3,7 @@ using System;
 using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WMS.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240715072811_InitDb")]
+    partial class InitDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -343,46 +346,6 @@ namespace WMS.Migrations
                     b.ToTable("ProductTemplateAttributeValue");
                 });
 
-            modelBuilder.Entity("Data.Entities.ProductVariantCombination", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool?>("Active")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("CreateDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid?>("CreateUid")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProductProductId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ProductTemplateAttributeValueId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("WriteDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid?>("WriteUid")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreateUid");
-
-                    b.HasIndex("ProductProductId");
-
-                    b.HasIndex("ProductTemplateAttributeValueId");
-
-                    b.HasIndex("WriteUid");
-
-                    b.ToTable("ProductVariantCombination");
-                });
-
             modelBuilder.Entity("Data.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -630,8 +593,8 @@ namespace WMS.Migrations
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "8a12fe29-7fe8-41f3-9af2-54b1ca8d4207",
                             CurrenNoticeCount = 0,
-                            DateCreated = new DateTime(2024, 7, 15, 14, 34, 28, 706, DateTimeKind.Local).AddTicks(6190),
-                            DateUpdated = new DateTime(2024, 7, 15, 14, 34, 28, 706, DateTimeKind.Local).AddTicks(6190),
+                            DateCreated = new DateTime(2024, 7, 15, 14, 28, 11, 84, DateTimeKind.Local).AddTicks(4700),
+                            DateUpdated = new DateTime(2024, 7, 15, 14, 28, 11, 84, DateTimeKind.Local).AddTicks(4700),
                             Email = "lieudvq0302@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "System",
@@ -958,37 +921,6 @@ namespace WMS.Migrations
                     b.Navigation("WriteUser");
                 });
 
-            modelBuilder.Entity("Data.Entities.ProductVariantCombination", b =>
-                {
-                    b.HasOne("Data.Entities.User", "CreateUser")
-                        .WithMany()
-                        .HasForeignKey("CreateUid");
-
-                    b.HasOne("Data.Entities.ProductProduct", "ProductProduct")
-                        .WithMany("ProductVariantCombinations")
-                        .HasForeignKey("ProductProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entities.ProductTemplateAttributeValue", "ProductTemplateAttributeValue")
-                        .WithMany("ProductVariantCombinations")
-                        .HasForeignKey("ProductTemplateAttributeValueId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entities.User", "WriteUser")
-                        .WithMany()
-                        .HasForeignKey("WriteUid");
-
-                    b.Navigation("CreateUser");
-
-                    b.Navigation("ProductProduct");
-
-                    b.Navigation("ProductTemplateAttributeValue");
-
-                    b.Navigation("WriteUser");
-                });
-
             modelBuilder.Entity("Data.Entities.UomCategory", b =>
                 {
                     b.HasOne("Data.Entities.User", "CreateUser")
@@ -1094,11 +1026,6 @@ namespace WMS.Migrations
                     b.Navigation("ProductTemplateAttributeValues");
                 });
 
-            modelBuilder.Entity("Data.Entities.ProductProduct", b =>
-                {
-                    b.Navigation("ProductVariantCombinations");
-                });
-
             modelBuilder.Entity("Data.Entities.ProductRemoval", b =>
                 {
                     b.Navigation("ProductCategories");
@@ -1114,11 +1041,6 @@ namespace WMS.Migrations
             modelBuilder.Entity("Data.Entities.ProductTemplateAttributeLine", b =>
                 {
                     b.Navigation("ProductTemplateAttributeValues");
-                });
-
-            modelBuilder.Entity("Data.Entities.ProductTemplateAttributeValue", b =>
-                {
-                    b.Navigation("ProductVariantCombinations");
                 });
 
             modelBuilder.Entity("Data.Entities.Role", b =>

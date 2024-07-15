@@ -65,6 +65,8 @@ namespace Data.Entities
         [ForeignKey("WriteUid")]
         public virtual User WriteUser { get; set; }
 
+        public virtual ICollection<ProductTemplate> ProductTemplates { get; set; }
+
         [NotMapped]
         private string _uomType;
         [NotMapped]

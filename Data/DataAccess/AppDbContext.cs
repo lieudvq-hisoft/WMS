@@ -102,8 +102,68 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
             .WithMany(u => u.UomUoms)
             .HasForeignKey(r => r.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProductCategory>()
+            .HasOne(r => r.ProductRemoval)
+            .WithMany(u => u.ProductCategories)
+            .HasForeignKey(r => r.RemovalStrategyId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProductAttributeValue>()
+            .HasOne(r => r.ProductAttribute)
+            .WithMany(u => u.ProductAttributeValues)
+            .HasForeignKey(r => r.AttributeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProductTemplate>()
+            .HasOne(r => r.UomUom)
+            .WithMany(u => u.ProductTemplates)
+            .HasForeignKey(r => r.UomId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProductProduct>()
+            .HasOne(r => r.ProductTemplate)
+            .WithMany(u => u.ProductProducts)
+            .HasForeignKey(r => r.ProductTmplId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProductTemplateAttributeLine>()
+            .HasOne(ptal => ptal.ProductTemplate)
+            .WithMany(pt => pt.ProductTemplateAttributeLines)
+            .HasForeignKey(ptal => ptal.ProductTmplId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProductTemplateAttributeLine>()
+            .HasOne(ptal => ptal.ProductAttribute)
+            .WithMany(pa => pa.ProductTemplateAttributeLines)
+            .HasForeignKey(ptal => ptal.AttributeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProductTemplateAttributeValue>()
+            .HasOne(ptal => ptal.ProductAttributeValue)
+            .WithMany(pt => pt.ProductTemplateAttributeValues)
+            .HasForeignKey(ptal => ptal.ProductAttributeValueId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProductTemplateAttributeValue>()
+            .HasOne(ptal => ptal.ProductTemplateAttributeLine)
+            .WithMany(pa => pa.ProductTemplateAttributeValues)
+            .HasForeignKey(ptal => ptal.AttributeLineId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProductVariantCombination>()
+            .HasOne(ptal => ptal.ProductProduct)
+            .WithMany(pa => pa.ProductVariantCombinations)
+            .HasForeignKey(ptal => ptal.ProductProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ProductVariantCombination>()
+            .HasOne(ptal => ptal.ProductTemplateAttributeValue)
+            .WithMany(pt => pt.ProductVariantCombinations)
+            .HasForeignKey(ptal => ptal.ProductTemplateAttributeValueId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-  
     }
     public DbSet<User> User { get; set; }
     public DbSet<UserRole> UserRole { get; set; }
@@ -111,5 +171,18 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
 
     public DbSet<UomCategory> UomCategory { get; set; }
     public DbSet<UomUom> UomUom { get; set; }
+
+    public DbSet<ProductRemoval> ProductRemoval { get; set; }
+    public DbSet<ProductCategory> ProductCategory { get; set; }
+
+    public DbSet<ProductAttribute> ProductAttribute { get; set; }
+    public DbSet<ProductAttributeValue> ProductAttributeValue { get; set; }
+
+    public DbSet<ProductTemplate> ProductTemplate { get; set; }
+    public DbSet<ProductProduct> ProductProduct { get; set; }
+
+    public DbSet<ProductTemplateAttributeLine> ProductTemplateAttributeLine { get; set; }
+    public DbSet<ProductTemplateAttributeValue> ProductTemplateAttributeValue { get; set; }
+
 
 }

@@ -34,3 +34,24 @@ public enum UomType
     Smaller
 }
 
+public enum TrackingType
+{
+    [EnumMember(Value = "Serial")]
+    Serial,
+
+    [EnumMember(Value = "Lot")]
+    Lot,
+
+    [EnumMember(Value = "None")]
+    None
+}
+
+public enum RemovalMethod
+{
+    [EnumMember(Value = "LIFO")]
+    LIFO,
+
+    [EnumMember(Value = "FIFO")]
+    FIFO,
+}
+

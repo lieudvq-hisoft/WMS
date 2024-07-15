@@ -29,6 +29,10 @@ namespace Services.Mapping
                 .ForMember(dest => dest.FactorInv, opt => opt.Ignore());
             CreateMap<UomUom, UomUomUpdateType>().ReverseMap();
             CreateMap<UomUom, UomUomUpdateFactor>().ReverseMap();
+
+            CreateMap<ProductRemoval, ProductRemovalModel>().ReverseMap();
+            CreateMap<ProductRemovalCreate, ProductRemoval>().ReverseMap();
+            CreateMap<ProductRemovalUpdate, ProductRemoval>().ReverseMap();
         }
     }
 }
