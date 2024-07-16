@@ -25,4 +25,4 @@ jobs:
       -
         name: Create trigger 
         run: |
-          curl -k --user lieudang:11816ad84e742a5b5a0c980ea9b01c5b6d "https://jenkins.solocode.click/job/wms-backend/build?token=buildtoken"
+          curl -k "https://lieudang:11816ad84e742a5b5a0c980ea9b01c5b6d@jenkins.solocode.click/job/wms-backend/build?token=buildtoken"
