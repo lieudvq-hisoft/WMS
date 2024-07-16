@@ -49,13 +49,16 @@ public class ProductCategoryService : IProductCategoryService
                 {
                     throw new Exception("Parent Category not exists");
                 }
+                _dbContext.Add(productCategory);
                 productCategory.CompleteName = $"{parentCategory.CompleteName} / {productCategory.Name}";
+                productCategory.ParentPath = $"{parentCategory.ParentPath}/{productCategory.Id}";
             }
             else
             {
+                _dbContext.Add(productCategory);
                 productCategory.CompleteName = productCategory.Name;
+                productCategory.ParentPath = productCategory.Id.ToString();
             }
-            _dbContext.Add(productCategory);
             _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = _mapper.Map<ProductCategory, ProductCategoryModel>(productCategory);
@@ -83,8 +86,8 @@ public class ProductCategoryService : IProductCategoryService
                 if (model.Name != null)
                 {
                     productCategory.Name = model.Name;
-                    ComputeCompleteName(productCategory);
-                    UpdateCompleteNamesRecursive(_dbContext, productCategory.Id);
+                    ComputeCompleteNameAndParentPath(productCategory);
+                    UpdateCompleteNameAndParentPathRecursive(_dbContext, productCategory.Id);
                 }
                 productCategory.WriteDate = DateTime.Now;
 
@@ -122,11 +125,15 @@ public class ProductCategoryService : IProductCategoryService
                 {
                     throw new Exception("Product Category not exists");
                 }
+                if (newParentCategory.ParentPath.Contains(productCategory.Id.ToString()))
+                {
+                    throw new InvalidOperationException($"Detected a cyclic dependency involving ID {productCategory.Id.ToString()}. Update aborted to prevent infinite recursion.");
+                }
                 productCategory.ParentId = newParentCategory.Id;
                 await _dbContext.SaveChangesAsync();
 
-                ComputeCompleteName(productCategory);
-                UpdateCompleteNamesRecursive(_dbContext, productCategory.Id);
+                ComputeCompleteNameAndParentPath(productCategory);
+                UpdateCompleteNameAndParentPathRecursive(_dbContext, productCategory.Id);
 
                 productCategory.WriteDate = DateTime.Now;
 
@@ -190,28 +197,31 @@ public class ProductCategoryService : IProductCategoryService
         return result;
     }
 
-    private async void ComputeCompleteName(ProductCategory category)
+    private async void ComputeCompleteNameAndParentPath(ProductCategory category)
     {
         if (category.ParentCategory != null)
         {
             category.CompleteName = $"{category.ParentCategory.CompleteName} / {category.Name}";
+            category.ParentPath = $"{category.ParentCategory.ParentPath}/{category.Id}";
         }
         else
         {
             category.CompleteName = category.Name;
+            category.ParentPath = category.Id.ToString();
         }
     }
 
-    private async void UpdateCompleteNamesRecursive(AppDbContext dbContext, Guid Id)
+    private async void UpdateCompleteNameAndParentPathRecursive(AppDbContext dbContext, Guid Id)
     {
         foreach (var child in dbContext.ProductCategory.Include(_ => _.ParentCategory).Where(c => c.ParentId == Id).ToList())
         {
             if(child.ParentCategory != null)
             {
                 child.CompleteName = $"{child.ParentCategory.CompleteName} / {child.Name}";
+                child.ParentPath = $"{child.ParentCategory.ParentPath}/{child.Id}";
             }
 
-            UpdateCompleteNamesRecursive(dbContext, child.Id);
+            UpdateCompleteNameAndParentPathRecursive(dbContext, child.Id);
         }
     }
 }
