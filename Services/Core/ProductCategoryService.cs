@@ -17,6 +17,7 @@ public interface IProductCategoryService
 {
     Task<ResultModel> Create(ProductCategoryCreate model);
     Task<ResultModel> Update(ProductCategoryUpdate model);
+    Task<ResultModel> UpdateParent(ProductCategoryParentUpdate model);
     Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
     Task<ResultModel> Delete(Guid id);
 }
@@ -92,6 +93,48 @@ public class ProductCategoryService : IProductCategoryService
                 result.Succeed = true;
                 result.Data = _mapper.Map<ProductCategory, ProductCategoryModel>(productCategory);
                     
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UpdateParent(ProductCategoryParentUpdate model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                var newParentCategory = _dbContext.ProductCategory.FirstOrDefault(_ => _.Id == model.ParentId);
+                if (newParentCategory == null)
+                {
+                    throw new Exception("New parent Product Category not exists");
+                }
+                var productCategory = _dbContext.ProductCategory.FirstOrDefault(_ => _.Id == model.Id);
+                if (productCategory == null)
+                {
+                    throw new Exception("Product Category not exists");
+                }
+                productCategory.ParentId = newParentCategory.Id;
+                await _dbContext.SaveChangesAsync();
+
+                ComputeCompleteName(productCategory);
+                UpdateCompleteNamesRecursive(_dbContext, productCategory.Id);
+
+                productCategory.WriteDate = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+
+                result.Succeed = true;
+                result.Data = _mapper.Map<ProductCategory, ProductCategoryModel>(productCategory);
+
                 await transaction.CommitAsync();
             }
             catch (Exception ex)

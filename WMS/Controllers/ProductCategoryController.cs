@@ -37,6 +37,14 @@ public class ProductCategoryController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
+    [HttpPut("Parent")]
+    public async Task<ActionResult> UpdateParent([FromBody] ProductCategoryParentUpdate model)
+    {
+        var result = await _productCategoryService.UpdateParent(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
     [HttpGet()]
     public async Task<ActionResult> Get([FromQuery] PagingParam<SortCriteria> paginationModel)
     {
