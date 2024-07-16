@@ -6,6 +6,7 @@ using Data.Enums;
 using Data.Model;
 using Data.Models;
 using Data.Utils.Paging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Services.Core;
@@ -123,4 +124,5 @@ public class ProductRemovalService : IProductRemovalService
         }
         return result;
     }
+
 }

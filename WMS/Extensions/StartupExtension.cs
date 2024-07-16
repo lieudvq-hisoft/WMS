@@ -49,6 +49,7 @@ public static class StartupExtension
         services.AddScoped<IUomCategoryService, UomCategoryService>();
         services.AddScoped<IUomUomService, UomUomService>();
         services.AddScoped<IProductRemovalService, ProductRemovalService>();
+        services.AddScoped<IProductCategoryService, ProductCategoryService>();
         //services.AddSingleton<IHangfireServices, HangfireServices>();
         //services.AddHostedService<HangfireJob>();
         services.AddSingleton<IProducer<Null, string>>(sp =>

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.DataAccess;
 using Newtonsoft.Json;
 
 namespace Data.Entities
@@ -12,7 +13,6 @@ namespace Data.Entities
 
         [Required]
         public string Name { get; set; }
-
         public string? CompleteName { get; set; }
 
         public string? ParentPath { get; set; }
@@ -40,5 +40,7 @@ namespace Data.Entities
 
         [ForeignKey("ParentId")]
         public virtual ProductCategory ParentCategory { get; set; }
+
+        public virtual ICollection<ProductCategory> ProductCategories { get; set; }
     }
 }

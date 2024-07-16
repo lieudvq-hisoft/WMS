@@ -33,6 +33,10 @@ namespace Services.Mapping
             CreateMap<ProductRemoval, ProductRemovalModel>().ReverseMap();
             CreateMap<ProductRemovalCreate, ProductRemoval>().ReverseMap();
             CreateMap<ProductRemovalUpdate, ProductRemoval>().ReverseMap();
+
+            CreateMap<ProductCategory, ProductCategoryModel>().ReverseMap();
+            CreateMap<ProductCategoryCreate, ProductCategory>().ReverseMap();
+            CreateMap<ProductCategoryUpdate, ProductCategory>().ReverseMap();
         }
     }
 }

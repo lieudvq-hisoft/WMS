@@ -13,26 +13,26 @@ namespace UomCategory.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 //[Authorize(AuthenticationSchemes = "Bearer")]
-public class ProductRemovalController : ControllerBase
+public class ProductCategoryController : ControllerBase
 {
-    private readonly IProductRemovalService _productRemovalService;
-    public ProductRemovalController(IProductRemovalService productRemovalService)
+    private readonly IProductCategoryService _productCategoryService;
+    public ProductCategoryController(IProductCategoryService productCategoryService)
     {
-        _productRemovalService = productRemovalService;
+        _productCategoryService = productCategoryService;
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] ProductRemovalCreate model)
+    public async Task<ActionResult> Create([FromBody] ProductCategoryCreate model)
     {
-        var result = await _productRemovalService.Create(model);
+        var result = await _productCategoryService.Create(model);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
 
     [HttpPut]
-    public async Task<ActionResult> Update([FromBody] ProductRemovalUpdate model)
+    public async Task<ActionResult> Update([FromBody] ProductCategoryUpdate model)
     {
-        var result = await _productRemovalService.Update(model);
+        var result = await _productCategoryService.Update(model);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
@@ -40,7 +40,7 @@ public class ProductRemovalController : ControllerBase
     [HttpGet()]
     public async Task<ActionResult> Get([FromQuery] PagingParam<SortCriteria> paginationModel)
     {
-        var result = await _productRemovalService.Get(paginationModel);
+        var result = await _productCategoryService.Get(paginationModel);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
@@ -48,7 +48,7 @@ public class ProductRemovalController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
-        var result = await _productRemovalService.Delete(id);
+        var result = await _productCategoryService.Delete(id);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
