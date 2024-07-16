@@ -22,13 +22,7 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.SOLOCODE_USERNAME }}/wms-backend:latest
-      # -
-      #   name: Create trigger 
-      #   run: |
-      #     curl -k --user lieudang:11816ad84e742a5b5a0c980ea9b01c5b6d "https://jenkins.solocode.click/job/wms-backend/build?token=buildtoken"
-      - name: Download Jenkins CLI
+      -
+        name: Create trigger 
         run: |
-          curl -O http://jenkins.solocode.click/jnlpJars/jenkins-cli.jar
-      - name: Trigger Jenkins Build
-        run: |
-          java -jar jenkins-cli.jar -s http://jenkins.solocode.click/ -auth lieudang:11816ad84e742a5b5a0c980ea9b01c5b6d build wms-backend -s -v
+          curl -k "https://lieudang:11816ad84e742a5b5a0c980ea9b01c5b6d@jenkins.solocode.click/job/wms-backend/build?token=buildtoken"
