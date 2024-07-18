@@ -1,4 +1,5 @@
 ﻿using System;
+using Data.Entities;
 using Data.Enums;
 
 namespace Data.Models
@@ -9,6 +10,12 @@ namespace Data.Models
         public string Name { get; set; }
         public string? CompleteName { get; set; }
         public string? ParentPath { get; set; }
+    }
+
+    public class ProductCategoryInfo : ProductCategoryModel
+    {
+        public ProductCategory? ParentCategory { get; set; }
+
     }
 
     public class ProductCategoryCreate

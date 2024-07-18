@@ -20,6 +20,7 @@ public interface IProductCategoryService
     Task<ResultModel> UpdateParent(ProductCategoryParentUpdate model);
     Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
     Task<ResultModel> Delete(Guid id);
+    Task<ResultModel> GetInfo(Guid id);
 }
 public class ProductCategoryService : IProductCategoryService
 {
@@ -189,6 +190,27 @@ public class ProductCategoryService : IProductCategoryService
             _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = "Deleted successfully!";
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetInfo(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var productCategory = _dbContext.ProductCategory.Include(_ => _.ParentCategory).FirstOrDefault(_ => _.Id == id);
+            if (productCategory == null)
+            {
+                throw new Exception("Product Category not exists");
+            }
+            result.Succeed = true;
+            result.Data = _mapper.Map<ProductCategoryInfo>(productCategory);
         }
         catch (Exception ex)
         {
