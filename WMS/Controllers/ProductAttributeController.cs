@@ -12,7 +12,7 @@ namespace UomCategory.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(AuthenticationSchemes = "Bearer")]
+[Authorize(AuthenticationSchemes = "Bearer")]
 public class ProductAttributeController : ControllerBase
 {
     private readonly IProductAttributeService _productAttributeService;

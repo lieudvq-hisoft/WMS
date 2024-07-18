@@ -12,7 +12,7 @@ namespace UomCategory.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(AuthenticationSchemes = "Bearer")]
+[Authorize(AuthenticationSchemes = "Bearer")]
 public class ProductRemovalController : ControllerBase
 {
     private readonly IProductRemovalService _productRemovalService;
