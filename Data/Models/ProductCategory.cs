@@ -14,7 +14,7 @@ namespace Data.Models
 
     public class ProductCategoryInfo : ProductCategoryModel
     {
-        public ProductCategory? ParentCategory { get; set; }
+        public ProductCategoryModel? ParentCategory { get; set; }
 
     }
 
