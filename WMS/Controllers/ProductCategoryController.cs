@@ -53,6 +53,14 @@ public class ProductCategoryController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
+    [HttpGet("SelectParent/{id}")]
+    public async Task<ActionResult> GetForSelectParent(Guid id)
+    {
+        var result = await _productCategoryService.GetForSelectParent(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {

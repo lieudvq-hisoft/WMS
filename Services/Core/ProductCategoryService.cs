@@ -21,6 +21,7 @@ public interface IProductCategoryService
     Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetInfo(Guid id);
+    Task<ResultModel> GetForSelectParent(Guid id);
 }
 public class ProductCategoryService : IProductCategoryService
 {
@@ -211,6 +212,23 @@ public class ProductCategoryService : IProductCategoryService
             }
             result.Succeed = true;
             result.Data = _mapper.Map<ProductCategoryInfo>(productCategory);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetForSelectParent(Guid id)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var productCategories = _dbContext.ProductCategory.Where(_ => _.Id != id).AsQueryable();
+            var data = _mapper.ProjectTo<ProductCategoryModel>(productCategories).ToList();
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<ProductCategoryModel>(productCategories).ToList();
         }
         catch (Exception ex)
         {
