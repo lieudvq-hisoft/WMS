@@ -225,8 +225,8 @@ public class ProductCategoryService : IProductCategoryService
         var result = new ResultModel();
         try
         {
-            var productCategories = _dbContext.ProductCategory.Where(_ => _.Id != id).AsQueryable();
-            var data = _mapper.ProjectTo<ProductCategoryModel>(productCategories).ToList();
+            var productCategories = _dbContext.ProductCategory
+                .Where(_ => _.Id != id).AsQueryable().OrderBy(_ => _.CompleteName);
             result.Succeed = true;
             result.Data = _mapper.ProjectTo<ProductCategoryModel>(productCategories).ToList();
         }
