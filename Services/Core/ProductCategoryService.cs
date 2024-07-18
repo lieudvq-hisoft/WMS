@@ -18,7 +18,7 @@ public interface IProductCategoryService
     Task<ResultModel> Create(ProductCategoryCreate model);
     Task<ResultModel> Update(ProductCategoryUpdate model);
     Task<ResultModel> UpdateParent(ProductCategoryParentUpdate model);
-    Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
+    Task<ResultModel> Get(PagingParam<ProductCategorySortCriteria> paginationModel);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetInfo(Guid id);
     Task<ResultModel> GetForSelectParent(Guid id);
@@ -155,7 +155,7 @@ public class ProductCategoryService : IProductCategoryService
         return result;
     }
 
-    public async Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel)
+    public async Task<ResultModel> Get(PagingParam<ProductCategorySortCriteria> paginationModel)
     {
         var result = new ResultModel();
         try

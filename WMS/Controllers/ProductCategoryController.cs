@@ -12,7 +12,7 @@ namespace UomCategory.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(AuthenticationSchemes = "Bearer")]
+//[Authorize(AuthenticationSchemes = "Bearer")]
 public class ProductCategoryController : ControllerBase
 {
     private readonly IProductCategoryService _productCategoryService;
@@ -45,8 +45,8 @@ public class ProductCategoryController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
-    [HttpGet()]
-    public async Task<ActionResult> Get([FromQuery] PagingParam<SortCriteria> paginationModel)
+    [HttpGet]
+    public async Task<ActionResult> Get([FromQuery] PagingParam<ProductCategorySortCriteria> paginationModel)
     {
         var result = await _productCategoryService.Get(paginationModel);
         if (result.Succeed) return Ok(result.Data);
