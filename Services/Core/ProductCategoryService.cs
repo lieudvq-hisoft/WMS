@@ -91,6 +91,15 @@ public class ProductCategoryService : IProductCategoryService
                     ComputeCompleteNameAndParentPath(productCategory);
                     UpdateCompleteNameAndParentPathRecursive(_dbContext, productCategory.Id);
                 }
+                if(model.RemovalStrategyId != null)
+                {
+                    var productRemoval = _dbContext.ProductRemoval.FirstOrDefault(_ => _.Id == model.RemovalStrategyId);
+                    if (productRemoval == null)
+                    {
+                        throw new Exception("Product Removal not exists");
+                    }
+                    productCategory.RemovalStrategyId = productRemoval.Id;
+                }
                 productCategory.WriteDate = DateTime.Now;
 
                 await _dbContext.SaveChangesAsync();

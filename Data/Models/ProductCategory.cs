@@ -30,6 +30,7 @@ namespace Data.Models
     {
         public Guid Id { get; set; }
         public string? Name { get; set; }
+        public Guid? RemovalStrategyId { get; set; }
     }
 
     public class ProductCategoryParentUpdate
