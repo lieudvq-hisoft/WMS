@@ -11,6 +11,12 @@ namespace Data.Models
         public List<ProductAttributeValueModel>? ProductAttributeValues { get; set; }
     }
 
+    public class ProductAttributeInfo
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+    }
+
     public class ProductAttributeCreate
     {
         public string Name { get; set; }

@@ -40,6 +40,7 @@ namespace Services.Mapping
             CreateMap<ProductCategoryUpdate, ProductCategory>().ReverseMap();
 
             CreateMap<ProductAttribute, ProductAttributeModel>().ReverseMap();
+            CreateMap<ProductAttribute, ProductAttributeInfo>().ReverseMap();
             CreateMap<ProductAttributeCreate, ProductAttribute>().ReverseMap();
             CreateMap<ProductAttributeUpdate, ProductAttribute>().ReverseMap();
 

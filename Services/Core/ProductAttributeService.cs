@@ -20,6 +20,7 @@ public interface IProductAttributeService
     Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetAttributeValue(PagingParam<SortCriteria> paginationModel, Guid id);
+    Task<ResultModel> GetInfo(Guid id);
 }
 public class ProductAttributeService : IProductAttributeService
 {
@@ -146,6 +147,27 @@ public class ProductAttributeService : IProductAttributeService
             _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = "Deleted successfully!";
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetInfo(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var uomCate = _dbContext.ProductAttribute.FirstOrDefault(_ => _.Id == id);
+            if (uomCate == null)
+            {
+                throw new Exception("Product Attribute not exists");
+            }
+            result.Succeed = true;
+            result.Data = _mapper.Map<ProductAttributeInfo>(uomCate);
         }
         catch (Exception ex)
         {
