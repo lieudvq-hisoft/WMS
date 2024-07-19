@@ -1,4 +1,5 @@
 ﻿using System;
+using Data.Entities;
 using Data.Enums;
 
 namespace Data.Models
@@ -7,6 +8,7 @@ namespace Data.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public List<ProductAttributeValueModel>? ProductAttributeValues { get; set; }
     }
 
     public class ProductAttributeCreate

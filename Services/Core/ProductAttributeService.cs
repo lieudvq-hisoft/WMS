@@ -88,7 +88,7 @@ public class ProductAttributeService : IProductAttributeService
         var result = new ResultModel();
         try
         {
-            var productAttributes = _dbContext.ProductAttribute.AsQueryable();
+            var productAttributes = _dbContext.ProductAttribute.Include(_ => _.ProductAttributeValues).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, productAttributes.Count());
             productAttributes = productAttributes.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             productAttributes = productAttributes.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
