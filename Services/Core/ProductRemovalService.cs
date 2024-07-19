@@ -17,6 +17,7 @@ public interface IProductRemovalService
     Task<ResultModel> Update(ProductRemovalUpdate model);
     Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
     Task<ResultModel> Delete(Guid id);
+    Task<ResultModel> GetForSelect();
 }
 public class ProductRemovalService : IProductRemovalService
 {
@@ -117,6 +118,22 @@ public class ProductRemovalService : IProductRemovalService
             _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = "Deleted successfully!";
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetForSelect()
+    {
+        var result = new ResultModel();
+        try
+        {
+            var productRemovals = _dbContext.ProductRemoval.AsQueryable();
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<ProductRemovalModel>(productRemovals).ToList();
         }
         catch (Exception ex)
         {

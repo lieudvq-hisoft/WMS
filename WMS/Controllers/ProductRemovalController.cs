@@ -37,7 +37,7 @@ public class ProductRemovalController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
-    [HttpGet()]
+    [HttpGet]
     public async Task<ActionResult> Get([FromQuery] PagingParam<SortCriteria> paginationModel)
     {
         var result = await _productRemovalService.Get(paginationModel);
@@ -49,6 +49,14 @@ public class ProductRemovalController : ControllerBase
     public async Task<ActionResult> Delete(Guid id)
     {
         var result = await _productRemovalService.Delete(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [HttpGet("Select")]
+    public async Task<ActionResult> GetForSelect()
+    {
+        var result = await _productRemovalService.GetForSelect();
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
