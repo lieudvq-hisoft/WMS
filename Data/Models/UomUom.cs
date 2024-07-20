@@ -8,7 +8,6 @@ namespace Data.Models
         public Guid Id { get; set; }
         public string UomType { get; set; }
         public string Name { get; set; }
-        //public decimal Factor { get; set; }
         public decimal Rounding { get; set; }
         public bool? Active { get; set; }
         public decimal Ratio { get; set; }

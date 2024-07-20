@@ -47,6 +47,16 @@ namespace Services.Mapping
             CreateMap<ProductAttributeValue, ProductAttributeValueModel>().ReverseMap();
             CreateMap<ProductAttributeValueCreate, ProductAttributeValue>().ReverseMap();
             CreateMap<ProductAttributeValueUpdate, ProductAttributeValue>().ReverseMap();
+
+            CreateMap<ProductTemplateAttributeLine, ProductTemplateAttributeLineModel>().ReverseMap();
+            CreateMap<ProductTemplateAttributeLineCreate, ProductTemplateAttributeLine>().ReverseMap();
+            CreateMap<ProductTemplateAttributeLineUpdate, ProductTemplateAttributeLine>().ReverseMap();
+            CreateMap<ProductTemplateAttributeLineInfo, ProductTemplateAttributeLine>().ReverseMap();
+
+            CreateMap<ProductTemplate, ProductTemplateModel>().ReverseMap();
+            CreateMap<ProductTemplateCreate, ProductTemplate>().ReverseMap();
+            CreateMap<ProductTemplateUpdate, ProductTemplate>().ReverseMap();
+            CreateMap<ProductTemplateInfo, ProductTemplate>().ReverseMap();
         }
     }
 }

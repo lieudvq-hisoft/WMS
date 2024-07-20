@@ -1,0 +1,41 @@
+﻿
+namespace Data.Models
+{
+	public class ProductTemplateModel
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string DetailedType { get; set; }
+        public string Tracking { get; set; }
+        public string Description { get; set; }
+        public bool Active { get; set; }
+    }
+
+    public class ProductTemplateInfo : ProductTemplateModel
+    {
+        public ProductCategoryModel ProductCategory { get; set; }
+        public UomUomModel UomUom { get; set; }
+    }
+
+    public class ProductTemplateCreate
+    {
+        public Guid CategId { get; set; }
+        public Guid UomId { get; set; }
+        public string Name { get; set; }
+        public string DetailedType { get; set; }
+        public string Tracking { get; set; }
+        public string Description { get; set; }
+    }
+
+    public class ProductTemplateUpdate
+    {
+        public Guid Id { get; set; }
+        public Guid? CategId { get; set; }
+        public Guid? UomId { get; set; }
+        public string? Name { get; set; }
+        public string? DetailedType { get; set; }
+        public string? Tracking { get; set; }
+        public string? Description { get; set; }
+    }
+}
+

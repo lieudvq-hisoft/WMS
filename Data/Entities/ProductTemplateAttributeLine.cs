@@ -20,7 +20,7 @@ namespace Data.Entities
 
         public Guid? WriteUid { get; set; }
 
-        public DateTime? CreateDate { get; set; }
+        public DateTime? CreateDate { get; set; } = DateTime.Now;
 
         public DateTime? WriteDate { get; set; }
 
