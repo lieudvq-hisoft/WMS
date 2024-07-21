@@ -22,6 +22,7 @@ public interface IProductCategoryService
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetInfo(Guid id);
     Task<ResultModel> GetForSelectParent(Guid id);
+    Task<ResultModel> GetForSelect();
 }
 public class ProductCategoryService : IProductCategoryService
 {
@@ -236,6 +237,22 @@ public class ProductCategoryService : IProductCategoryService
         {
             var productCategories = _dbContext.ProductCategory
                 .Where(_ => _.Id != id).AsQueryable().OrderBy(_ => _.CompleteName);
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<ProductCategoryModel>(productCategories).ToList();
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetForSelect()
+    {
+        var result = new ResultModel();
+        try
+        {
+            var productCategories = _dbContext.ProductCategory.AsQueryable().OrderBy(_ => _.CompleteName);
             result.Succeed = true;
             result.Data = _mapper.ProjectTo<ProductCategoryModel>(productCategories).ToList();
         }
