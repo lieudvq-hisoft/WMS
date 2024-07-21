@@ -15,6 +15,7 @@ public interface IUomUomService
     Task<ResultModel> UpdateFactor(UomUomUpdateFactor model);
     Task<ResultModel> UpdateInfo(UomUomUpdate model);
     Task<ResultModel> Delete(Guid id);
+    Task<ResultModel> GetForSelect();
 }
 public class UomUomService : IUomUomService
 {
@@ -167,6 +168,23 @@ public class UomUomService : IUomUomService
             _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = "Deleted successfully!";
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetForSelect()
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var uomUom = _dbContext.UomUom.Include(_ => _.Category).AsQueryable();
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<UomUomModel>(uomUom).ToList();
         }
         catch (Exception ex)
         {
