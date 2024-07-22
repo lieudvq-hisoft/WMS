@@ -39,4 +39,12 @@ public class ProductTemplateAttributeLineController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPut("AttributeValues")]
+    public async Task<ActionResult> UpdateAttributeValues(ProductTemplateAttributeValueCreate model)
+    {
+        var result = await _productTemplateAttributeLineService.UpdateAttributeValues(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }

@@ -28,9 +28,5 @@ namespace Data.Models
         public bool Active { get; set; }
     }
 
-    public class ProductTemplateAttributeValueModel
-    {
-        public ProductAttributeValueModel ProductAttributeValue { get; set; }
-    }
 }
 
