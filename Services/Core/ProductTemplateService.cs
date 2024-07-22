@@ -170,7 +170,10 @@ public class ProductTemplateService : IProductTemplateService
         var result = new ResultModel();
         try
         {
-            var productTemplateAttributeLines = _dbContext.ProductTemplateAttributeLine.Include(_ => _.ProductAttribute).Where(_ => _.ProductTmplId == id).AsQueryable();
+            var productTemplateAttributeLines = _dbContext.ProductTemplateAttributeLine
+                .Include(_ => _.ProductAttribute)
+                .Include(_ => _.ProductTemplateAttributeValues).ThenInclude(_ => _.ProductAttributeValue)
+                .Where(_ => _.ProductTmplId == id).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, productTemplateAttributeLines.Count());
             productTemplateAttributeLines = productTemplateAttributeLines.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             productTemplateAttributeLines = productTemplateAttributeLines.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);

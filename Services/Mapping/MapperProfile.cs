@@ -57,6 +57,9 @@ namespace Services.Mapping
             CreateMap<ProductTemplateCreate, ProductTemplate>().ReverseMap();
             CreateMap<ProductTemplateUpdate, ProductTemplate>().ReverseMap();
             CreateMap<ProductTemplateInfo, ProductTemplate>().ReverseMap();
+
+            CreateMap<ProductTemplateAttributeValue, ProductTemplateAttributeValueModel>().ReverseMap();
+
         }
     }
 }

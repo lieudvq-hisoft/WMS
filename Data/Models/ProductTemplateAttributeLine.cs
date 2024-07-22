@@ -13,6 +13,7 @@ namespace Data.Models
     public class ProductTemplateAttributeLineInfo : ProductTemplateAttributeLineModel
     {
         public ProductAttribute ProductAttribute { get; set; }
+        public List<ProductTemplateAttributeValueModel> ProductTemplateAttributeValues { get; set; }
     }
 
     public class ProductTemplateAttributeLineCreate
@@ -25,6 +26,11 @@ namespace Data.Models
     {
         public Guid Id { get; set; }
         public bool Active { get; set; }
+    }
+
+    public class ProductTemplateAttributeValueModel
+    {
+        public ProductAttributeValueModel ProductAttributeValue { get; set; }
     }
 }
 
