@@ -171,7 +171,7 @@ public class ProductTemplateService : IProductTemplateService
         try
         {
             var productTemplateAttributeLines = _dbContext.ProductTemplateAttributeLine
-                .Include(_ => _.ProductAttribute)
+                .Include(_ => _.ProductAttribute).ThenInclude(_ => _.ProductAttributeValues)
                 .Include(_ => _.ProductTemplateAttributeValues).ThenInclude(_ => _.ProductAttributeValue)
                 .Where(_ => _.ProductTmplId == id).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, productTemplateAttributeLines.Count());

@@ -12,7 +12,7 @@ namespace Data.Models
 
     public class ProductTemplateAttributeLineInfo : ProductTemplateAttributeLineModel
     {
-        public ProductAttribute ProductAttribute { get; set; }
+        public ProductAttributeModel ProductAttribute { get; set; }
         public List<ProductTemplateAttributeValueModel> ProductTemplateAttributeValues { get; set; }
     }
 
