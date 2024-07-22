@@ -57,4 +57,12 @@ public class ProductTemplateController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpGet("AttributeLine/{id}")]
+    public async Task<ActionResult> GetAttributeLine([FromQuery] PagingParam<ProductTemplateAttributeLineSortCriteria> paginationModel, Guid id)
+    {
+        var result = await _productTemplateService.GetAttributeLine(paginationModel, id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }

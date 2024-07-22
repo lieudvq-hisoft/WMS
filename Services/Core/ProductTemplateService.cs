@@ -18,6 +18,7 @@ public interface IProductTemplateService
     Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetInfo(Guid id);
+    Task<ResultModel> GetAttributeLine(PagingParam<ProductTemplateAttributeLineSortCriteria> paginationModel, Guid id);
 }
 public class ProductTemplateService : IProductTemplateService
 {
@@ -156,6 +157,27 @@ public class ProductTemplateService : IProductTemplateService
             }
             result.Succeed = true;
             result.Data = _mapper.Map<ProductTemplateInfo>(productTemplate);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetAttributeLine(PagingParam<ProductTemplateAttributeLineSortCriteria> paginationModel, Guid id)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var productTemplateAttributeLines = _dbContext.ProductTemplateAttributeLine.Include(_ => _.ProductAttribute).Where(_ => _.ProductTmplId == id).AsQueryable();
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, productTemplateAttributeLines.Count());
+            productTemplateAttributeLines = productTemplateAttributeLines.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            productTemplateAttributeLines = productTemplateAttributeLines.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<ProductTemplateAttributeLineInfo>(productTemplateAttributeLines);
+            paging.Data = viewModels;
+            result.Succeed = true;
+            result.Data = paging;
         }
         catch (Exception ex)
         {

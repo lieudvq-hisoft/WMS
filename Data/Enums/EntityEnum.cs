@@ -28,6 +28,11 @@ public enum ProductCategorySortCriteria
     Name
 }
 
+public enum ProductTemplateAttributeLineSortCriteria
+{
+    CreateDate
+}
+
 public enum UomType
 {
     [EnumMember(Value = "Bigger")]
