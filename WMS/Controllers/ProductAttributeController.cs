@@ -68,4 +68,12 @@ public class ProductAttributeController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpGet("Select")]
+    public async Task<ActionResult> GetForSelect()
+    {
+        var result = await _productAttributeService.GetForSelect();
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }

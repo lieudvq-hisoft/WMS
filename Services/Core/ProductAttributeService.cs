@@ -21,6 +21,8 @@ public interface IProductAttributeService
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetAttributeValue(PagingParam<SortCriteria> paginationModel, Guid id);
     Task<ResultModel> GetInfo(Guid id);
+    Task<ResultModel> GetForSelect();
+
 }
 public class ProductAttributeService : IProductAttributeService
 {
@@ -168,6 +170,22 @@ public class ProductAttributeService : IProductAttributeService
             }
             result.Succeed = true;
             result.Data = _mapper.Map<ProductAttributeInfo>(uomCate);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetForSelect()
+    {
+        var result = new ResultModel();
+        try
+        {
+            var productTemplates = _dbContext.ProductTemplate.AsQueryable();
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<ProductTemplateModel>(productTemplates).ToList();
         }
         catch (Exception ex)
         {
