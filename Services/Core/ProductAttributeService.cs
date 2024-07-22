@@ -185,7 +185,7 @@ public class ProductAttributeService : IProductAttributeService
         {
             var productTemplates = _dbContext.ProductAttribute.AsQueryable();
             result.Succeed = true;
-            result.Data = _mapper.ProjectTo<ProductTemplateModel>(productTemplates).ToList();
+            result.Data = _mapper.ProjectTo<ProductAttributeInfo>(productTemplates).ToList();
         }
         catch (Exception ex)
         {
