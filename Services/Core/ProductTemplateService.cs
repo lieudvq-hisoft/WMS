@@ -134,6 +134,7 @@ public class ProductTemplateService : IProductTemplateService
                 .Include(_ => _.ProductVariantCombinations)
                 .ThenInclude(_ => _.ProductTemplateAttributeValue)
                 .ThenInclude(_ => _.ProductAttributeValue)
+                .ThenInclude(_ => _.ProductAttribute)
                 .Where(_ => _.ProductTmplId == id).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, productProducts.Count());
             productProducts = productProducts.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
@@ -144,7 +145,13 @@ public class ProductTemplateService : IProductTemplateService
                 {
                     Id = _.Id,
                     Name = _.ProductTemplate.Name,
-                    VariantCombination = string.Join(", ", _.ProductVariantCombinations.Select(pvc => pvc.ProductTemplateAttributeValue.ProductAttributeValue.Name))
+                    Pvcs = _.ProductVariantCombinations.Select(pvc =>
+                    new Pvc
+                    {
+                        Attribute = pvc.ProductTemplateAttributeValue.ProductAttributeValue.ProductAttribute.Name,
+                        Value = pvc.ProductTemplateAttributeValue.ProductAttributeValue.Name
+                    })
+                    .ToList()
                 });
             paging.Data = viewModels;
             result.Succeed = true;
