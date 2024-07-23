@@ -135,7 +135,7 @@ public class ProductTemplateAttributeLineService : IProductTemplateAttributeLine
 
             foreach (var id in idsToRemove)
             {
-                var valueToRemove = ptal.ProductTemplateAttributeValues.FirstOrDefault(x => x.Id == id);
+                var valueToRemove = ptal.ProductTemplateAttributeValues.FirstOrDefault(x => x.ProductAttributeValueId == id);
                 if (valueToRemove != null)
                 {
                     _dbContext.ProductTemplateAttributeValue.Remove(valueToRemove);
