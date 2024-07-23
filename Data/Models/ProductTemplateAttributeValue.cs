@@ -12,7 +12,7 @@ namespace Data.Models
     public class ProductTemplateAttributeValueCreate
     {
         public Guid AttributeLineId { get; set; }
-        public List<Guid> ProductTemplateAttributeValueIds { get; set; }
+        public List<Guid> ProductAttributeValueIds { get; set; }
     }
 }
 

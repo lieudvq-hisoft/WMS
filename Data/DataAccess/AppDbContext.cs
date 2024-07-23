@@ -183,6 +183,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
 
     public DbSet<ProductTemplateAttributeLine> ProductTemplateAttributeLine { get; set; }
     public DbSet<ProductTemplateAttributeValue> ProductTemplateAttributeValue { get; set; }
-
+    public DbSet<ProductVariantCombination> ProductVariantCombination { get; set; }
 
 }

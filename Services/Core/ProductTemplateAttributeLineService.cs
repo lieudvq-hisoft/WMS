@@ -118,9 +118,10 @@ public class ProductTemplateAttributeLineService : IProductTemplateAttributeLine
             {
                 throw new Exception("Product Template Attribute Line note exists");
             }
-            var existingIds = ptal.ProductTemplateAttributeValues.Select(x => x.Id).ToList();
-            var idsToAdd = model.ProductTemplateAttributeValueIds.Except(existingIds).ToList();
-            var idsToRemove = existingIds.Except(model.ProductTemplateAttributeValueIds).ToList();
+            //var existingIds = ptal.ProductTemplateAttributeValues.Select(x => x.Id).ToList();
+            var existingIds = ptal.ProductTemplateAttributeValues.Select(_ => _.ProductAttributeValueId).ToList();
+            var idsToAdd = model.ProductAttributeValueIds.Except(existingIds).ToList();
+            var idsToRemove = existingIds.Except(model.ProductAttributeValueIds).ToList();
 
             foreach (var id in idsToAdd)
             {

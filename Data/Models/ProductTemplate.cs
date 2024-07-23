@@ -37,5 +37,22 @@ namespace Data.Models
         public string? Tracking { get; set; }
         public string? Description { get; set; }
     }
+
+    public class SuggestProductVariant
+    {
+        public Guid Id { get; set; }
+        public Guid? CategId { get; set; }
+        public Guid? UomId { get; set; }
+        public string? Name { get; set; }
+        public string? DetailedType { get; set; }
+        public string? Tracking { get; set; }
+        public string? Description { get; set; }
+    }
+
+    public class ProductVariantCreate
+    {
+        public Guid ProductTemplateId { get; set; }
+        public List<Guid> PtavIds { get; set; }
+    }
 }
 

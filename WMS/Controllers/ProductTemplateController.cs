@@ -65,4 +65,28 @@ public class ProductTemplateController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpGet("SuggestProductVariants/{id}")]
+    public async Task<ActionResult> SuggestProductVariants(Guid id)
+    {
+        var result = await _productTemplateService.SuggestProductVariants(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [HttpPost("ProductVariant")]
+    public async Task<ActionResult> CreateProductVariant(ProductVariantCreate model)
+    {
+        var result = await _productTemplateService.CreateProductVariant(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [HttpGet("ProductVariant/{id}")]
+    public async Task<ActionResult> GetProductVariant([FromQuery] PagingParam<ProductVariantSortCriteria> paginationModel, Guid id)
+    {
+        var result = await _productTemplateService.GetProductVariant(paginationModel, id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }
