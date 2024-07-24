@@ -241,6 +241,7 @@ public class ProductTemplateService : IProductTemplateService
                 .Include(_ => _.ProductTemplateAttributeLines)
                 .ThenInclude(_ => _.ProductTemplateAttributeValues)
                 .ThenInclude(_ => _.ProductAttributeValue)
+                .ThenInclude(_ => _.ProductAttribute)
                 .Include(_ => _.ProductProducts)
                 .ThenInclude(_ => _.ProductVariantCombinations)
                 .Where(_ => _.Id == id).FirstOrDefault();
@@ -254,7 +255,8 @@ public class ProductTemplateService : IProductTemplateService
                 new ProductVariantCombinationSuggest
                 {
                     ProductTemplateAttributeValueId = ptav.Id,
-                    AttributeName = ptav.ProductAttributeValue.Name,
+                    AttributeName = ptav.ProductAttributeValue.ProductAttribute.Name,
+                    AttributeValue = ptav.ProductAttributeValue.Name,
                 }).ToList()).ToList();
 
             var combinationSuggests = CartesianProduct(suggestPvcs);
