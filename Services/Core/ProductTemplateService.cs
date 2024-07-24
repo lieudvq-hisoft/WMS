@@ -193,13 +193,18 @@ public class ProductTemplateService : IProductTemplateService
         result.Succeed = false;
         try
         {
-            var productTemplate = _dbContext.ProductTemplate.Include(_ => _.ProductCategory).Include(_ => _.UomUom).FirstOrDefault(_ => _.Id == id);
+            var productTemplate = _dbContext.ProductTemplate
+                .Include(_ => _.ProductCategory)
+                .Include(_ => _.ProductProducts)
+                .Include(_ => _.UomUom).FirstOrDefault(_ => _.Id == id);
             if (productTemplate == null)
             {
                 throw new Exception("Product Category not exists");
             }
             result.Succeed = true;
-            result.Data = _mapper.Map<ProductTemplateInfo>(productTemplate);
+            var data = _mapper.Map<ProductTemplateInfo>(productTemplate);
+            data.TotalVariant = productTemplate.ProductProducts.Count();
+            result.Data = data;
         }
         catch (Exception ex)
         {
