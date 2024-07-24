@@ -108,11 +108,23 @@ public class ProductTemplateService : IProductTemplateService
         var result = new ResultModel();
         try
         {
-            var productTemplates = _dbContext.ProductTemplate.AsQueryable();
+            var productTemplates = _dbContext.ProductTemplate
+                .Include(_ => _.ProductCategory)
+                .Include(_ => _.UomUom)
+                .Include(_ => _.ProductProducts)
+                .AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, productTemplates.Count());
             productTemplates = productTemplates.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             productTemplates = productTemplates.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
-            var viewModels = _mapper.ProjectTo<ProductTemplateModel>(productTemplates);
+            //var viewModels = _mapper.ProjectTo<ProductTemplateInfo>(productTemplates);
+            var viewModels = productTemplates.Select(pt => new ProductTemplateInfo
+            {
+                Id = pt.Id,
+                Name = pt.Name,
+                ProductCategory = _mapper.Map<ProductCategoryModel>(pt.ProductCategory),
+                UomUom = _mapper.Map<UomUomModel>(pt.UomUom),
+                TotalVariant = pt.ProductProducts.Count()
+            });
             paging.Data = viewModels;
             result.Succeed = true;
             result.Data = paging;
