@@ -64,6 +64,11 @@ namespace Services.Mapping
 
             CreateMap<ProductVariantCombinationCreate, ProductVariantCombination>().ReverseMap();
 
+            CreateMap<StockWarehouse, StockWarehouseModel>().ReverseMap();
+            CreateMap<StockWarehouse, StockWarehouseCreate>().ReverseMap();
+            CreateMap<StockWarehouse, StockWarehouseUpdate>().ReverseMap();
+            CreateMap<StockWarehouse, StockWarehouseInfo>().ReverseMap();
+
         }
     }
 }

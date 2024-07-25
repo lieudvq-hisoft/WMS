@@ -55,7 +55,7 @@ public static class StartupExtension
         services.AddScoped<IProductTemplateService, ProductTemplateService>();
         services.AddScoped<IProductTemplateAttributeLineService, ProductTemplateAttributeLineService>();
         services.AddScoped<IProductProductService, ProductProductService>();
-        //services.AddSingleton<IHangfireServices, HangfireServices>();
+        services.AddScoped<IStockWarehouseService, StockWarehouseService>();
         //services.AddHostedService<HangfireJob>();
         services.AddSingleton<IProducer<Null, string>>(sp =>
             new ProducerBuilder<Null, string>(new ProducerConfig

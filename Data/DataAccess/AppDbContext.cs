@@ -163,6 +163,38 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
             .HasForeignKey(ptal => ptal.ProductTemplateAttributeValueId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        var virtualLocationId = new Guid("b7d84e2e-39f3-4a8e-a5a5-8b8e839e7071");
+        var inventoryAdjustmentId = new Guid("d95a2d57-68a6-4f85-b6b3-d3eb2a5b73a6");
+        var physicalLocationId = new Guid("e2a7c3e0-1a4d-43b6-95e1-123456789abc");
+        modelBuilder.Entity<StockLocation>().HasData(
+            new Entities.StockLocation()
+            {
+                Id = virtualLocationId,
+                Name = "Virtual Locations",
+                CompleteName = "Virtual Locations",
+                ParentPath = $"{virtualLocationId}/",
+                Usage = Enums.LocationType.View,
+            });
+
+        modelBuilder.Entity<StockLocation>().HasData(
+            new Entities.StockLocation()
+            {
+                Id = inventoryAdjustmentId,
+                LocationId = virtualLocationId,
+                Name = "Inventory adjustment",
+                CompleteName = "Virtual Locations / Inventory adjustment",
+                ParentPath = $"{virtualLocationId}/{inventoryAdjustmentId}/",
+                Usage = Enums.LocationType.View,
+            });
+        modelBuilder.Entity<StockLocation>().HasData(
+            new Entities.StockLocation()
+            {
+                Id = physicalLocationId,
+                Name = "Physical Locations",
+                CompleteName = "Physical Locations",
+                ParentPath = $"{physicalLocationId}/",
+                Usage = Enums.LocationType.View,
+            });
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
     public DbSet<User> User { get; set; }
@@ -184,5 +216,9 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<ProductTemplateAttributeLine> ProductTemplateAttributeLine { get; set; }
     public DbSet<ProductTemplateAttributeValue> ProductTemplateAttributeValue { get; set; }
     public DbSet<ProductVariantCombination> ProductVariantCombination { get; set; }
+
+    public DbSet<StockWarehouse> StockWarehouse { get; set; }
+    public DbSet<StockLocation> StockLocation { get; set; }
+    public DbSet<StockPickingType> StockPickingType { get; set; }
 
 }

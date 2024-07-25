@@ -3,6 +3,7 @@ using System;
 using Data.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WMS.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240725062049_stock")]
+    partial class stock
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -496,42 +499,6 @@ namespace WMS.Migrations
                     b.HasIndex("WriteUid");
 
                     b.ToTable("StockLocation");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("b7d84e2e-39f3-4a8e-a5a5-8b8e839e7071"),
-                            Active = true,
-                            CompleteName = "Virtual Locations",
-                            CreateDate = new DateTime(2024, 7, 25, 14, 11, 54, 27, DateTimeKind.Local).AddTicks(8640),
-                            Name = "Virtual Locations",
-                            ParentPath = "b7d84e2e-39f3-4a8e-a5a5-8b8e839e7071/",
-                            Usage = 0,
-                            WriteDate = new DateTime(2024, 7, 25, 14, 11, 54, 27, DateTimeKind.Local).AddTicks(8640)
-                        },
-                        new
-                        {
-                            Id = new Guid("d95a2d57-68a6-4f85-b6b3-d3eb2a5b73a6"),
-                            Active = true,
-                            CompleteName = "Virtual Locations / Inventory adjustment",
-                            CreateDate = new DateTime(2024, 7, 25, 14, 11, 54, 27, DateTimeKind.Local).AddTicks(8690),
-                            LocationId = new Guid("b7d84e2e-39f3-4a8e-a5a5-8b8e839e7071"),
-                            Name = "Inventory adjustment",
-                            ParentPath = "b7d84e2e-39f3-4a8e-a5a5-8b8e839e7071/d95a2d57-68a6-4f85-b6b3-d3eb2a5b73a6/",
-                            Usage = 0,
-                            WriteDate = new DateTime(2024, 7, 25, 14, 11, 54, 27, DateTimeKind.Local).AddTicks(8690)
-                        },
-                        new
-                        {
-                            Id = new Guid("e2a7c3e0-1a4d-43b6-95e1-123456789abc"),
-                            Active = true,
-                            CompleteName = "Physical Locations",
-                            CreateDate = new DateTime(2024, 7, 25, 14, 11, 54, 27, DateTimeKind.Local).AddTicks(8700),
-                            Name = "Physical Locations",
-                            ParentPath = "e2a7c3e0-1a4d-43b6-95e1-123456789abc/",
-                            Usage = 0,
-                            WriteDate = new DateTime(2024, 7, 25, 14, 11, 54, 27, DateTimeKind.Local).AddTicks(8700)
-                        });
                 });
 
             modelBuilder.Entity("Data.Entities.StockPickingType", b =>
@@ -843,8 +810,8 @@ namespace WMS.Migrations
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "8a12fe29-7fe8-41f3-9af2-54b1ca8d4207",
                             CurrenNoticeCount = 0,
-                            DateCreated = new DateTime(2024, 7, 25, 14, 11, 54, 27, DateTimeKind.Local).AddTicks(3310),
-                            DateUpdated = new DateTime(2024, 7, 25, 14, 11, 54, 27, DateTimeKind.Local).AddTicks(3310),
+                            DateCreated = new DateTime(2024, 7, 25, 13, 20, 49, 762, DateTimeKind.Local).AddTicks(660),
+                            DateUpdated = new DateTime(2024, 7, 25, 13, 20, 49, 762, DateTimeKind.Local).AddTicks(660),
                             Email = "lieudvq0302@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "System",
