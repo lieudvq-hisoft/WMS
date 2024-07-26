@@ -37,5 +37,8 @@ namespace Data.Entities
         public Guid? WhPackStockLocId { get; set; }
         [ForeignKey("WhPackStockLocId")]
         public virtual StockLocation? WhPackStockLoc { get; set; }
+
+        public virtual ICollection<StockPickingType> StockPickingTypes { get; set; }
+
     }
 }
