@@ -15,6 +15,7 @@ namespace Services.Core;
 public interface IStockLocationService
 {
     Task<ResultModel> Get(PagingParam<StockLocationSortCriteria> paginationModel);
+    Task<ResultModel> GetInfo(Guid id);
 }
 public class StockLocationService : IStockLocationService
 {
@@ -44,6 +45,27 @@ public class StockLocationService : IStockLocationService
             paging.Data = viewModels;
             result.Succeed = true;
             result.Data = paging;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetInfo(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var stockLocation = _dbContext.StockLocation.Include(_ => _.ParentLocation).FirstOrDefault(_ => _.Id == id);
+            if (stockLocation == null)
+            {
+                throw new Exception("Stock location not exists");
+            }
+            result.Succeed = true;
+            result.Data = _mapper.Map<StockLocationInfo>(stockLocation);
         }
         catch (Exception ex)
         {

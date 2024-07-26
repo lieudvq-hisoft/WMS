@@ -1,4 +1,5 @@
-﻿using Data.Enums;
+﻿using Data.Entities;
+using Data.Enums;
 
 namespace Data.Models
 {
@@ -10,6 +11,12 @@ namespace Data.Models
         public string? ParentPath { get; set; }
         public string? Barcode { get; set; }
         public LocationType Usage { get; set; }
+    }
+
+    public class StockLocationInfo : StockLocationModel
+    {
+        public StockLocationModel? ParentLocation { get; set; }
+
     }
 }
 
