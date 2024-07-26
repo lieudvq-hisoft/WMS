@@ -307,6 +307,7 @@ public class StockWarehouseService : IStockWarehouseService
                 .Include(_ => _.WhOutputStockLoc)
                 .Include(_ => _.WhPackStockLoc)
                 .Include(_ => _.WhQcStockLoc)
+                .Include(_ => _.StockPickingTypes)
                 .FirstOrDefault(_ => _.Id == id);
             if (stockWarehouse == null)
             {

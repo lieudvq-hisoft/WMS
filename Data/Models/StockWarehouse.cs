@@ -20,6 +20,8 @@ namespace Data.Models
         public StockLocationModel WhQcStockLoc { get; set; }
         public StockLocationModel WhOutputStockLoc { get; set; }
         public StockLocationModel WhPackStockLoc { get; set; }
+        public List<StockPickingTypeModel> StockPickingTypes { get; set; }
+
     }
 
     public class StockWarehouseCreate

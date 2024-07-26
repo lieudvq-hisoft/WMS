@@ -44,6 +44,12 @@ public enum StockWarehouseSortCriteria
     CreateDate
 }
 
+public enum StockLocationSortCriteria
+{
+    Name,
+    CompleteName
+}
+
 public enum UomType
 {
     [EnumMember(Value = "Bigger")]

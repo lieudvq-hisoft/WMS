@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Data.Entities;
-using Data.Enums;
+﻿using Data.Enums;
 
 namespace Data.Models
 {
