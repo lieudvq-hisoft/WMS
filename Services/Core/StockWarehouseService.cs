@@ -312,7 +312,6 @@ public class StockWarehouseService : IStockWarehouseService
             {
                 throw new Exception("Warehouse not exists");
             }
-            _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = _mapper.Map<StockWarehouseInfo>(stockWarehouse);
         }
