@@ -16,7 +16,7 @@ public interface IStockLocationService
 {
     Task<ResultModel> Get(PagingParam<StockLocationSortCriteria> paginationModel);
     Task<ResultModel> GetInfo(Guid id);
-    Task<ResultModel> GetForSelect();
+    Task<ResultModel> GetForSelectParent(Guid id);
 }
 public class StockLocationService : IStockLocationService
 {
@@ -75,12 +75,12 @@ public class StockLocationService : IStockLocationService
         return result;
     }
 
-    public async Task<ResultModel> GetForSelect()
+    public async Task<ResultModel> GetForSelectParent(Guid id)
     {
         var result = new ResultModel();
         try
         {
-            var productCategories = _dbContext.StockLocation.AsQueryable().OrderBy(_ => _.CompleteName);
+            var productCategories = _dbContext.StockLocation.Where(_ => _.Id != id).AsQueryable().OrderBy(_ => _.CompleteName);
             result.Succeed = true;
             result.Data = _mapper.ProjectTo<StockLocationModel>(productCategories).ToList();
         }

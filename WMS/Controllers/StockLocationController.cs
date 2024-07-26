@@ -37,10 +37,10 @@ public class StockLocationController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
-    [HttpGet("Select")]
-    public async Task<ActionResult> GetSelect(Guid id)
+    [HttpGet("SelectParent/{id}")]
+    public async Task<ActionResult> GetForSelectParent(Guid id)
     {
-        var result = await _stockLocationService.GetInfo(id);
+        var result = await _stockLocationService.GetForSelectParent(id);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
