@@ -18,6 +18,7 @@ public interface IStockWarehouseService
     Task<ResultModel> Update(StockWarehouseUpdate model);
     Task<ResultModel> Get(PagingParam<StockWarehouseSortCriteria> paginationModel);
     Task<ResultModel> Delete(Guid id);
+    Task<ResultModel> GetInfo(Guid id);
 }
 public class StockWarehouseService : IStockWarehouseService
 {
@@ -285,6 +286,35 @@ public class StockWarehouseService : IStockWarehouseService
             _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = "Deleted successfully!";
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetInfo(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var stockWarehouse = _dbContext.StockWarehouse
+                .Include(_ => _.ViewLocation)
+                .Include(_ => _.LotStock)
+                .Include(_ => _.WhInputStockLoc)
+                .Include(_ => _.WhOutputStockLoc)
+                .Include(_ => _.WhPackStockLoc)
+                .Include(_ => _.WhQcStockLoc)
+                .FirstOrDefault(_ => _.Id == id);
+            if (stockWarehouse == null)
+            {
+                throw new Exception("Warehouse not exists");
+            }
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<StockWarehouseInfo>(stockWarehouse);
         }
         catch (Exception ex)
         {

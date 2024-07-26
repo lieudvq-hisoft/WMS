@@ -14,7 +14,12 @@ namespace Data.Models
 
     public class StockWarehouseInfo : StockWarehouse
     {
-
+        public StockLocationModel ViewLocation { get; set; }
+        public StockLocationModel LotStock { get; set; }
+        public StockLocationModel WhInputStockLoc { get; set; }
+        public StockLocationModel WhQcStockLoc { get; set; }
+        public StockLocationModel WhOutputStockLoc { get; set; }
+        public StockLocationModel WhPackStockLoc { get; set; }
     }
 
     public class StockWarehouseCreate
