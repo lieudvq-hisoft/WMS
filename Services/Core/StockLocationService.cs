@@ -16,6 +16,7 @@ public interface IStockLocationService
 {
     Task<ResultModel> Get(PagingParam<StockLocationSortCriteria> paginationModel);
     Task<ResultModel> GetInfo(Guid id);
+    Task<ResultModel> GetForSelect();
 }
 public class StockLocationService : IStockLocationService
 {
@@ -66,6 +67,22 @@ public class StockLocationService : IStockLocationService
             }
             result.Succeed = true;
             result.Data = _mapper.Map<StockLocationInfo>(stockLocation);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetForSelect()
+    {
+        var result = new ResultModel();
+        try
+        {
+            var productCategories = _dbContext.StockLocation.AsQueryable().OrderBy(_ => _.CompleteName);
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<StockLocationModel>(productCategories).ToList();
         }
         catch (Exception ex)
         {
