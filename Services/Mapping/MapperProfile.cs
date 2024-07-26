@@ -69,6 +69,8 @@ namespace Services.Mapping
             CreateMap<StockWarehouse, StockWarehouseUpdate>().ReverseMap();
             CreateMap<StockWarehouse, StockWarehouseInfo>().ReverseMap();
 
+            CreateMap<StockLocation, StockLocationModel>().ReverseMap();
+
         }
     }
 }

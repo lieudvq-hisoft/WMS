@@ -12,7 +12,7 @@ namespace Data.Models
         public string Code { get; set; }
     }
 
-    public class StockWarehouseInfo : StockWarehouse
+    public class StockWarehouseInfo : StockWarehouseModel
     {
         public StockLocationModel ViewLocation { get; set; }
         public StockLocationModel LotStock { get; set; }
