@@ -22,7 +22,7 @@ public class StockPickingTypeController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult> Get([FromQuery] PagingParam<SortCriteria> paginationModel)
+    public async Task<ActionResult> Get([FromQuery] PagingParam<SortStockPickingTypeCriteria> paginationModel)
     {
         var result = await _stockPickingTypeService.Get(paginationModel);
         if (result.Succeed) return Ok(result.Data);

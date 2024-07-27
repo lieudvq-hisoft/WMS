@@ -14,7 +14,7 @@ namespace Services.Core;
 
 public interface IStockPickingTypeService
 {
-    Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
+    Task<ResultModel> Get(PagingParam<SortStockPickingTypeCriteria> paginationModel);
 }
 public class StockPickingTypeService : IStockPickingTypeService
 {
@@ -28,7 +28,7 @@ public class StockPickingTypeService : IStockPickingTypeService
         _configuration = configuration;
     }
 
-    public async Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel)
+    public async Task<ResultModel> Get(PagingParam<SortStockPickingTypeCriteria> paginationModel)
     {
         var result = new ResultModel();
         try

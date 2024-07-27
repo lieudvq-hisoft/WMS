@@ -50,6 +50,11 @@ public enum StockLocationSortCriteria
     CompleteName
 }
 
+public enum SortStockPickingTypeCriteria
+{
+    Barcode
+}
+
 public enum UomType
 {
     [EnumMember(Value = "Bigger")]
