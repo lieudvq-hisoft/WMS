@@ -74,6 +74,7 @@ namespace Services.Mapping
 
 
             CreateMap<StockPickingType, StockPickingTypeModel>().ReverseMap();
+            CreateMap<StockPickingType, StockPickingTypeInfo>().ReverseMap();
         }
     }
 }
