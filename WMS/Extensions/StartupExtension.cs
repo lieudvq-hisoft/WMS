@@ -58,6 +58,7 @@ public static class StartupExtension
         services.AddScoped<IStockWarehouseService, StockWarehouseService>();
         services.AddScoped<IStockLocationService, StockLocationService>();
         services.AddScoped<IStockPickingTypeService, StockPickingTypeService>();
+        services.AddScoped<IStockQuantService, StockQuantService>();
         services.AddSingleton<IProducer<Null, string>>(sp =>
             new ProducerBuilder<Null, string>(new ProducerConfig
             {

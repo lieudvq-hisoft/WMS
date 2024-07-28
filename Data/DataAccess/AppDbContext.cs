@@ -15,6 +15,8 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
 
     }
 
+
+
     [Obsolete]
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -220,5 +222,10 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<StockWarehouse> StockWarehouse { get; set; }
     public DbSet<StockLocation> StockLocation { get; set; }
     public DbSet<StockPickingType> StockPickingType { get; set; }
+
+    public DbSet<StockQuant> StockQuant { get; set; }
+    public DbSet<StockMoveLine> StockMoveLine { get; set; }
+    public DbSet<StockMove> StockMove { get; set; }
+    public DbSet<StockPicking> StockPicking { get; set; }
 
 }

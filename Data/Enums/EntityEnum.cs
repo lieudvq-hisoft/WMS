@@ -55,6 +55,16 @@ public enum SortStockPickingTypeCriteria
     Barcode
 }
 
+public enum StockQuantSortCriteria
+{
+    CreateDate
+}
+
+public enum StockMoveLineSortCriteria
+{
+    CreateDate
+}
+
 public enum UomType
 {
     [EnumMember(Value = "Bigger")]
