@@ -56,7 +56,10 @@ namespace Services.Mapping
             CreateMap<ProductTemplate, ProductTemplateModel>().ReverseMap();
             CreateMap<ProductTemplateCreate, ProductTemplate>().ReverseMap();
             CreateMap<ProductTemplateUpdate, ProductTemplate>().ReverseMap();
-            CreateMap<ProductTemplateInfo, ProductTemplate>().ReverseMap();
+            CreateMap<ProductTemplateInfo, ProductTemplate>();
+
+            CreateMap<ProductTemplate, ProductTemplateInfo>()
+                .ForMember(dest => dest.QtyAvailable, opt => opt.MapFrom(src => src.ProductProducts.SelectMany(pp => pp.StockQuants).Sum(sq => sq.Quantity)));
 
             CreateMap<ProductTemplateAttributeValue, ProductTemplateAttributeValueModel>().ReverseMap();
 

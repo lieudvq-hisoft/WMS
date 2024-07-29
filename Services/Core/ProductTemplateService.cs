@@ -267,6 +267,7 @@ public class ProductTemplateService : IProductTemplateService
             var productTemplate = _dbContext.ProductTemplate
                 .Include(_ => _.ProductCategory)
                 .Include(_ => _.ProductProducts)
+                .ThenInclude(_ => _.StockQuants)
                 .Include(_ => _.UomUom).FirstOrDefault(_ => _.Id == id);
             if (productTemplate == null)
             {
