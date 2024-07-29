@@ -114,6 +114,7 @@ public class ProductTemplateService : IProductTemplateService
                 .Include(_ => _.ProductCategory)
                 .Include(_ => _.UomUom)
                 .Include(_ => _.ProductProducts)
+                .ThenInclude(_ => _.StockQuants)
                 .AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, productTemplates.Count());
             productTemplates = productTemplates.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
@@ -125,7 +126,8 @@ public class ProductTemplateService : IProductTemplateService
                 Name = pt.Name,
                 ProductCategory = _mapper.Map<ProductCategoryModel>(pt.ProductCategory),
                 UomUom = _mapper.Map<UomUomModel>(pt.UomUom),
-                TotalVariant = pt.ProductProducts.Count()
+                TotalVariant = pt.ProductProducts.Count(),
+                QtyAvailable = pt.ProductProducts.SelectMany(pp => pp.StockQuants).Sum(sq => sq.Quantity)
             });
             paging.Data = viewModels;
             result.Succeed = true;

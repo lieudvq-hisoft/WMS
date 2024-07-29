@@ -16,6 +16,7 @@ namespace Data.Models
         public ProductCategoryModel ProductCategory { get; set; }
         public UomUomModel UomUom { get; set; }
         public int? TotalVariant { get; set; }
+        public decimal? QtyAvailable { get; set; }
 
     }
 

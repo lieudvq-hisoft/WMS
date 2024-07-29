@@ -21,7 +21,7 @@ namespace Data.Models
         public Guid ProductId { get; set; }
         public Guid LocationId { get; set; }
         public Guid? LotId { get; set; }
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
     }
 
     public class StockQuantInfo
