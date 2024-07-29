@@ -165,6 +165,12 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
             .HasForeignKey(ptal => ptal.ProductTemplateAttributeValueId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<StockQuant>()
+            .HasOne(r => r.ProductProduct)
+            .WithMany(u => u.StockQuants)
+            .HasForeignKey(r => r.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         var virtualLocationId = new Guid("b7d84e2e-39f3-4a8e-a5a5-8b8e839e7071");
         var inventoryAdjustmentId = new Guid("d95a2d57-68a6-4f85-b6b3-d3eb2a5b73a6");
         var physicalLocationId = new Guid("e2a7c3e0-1a4d-43b6-95e1-123456789abc");
