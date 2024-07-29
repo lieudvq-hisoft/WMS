@@ -168,6 +168,7 @@ public class ProductTemplateService : IProductTemplateService
                     })
                     .ToList(),
                     QtyAvailable = _.StockQuants.Sum(sq => sq.Quantity),
+                    UomUom = _.ProductTemplate.UomUom.Name
                 });
             paging.Data = viewModels;
             result.Succeed = true;

@@ -8,6 +8,7 @@ namespace Data.Models
         public string Name { get; set; }
         public List<Pvc> Pvcs { get; set; }
         public decimal? QtyAvailable { get; set; } = 0;
+        public string? UomUom { get; set; }
     }
     public class ProductProductCreate
     {
