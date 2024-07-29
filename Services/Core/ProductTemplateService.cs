@@ -149,6 +149,7 @@ public class ProductTemplateService : IProductTemplateService
                 .ThenInclude(_ => _.ProductTemplateAttributeValue)
                 .ThenInclude(_ => _.ProductAttributeValue)
                 .ThenInclude(_ => _.ProductAttribute)
+                .Include(_ => _.StockQuants)
                 .Where(_ => _.ProductTmplId == id).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, productProducts.Count());
             productProducts = productProducts.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
@@ -165,7 +166,8 @@ public class ProductTemplateService : IProductTemplateService
                         Attribute = pvc.ProductTemplateAttributeValue.ProductAttributeValue.ProductAttribute.Name,
                         Value = pvc.ProductTemplateAttributeValue.ProductAttributeValue.Name
                     })
-                    .ToList()
+                    .ToList(),
+                    QtyAvailable = _.StockQuants.Sum(sq => sq.Quantity),
                 });
             paging.Data = viewModels;
             result.Succeed = true;

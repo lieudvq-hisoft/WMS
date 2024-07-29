@@ -7,7 +7,7 @@ namespace Data.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public List<Pvc> Pvcs { get; set; }
-
+        public int? QtyAvailable { get; set; } = 0;
     }
     public class ProductProductCreate
     {
