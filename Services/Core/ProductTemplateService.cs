@@ -23,6 +23,7 @@ public interface IProductTemplateService
     Task<ResultModel> CreateProductVariant(ProductVariantCreate model);
     Task<ResultModel> GetProductVariant(PagingParam<ProductVariantSortCriteria> paginationModel, Guid id);
     Task<ResultModel> GetStockQuant(PagingParam<StockQuantSortCriteria> paginationModel, Guid id);
+    Task<ResultModel> GetProductVariantForSelect(Guid id);
 
 }
 public class ProductTemplateService : IProductTemplateService
@@ -431,6 +432,45 @@ public class ProductTemplateService : IProductTemplateService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 await transaction.RollbackAsync();
             }
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetProductVariantForSelect(Guid id)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var productProducts = _dbContext.ProductProduct
+                .Include(_ => _.ProductTemplate)
+                .Include(_ => _.ProductVariantCombinations)
+                .ThenInclude(_ => _.ProductTemplateAttributeValue)
+                .ThenInclude(_ => _.ProductAttributeValue)
+                .ThenInclude(_ => _.ProductAttribute)
+                .Include(_ => _.StockQuants)
+                .Where(_ => _.ProductTmplId == id).AsQueryable();
+            var viewModels = productProducts
+                .Select(_ =>
+                new ProductProductModel
+                {
+                    Id = _.Id,
+                    Name = _.ProductTemplate.Name,
+                    Pvcs = _.ProductVariantCombinations.Select(pvc =>
+                    new Pvc
+                    {
+                        Attribute = pvc.ProductTemplateAttributeValue.ProductAttributeValue.ProductAttribute.Name,
+                        Value = pvc.ProductTemplateAttributeValue.ProductAttributeValue.Name
+                    })
+                    .ToList(),
+                    QtyAvailable = _.StockQuants.Sum(sq => sq.Quantity),
+                    UomUom = _.ProductTemplate.UomUom.Name
+                });
+            result.Succeed = true;
+            result.Data = viewModels;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
         }
         return result;
     }
