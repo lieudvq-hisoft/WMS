@@ -22,11 +22,11 @@ namespace Data.Entities
 
         public DateTime? InventoryDate { get; set; }
 
-        public int Quantity { get; set; } = 0;
+        public decimal Quantity { get; set; } = 0;
 
-        public int? InventoryQuantity { get; set; }
+        public decimal? InventoryQuantity { get; set; }
 
-        public int? InventoryDiffQuantity { get; set; }
+        public decimal? InventoryDiffQuantity { get; set; }
 
         public bool? InventoryQuantitySet { get; set; } = false;
 

@@ -41,12 +41,12 @@ namespace Data.Entities
         public string? DescriptionPicking { get; set; }
 
         [Required]
-        public int ProductQty { get; set; }
+        public decimal ProductQty { get; set; }
 
         [Required]
-        public int ProductUomQty { get; set; }
+        public decimal ProductUomQty { get; set; }
 
-        public int? Quantity { get; set; }
+        public decimal? Quantity { get; set; }
 
         public DateTime? ReservationDate { get; set; }
 

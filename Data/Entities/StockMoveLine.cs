@@ -24,9 +24,9 @@ namespace Data.Entities
 
         public StockMoveState? State { get; set; }
 
-        public int? QuantityProductUom { get; set; }
+        public decimal? QuantityProductUom { get; set; }
 
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
 
         [Required]
         public Guid LocationId { get; set; }

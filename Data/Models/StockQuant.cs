@@ -30,9 +30,9 @@ namespace Data.Models
         public ProductProductModel ProductProduct { get; set; }
         public StockLocationModel StockLocation { get; set; }
         public DateTime? InventoryDate { get; set; }
-        public int Quantity { get; set; }
-        public int? InventoryQuantity { get; set; }
-        public int? InventoryDiffQuantity { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal? InventoryQuantity { get; set; }
+        public decimal? InventoryDiffQuantity { get; set; }
         public bool? InventoryQuantitySet { get; set; }
         public string? UomUom { get; set; }
     }
