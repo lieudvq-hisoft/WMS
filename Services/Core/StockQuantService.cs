@@ -15,6 +15,8 @@ namespace Services.Core;
 public interface IStockQuantService
 {
     Task<ResultModel> Create(StockQuantCreate model);
+    Task<ResultModel> GetStockMoveLines(PagingParam<StockMoveLineSortCriteria> paginationModel, Guid id);
+
 }
 public class StockQuantService : IStockQuantService
 {
@@ -91,6 +93,52 @@ public class StockQuantService : IStockQuantService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 await transaction.RollbackAsync();
             }
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetStockMoveLines(PagingParam<StockMoveLineSortCriteria> paginationModel, Guid id)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var stockMoveLines = _dbContext.StockMoveLine
+                .Include(_ => _.StockMove)
+                    .ThenInclude(_ => _.ProductProduct)
+                    .ThenInclude(_ => _.ProductTemplate)
+                .Include(_ => _.StockMove)
+                    .ThenInclude(_ => _.ProductProduct)
+                    .ThenInclude(_ => _.ProductVariantCombinations)
+                    .ThenInclude(_ => _.ProductTemplateAttributeValue)
+                    .ThenInclude(_ => _.ProductAttributeValue)
+                .Include(_ => _.ProductUom)
+                .Where(_ => _.QuantId == id)
+                .Include(_ => _.Location)
+                .Include(_ => _.LocationDest)
+                .AsQueryable();
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockMoveLines.Count());
+            stockMoveLines = stockMoveLines.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            stockMoveLines = stockMoveLines.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = stockMoveLines.Select(sml => new StockMoveLineView
+            {
+                Reference = sml.StockMove.Reference,
+                ProductProduct = sml.StockMove.ProductProduct.ProductTemplate.Name + " (" +
+                     string.Join(", ", sml.StockMove.ProductProduct.ProductVariantCombinations.Select(pvc => pvc.ProductTemplateAttributeValue.ProductAttributeValue.Name))+ ")",
+                UomUom = sml.ProductUom.Name,
+                QuantityProductUom = sml.QuantityProductUom,
+                Quantity = sml.Quantity,
+                State = sml.State,
+                Location = sml.Location.CompleteName,
+                LocationDest = sml.LocationDest.CompleteName
+
+            });
+            paging.Data = viewModels;
+            result.Succeed = true;
+            result.Data = paging;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
         }
         return result;
     }

@@ -25,6 +25,15 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpGet("MoveLines/{id}")]
+        public async Task<ActionResult> GetMoveLines([FromQuery] PagingParam<StockMoveLineSortCriteria> paginationModel, Guid id)
+        {
+            var result = await _stockQuantService.GetStockMoveLines(paginationModel, id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
     }
 }
 
