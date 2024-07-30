@@ -16,6 +16,7 @@ public interface IStockQuantService
 {
     Task<ResultModel> Create(StockQuantCreate model);
     Task<ResultModel> GetStockMoveLines(PagingParam<StockMoveLineSortCriteria> paginationModel, Guid id);
+    Task<ResultModel> Update(StockQuantUpdate model);
 
 }
 public class StockQuantService : IStockQuantService
@@ -142,4 +143,34 @@ public class StockQuantService : IStockQuantService
         }
         return result;
     }
+
+    public async Task<ResultModel> Update(StockQuantUpdate model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var stockQuant = _dbContext.StockQuant.FirstOrDefault(_ => _.Id == model.Id);
+            if (stockQuant != null)
+            {
+                throw new Exception("This record not existed");
+            }
+
+            if (model.InventoryQuantity != null)
+            {
+                stockQuant.InventoryQuantity = model.InventoryQuantity;
+                stockQuant.InventoryDiffQuantity = stockQuant.InventoryQuantity - stockQuant.Quantity;
+                stockQuant.InventoryQuantitySet = true;
+            }
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<StockQuant, StockQuantModel>(stockQuant);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
 }

@@ -34,6 +34,14 @@ namespace WMS.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpPut()]
+        public async Task<ActionResult> Update([FromBody] StockQuantUpdate model)
+        {
+            var result = await _stockQuantService.Update(model);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
     }
 }
 

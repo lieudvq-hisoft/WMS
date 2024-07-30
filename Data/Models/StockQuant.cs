@@ -36,5 +36,11 @@ namespace Data.Models
         public bool? InventoryQuantitySet { get; set; }
         public string? UomUom { get; set; }
     }
+
+    public class StockQuantUpdate
+    {
+        public Guid Id { get; set; }
+        public decimal? InventoryQuantity { get; set; }
+    }
 }
 

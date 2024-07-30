@@ -26,4 +26,12 @@ public class ProductProductController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
+    [HttpGet("StockQuant/{id}")]
+    public async Task<ActionResult> GetStockQuant([FromQuery] PagingParam<StockQuantSortCriteria> paginationModel, Guid id)
+    {
+        var result = await _productProductService.GetStockQuant(paginationModel, id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
 }
