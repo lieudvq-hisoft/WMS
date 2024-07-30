@@ -42,10 +42,18 @@ namespace WMS.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPut("InventoryQuantitySet/{id}")]
-        public async Task<ActionResult> UpdateInventoryQuantitySet(Guid id)
+        [HttpPut("Set/{id}")]
+        public async Task<ActionResult> SetStockQuant(Guid id)
         {
-            var result = await _stockQuantService.UpdateInventoryQuantitySet(id);
+            var result = await _stockQuantService.SetStockQuant(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
+
+        [HttpPut("Clear/{id}")]
+        public async Task<ActionResult> ClearStockQuant(Guid id)
+        {
+            var result = await _stockQuantService.ClearStockQuant(id);
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
