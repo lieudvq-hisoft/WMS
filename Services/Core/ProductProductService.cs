@@ -76,7 +76,7 @@ public class ProductProductService : IProductProductService
                     Id = _.Id,
                     ProductProduct = new ProductProductModel
                     {
-                        Id = _.Id,
+                        Id = _.ProductId,
                         Name = _.ProductProduct.ProductTemplate.Name,
                         Pvcs = _.ProductProduct.ProductVariantCombinations.Select(pvc =>
                             new Pvc
