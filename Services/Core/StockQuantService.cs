@@ -159,7 +159,7 @@ public class StockQuantService : IStockQuantService
             if (model.InventoryQuantity != null)
             {
                 stockQuant.InventoryQuantity = model.InventoryQuantity;
-                stockQuant.InventoryDiffQuantity = stockQuant.InventoryQuantity - stockQuant.Quantity;
+                stockQuant.InventoryDiffQuantity = model.InventoryQuantity - stockQuant.Quantity;
                 stockQuant.InventoryQuantitySet = true;
             }
             _dbContext.SaveChanges();
