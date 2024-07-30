@@ -90,7 +90,7 @@ public class ProductProductService : IProductProductService
                     InventoryDate = _.InventoryDate,
                     Quantity = _.Quantity,
                     UomUom = _.ProductProduct.ProductTemplate.UomUom.Name,
-                    InventoryQuantity = _.InventoryDiffQuantity,
+                    InventoryQuantity = _.InventoryQuantity,
                     InventoryDiffQuantity = _.InventoryDiffQuantity,
                     InventoryQuantitySet = _.InventoryQuantitySet,
                 });
