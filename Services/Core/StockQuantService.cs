@@ -151,7 +151,7 @@ public class StockQuantService : IStockQuantService
         try
         {
             var stockQuant = _dbContext.StockQuant.FirstOrDefault(_ => _.Id == model.Id);
-            if (stockQuant != null)
+            if (stockQuant == null)
             {
                 throw new Exception("This record not existed");
             }
