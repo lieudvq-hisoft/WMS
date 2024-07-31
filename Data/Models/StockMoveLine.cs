@@ -13,7 +13,7 @@ namespace Data.Models
         public decimal? Quantity { get; set; }
         public string Location { get; set; }
         public string LocationDest { get; set; }
-        public DateTime? CreateDate { get; set; }
+        public DateTime? WriteDate { get; set; }
 
     }
 }
