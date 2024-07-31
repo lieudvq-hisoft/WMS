@@ -64,7 +64,10 @@ public class ProductTemplateService : IProductTemplateService
         result.Succeed = false;
         try
         {
-            var productTemplate = _dbContext.ProductTemplate.FirstOrDefault(_ => _.Id == model.Id);
+            var productTemplate = _dbContext.ProductTemplate
+                .Include(_ => _.ProductProducts)
+                    .ThenInclude(_ => _.StockQuants)
+                .FirstOrDefault(_ => _.Id == model.Id);
             if (productTemplate == null)
             {
                 throw new Exception("Product Template not exists");
@@ -75,6 +78,13 @@ public class ProductTemplateService : IProductTemplateService
             }
             if (model.UomId != null)
             {
+                bool hasStockQuant = productTemplate.ProductProducts
+                    .Any(product => product.StockQuants.Any(stockQuant => stockQuant.Quantity > 0));
+                if (hasStockQuant)
+                {
+                    throw new Exception("You cannot change the unit of measure as there are already stock moves for this product. If you want to change the unit of measure, you should rather archive this product and create a new one.");
+                }
+
                 productTemplate.UomId = (Guid)model.UomId;
             }
             if (model.Description != null)

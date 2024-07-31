@@ -58,6 +58,11 @@ public class StockQuantService : IStockQuantService
                     throw new Exception("This record already exists");
                 }
                 var newStockQuant = _mapper.Map<StockQuantCreate, StockQuant>(model);
+
+                if (newStockQuant.Quantity <= 0)
+                {
+                    throw new Exception("Stock quantity must be greater than 0");
+                }
                 _dbContext.StockQuant.Add(newStockQuant);
 
                 var stockMove = new StockMove
