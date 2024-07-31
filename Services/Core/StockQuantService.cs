@@ -139,8 +139,8 @@ public class StockQuantService : IStockQuantService
                 Quantity = sml.Quantity,
                 State = sml.State,
                 Location = sml.Location.CompleteName,
-                LocationDest = sml.LocationDest.CompleteName
-
+                LocationDest = sml.LocationDest.CompleteName,
+                CreateDate = sml.CreateDate,
             });
             paging.Data = viewModels;
             result.Succeed = true;
