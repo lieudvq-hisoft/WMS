@@ -195,18 +195,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
             .HasForeignKey(r => r.LocationId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<StockWarehouse>()
-            .HasOne(r => r.LotStock)
-            .WithMany(u => u.StockWarehouses)
-            .HasForeignKey(r => r.LotStockId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<StockWarehouse>()
-            .HasOne(r => r.ViewLocation)
-            .WithMany(u => u.StockWarehouses)
-            .HasForeignKey(r => r.ViewLocationId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         modelBuilder.Entity<StockLocation>()
             .HasMany(r => r.StockQuants)
             .WithOne(u => u.StockLocation)
