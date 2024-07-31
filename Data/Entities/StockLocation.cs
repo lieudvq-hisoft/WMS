@@ -29,5 +29,6 @@ namespace Data.Entities
 
         public virtual ICollection<StockQuant> StockQuants { get; set; }
 
+        public virtual ICollection<StockWarehouse> StockWarehouses { get; set; }
     }
 }
