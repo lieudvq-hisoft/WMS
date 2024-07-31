@@ -9,6 +9,7 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Services.Core;
 
@@ -19,6 +20,7 @@ public interface IStockQuantService
     Task<ResultModel> Update(StockQuantUpdate model);
     Task<ResultModel> SetStockQuant(Guid id);
     Task<ResultModel> ClearStockQuant(Guid id);
+    Task<ResultModel> ApplyStockQuant(Guid id);
 
 }
 public class StockQuantService : IStockQuantService
@@ -238,6 +240,71 @@ public class StockQuantService : IStockQuantService
             stockQuant.InventoryQuantitySet = false;
             stockQuant.InventoryQuantity = 0;
             stockQuant.InventoryDiffQuantity = 0;
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<StockQuant, StockQuantModel>(stockQuant);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> ApplyStockQuant(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var stockQuant = _dbContext.StockQuant
+                .Include(_ => _.ProductProduct).ThenInclude(_ => _.ProductTemplate)
+                .FirstOrDefault(_ => _.Id == id);
+            if (stockQuant == null)
+            {
+                throw new Exception("This record not existed");
+            }
+
+            if (stockQuant.InventoryQuantitySet == false)
+            {
+                throw new Exception("This record needs to be set");
+            }
+
+            stockQuant.Quantity = (decimal)(stockQuant.Quantity + stockQuant.InventoryDiffQuantity);
+            stockQuant.InventoryQuantity = 0;
+
+            var stockMove = new StockMove
+            {
+                ProductId = stockQuant.ProductProduct.Id,
+                ProductUomId = stockQuant.ProductProduct.ProductTemplate.UomId,
+                LocationId = _inventoryAdjustmentId,
+                LocationDestId = stockQuant.LocationId,
+                Name = "Product Quantity Updated",
+                State = StockMoveState.Done,
+                Reference = "Product Quantity Updated",
+                ProductQty = (decimal)stockQuant.InventoryDiffQuantity,
+                ProductUomQty = (decimal)stockQuant.InventoryDiffQuantity,
+                Quantity = stockQuant.InventoryDiffQuantity,
+            };
+            _dbContext.StockMove.Add(stockMove);
+
+            var stockMoveLine = new StockMoveLine
+            {
+                MoveId = stockMove.Id,
+                ProductUomId = stockQuant.ProductProduct.ProductTemplate.UomId,
+                QuantId = stockQuant.Id,
+                State = StockMoveState.Done,
+                QuantityProductUom = stockQuant.InventoryDiffQuantity,
+                Quantity = (decimal)stockQuant.InventoryDiffQuantity,
+                LocationId = _inventoryAdjustmentId,
+                LocationDestId = stockQuant.LocationId,
+            };
+            _dbContext.StockMoveLine.Add(stockMoveLine);
+
+            stockQuant.InventoryDiffQuantity = 0;
+            stockQuant.InventoryQuantitySet = false;
+            stockQuant.WriteDate = DateTime.Now;
+
             _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = _mapper.Map<StockQuant, StockQuantModel>(stockQuant);

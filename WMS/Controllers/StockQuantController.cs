@@ -57,6 +57,14 @@ namespace WMS.Controllers
             if (result.Succeed) return Ok(result.Data);
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpPut("Apply/{id}")]
+        public async Task<ActionResult> ApplyStockQuant(Guid id)
+        {
+            var result = await _stockQuantService.ApplyStockQuant(id);
+            if (result.Succeed) return Ok(result.Data);
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }
 
