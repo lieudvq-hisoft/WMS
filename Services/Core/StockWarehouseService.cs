@@ -276,12 +276,12 @@ public class StockWarehouseService : IStockWarehouseService
             {
                 throw new Exception("Warehouse not exists");
             }
-            _dbContext.StockLocation.Remove(stockWarehouse.ViewLocation);
-            _dbContext.StockLocation.Remove(stockWarehouse.LotStock);
-            _dbContext.StockLocation.Remove(stockWarehouse.WhInputStockLoc);
-            _dbContext.StockLocation.Remove(stockWarehouse.WhOutputStockLoc);
-            _dbContext.StockLocation.Remove(stockWarehouse.WhPackStockLoc);
-            _dbContext.StockLocation.Remove(stockWarehouse.WhQcStockLoc);
+            _dbContext.Remove(stockWarehouse.ViewLocation);
+            _dbContext.Remove(stockWarehouse.LotStock);
+            _dbContext.Remove(stockWarehouse.WhInputStockLoc);
+            _dbContext.Remove(stockWarehouse.WhOutputStockLoc);
+            _dbContext.Remove(stockWarehouse.WhPackStockLoc);
+            _dbContext.Remove(stockWarehouse.WhQcStockLoc);
             _dbContext.Remove(stockWarehouse);
             _dbContext.SaveChanges();
             result.Succeed = true;
