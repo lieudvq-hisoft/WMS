@@ -50,5 +50,7 @@ namespace Data.Entities
 
         public DateTime? ReservationDate { get; set; }
 
+        public virtual ICollection<StockMoveLine> StockMoveLines { get; set; }
+
     }
 }

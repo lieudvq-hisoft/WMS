@@ -27,5 +27,7 @@ namespace Data.Entities
         [Required]
         public LocationType Usage { get; set; }
 
+        public virtual ICollection<StockQuant> StockQuants { get; set; }
+
     }
 }
