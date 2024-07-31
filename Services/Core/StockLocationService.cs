@@ -120,6 +120,11 @@ public class StockLocationService : IStockLocationService
             {
                 throw new Exception("Stock location not exists");
             }
+
+            if (stockLocation.Id == _virtualLocationId || stockLocation.Id == _inventoryAdjustmentId || stockLocation.Id == _physicalLocationId)
+            {
+                throw new Exception("Unable to delete this document because it is used as a default property");
+            }
             _dbContext.Remove(stockLocation);
             _dbContext.SaveChanges();
             result.Succeed = true;
