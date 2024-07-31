@@ -18,7 +18,7 @@ public interface IStockLocationService
     Task<ResultModel> GetInfo(Guid id);
     Task<ResultModel> GetForSelectParent(Guid id);
     Task<ResultModel> GetInternalLocation();
-
+    Task<ResultModel> Delete(Guid id);
 }
 public class StockLocationService : IStockLocationService
 {
@@ -101,6 +101,29 @@ public class StockLocationService : IStockLocationService
             var productCategories = _dbContext.StockLocation.Where(_ => _.Usage == LocationType.Internal).AsQueryable().OrderBy(_ => _.CompleteName);
             result.Succeed = true;
             result.Data = _mapper.ProjectTo<StockLocationModel>(productCategories).ToList();
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> Delete(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var stockLocation = _dbContext.StockLocation.FirstOrDefault(_ => _.Id == id);
+            if (stockLocation == null)
+            {
+                throw new Exception("Stock location not exists");
+            }
+            _dbContext.Remove(stockLocation);
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = "Deleted successfully!";
         }
         catch (Exception ex)
         {
