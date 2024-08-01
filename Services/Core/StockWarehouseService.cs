@@ -145,25 +145,25 @@ public class StockWarehouseService : IStockWarehouseService
                 };
                 _dbContext.Add(sptDelivery);
 
-                var sptPick = new StockPickingType
-                {
-                    WarehouseId = stockWarehouse.Id,
-                    Code = StockPickingTypeCode.Internal,
-                    Barcode = $"{stockWarehouse.Code}-PICK",
-                    Name = "Pick",
-                    CreateBackorder = CreateBackorderType.Ask
-                };
-                _dbContext.Add(sptPick);
+                //var sptPick = new StockPickingType
+                //{
+                //    WarehouseId = stockWarehouse.Id,
+                //    Code = StockPickingTypeCode.Internal,
+                //    Barcode = $"{stockWarehouse.Code}-PICK",
+                //    Name = "Pick",
+                //    CreateBackorder = CreateBackorderType.Ask
+                //};
+                //_dbContext.Add(sptPick);
 
-                var sptPack = new StockPickingType
-                {
-                    WarehouseId = stockWarehouse.Id,
-                    Code = StockPickingTypeCode.Internal,
-                    Barcode = $"{stockWarehouse.Code}-PACK",
-                    Name = "Pack",
-                    CreateBackorder = CreateBackorderType.Ask
-                };
-                _dbContext.Add(sptPack);
+                //var sptPack = new StockPickingType
+                //{
+                //    WarehouseId = stockWarehouse.Id,
+                //    Code = StockPickingTypeCode.Internal,
+                //    Barcode = $"{stockWarehouse.Code}-PACK",
+                //    Name = "Pack",
+                //    CreateBackorder = CreateBackorderType.Ask
+                //};
+                //_dbContext.Add(sptPack);
 
                 var sptInternal = new StockPickingType
                 {

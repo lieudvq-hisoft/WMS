@@ -18,6 +18,9 @@ public interface IStockPickingService
     Task<ResultModel> Create(StockPickingCreate model, Guid createId);
     Task<ResultModel> Update(StockPickingUpdate model);
     Task<ResultModel> Delete(Guid id);
+    Task<ResultModel> GetStockPickingIncoming(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
+    Task<ResultModel> GetStockPickingInternal(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
+    Task<ResultModel> GetStockPickingOutgoing(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
 
 }
 public class StockPickingService : IStockPickingService
@@ -145,6 +148,72 @@ public class StockPickingService : IStockPickingService
             _dbContext.Remove(stockPicking);
             result.Succeed = true;
             result.Data = "Deleted successfully!";
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetStockPickingIncoming(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var stockPickings = _dbContext.StockPicking
+                .Include(_ => _.PickingType).Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
+            stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            stockPickings = stockPickings.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<StockPickingModel>(stockPickings);
+            paging.Data = viewModels;
+            result.Succeed = true;
+            result.Data = paging;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetStockPickingInternal(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var stockPickings = _dbContext.StockPicking
+                .Include(_ => _.PickingType).Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
+            stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            stockPickings = stockPickings.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<StockPickingModel>(stockPickings);
+            paging.Data = viewModels;
+            result.Succeed = true;
+            result.Data = paging;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetStockPickingOutgoing(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var stockPickings = _dbContext.StockPicking
+                .Include(_ => _.PickingType).Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
+            stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            stockPickings = stockPickings.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = _mapper.ProjectTo<StockPickingModel>(stockPickings);
+            paging.Data = viewModels;
+            result.Succeed = true;
+            result.Data = paging;
         }
         catch (Exception ex)
         {
