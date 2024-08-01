@@ -83,6 +83,10 @@ namespace Services.Mapping
             CreateMap<StockQuantModel, StockQuant>().ReverseMap();
             CreateMap<StockQuantInfo, StockQuant>().ReverseMap();
 
+            CreateMap<StockPicking, StockPickingModel>().ReverseMap();
+            CreateMap<StockPicking, StockPickingCreate>().ReverseMap();
+            CreateMap<StockPicking, StockPickingUpdate>().ReverseMap();
+
         }
     }
 }
