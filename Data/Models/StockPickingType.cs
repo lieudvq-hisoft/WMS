@@ -15,6 +15,7 @@ namespace Data.Models
     public class StockPickingTypeInfo : StockPickingTypeModel
     {
         public StockWarehouseModel Warehouse { get; set; }
+        public int TotalPickingReady { get; set; }
     }
 }
 

@@ -77,7 +77,8 @@ namespace Services.Mapping
 
 
             CreateMap<StockPickingType, StockPickingTypeModel>().ReverseMap();
-            CreateMap<StockPickingType, StockPickingTypeInfo>().ReverseMap();
+            CreateMap<StockPickingType, StockPickingTypeInfo>()
+                .ForMember(dest => dest.TotalPickingReady, opt => opt.MapFrom(src => src.StockPickings.Where(_ => _.State == Data.Enums.PickingState.Assigned).Count()));
 
             CreateMap<StockQuantCreate, StockQuant>().ReverseMap();
             CreateMap<StockQuantModel, StockQuant>().ReverseMap();

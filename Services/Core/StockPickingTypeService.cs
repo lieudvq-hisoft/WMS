@@ -33,7 +33,9 @@ public class StockPickingTypeService : IStockPickingTypeService
         var result = new ResultModel();
         try
         {
-            var stockPickingTypes = _dbContext.StockPickingType.Include(_ => _.Warehouse).AsQueryable();
+            var stockPickingTypes = _dbContext.StockPickingType
+                .Include(_ => _.StockPickings)
+                .Include(_ => _.Warehouse).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickingTypes.Count());
             stockPickingTypes = stockPickingTypes.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             stockPickingTypes = stockPickingTypes.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);

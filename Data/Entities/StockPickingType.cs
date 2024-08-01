@@ -27,5 +27,7 @@ namespace Data.Entities
 
         [Required]
         public CreateBackorderType CreateBackorder { get; set; }
+
+        public virtual ICollection<StockPicking> StockPickings { get; set; }
     }
 }
