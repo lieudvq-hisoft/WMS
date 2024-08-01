@@ -162,7 +162,9 @@ public class StockPickingService : IStockPickingService
         try
         {
             var stockPickings = _dbContext.StockPicking
-                .Include(_ => _.PickingType).Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
+                .Include(_ => _.PickingType)
+                .ThenInclude(_ => _.Warehouse)
+                .Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
             stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             stockPickings = stockPickings.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
@@ -184,7 +186,9 @@ public class StockPickingService : IStockPickingService
         try
         {
             var stockPickings = _dbContext.StockPicking
-                .Include(_ => _.PickingType).Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
+                .Include(_ => _.PickingType)
+                .ThenInclude(_ => _.Warehouse)
+                .Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
             stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             stockPickings = stockPickings.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
@@ -206,7 +210,9 @@ public class StockPickingService : IStockPickingService
         try
         {
             var stockPickings = _dbContext.StockPicking
-                .Include(_ => _.PickingType).Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
+                .Include(_ => _.PickingType)
+                .ThenInclude(_ => _.Warehouse)
+                .Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
             stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             stockPickings = stockPickings.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);

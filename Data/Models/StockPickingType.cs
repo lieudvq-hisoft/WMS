@@ -10,6 +10,7 @@ namespace Data.Models
         public StockPickingTypeCode Code { get; set; }
         public string Barcode { get; set; }
         public string Name { get; set; }
+        public StockWarehouseModel Warehouse { get; set; }
     }
 
     public class StockPickingTypeInfo : StockPickingTypeModel
