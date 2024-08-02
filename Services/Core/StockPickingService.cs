@@ -241,6 +241,8 @@ public class StockPickingService : IStockPickingService
             {
                 stockPicking.LocationId = _vendorLocationId;
             }
+            var stockPickingType = _dbContext.StockPickingType.FirstOrDefault(_ => _.Id == model.PickingTypeId);
+            stockPicking.Name = $"{stockPickingType.Barcode}-{stockPicking.Id}";
             stockPicking.CreateUid = createUid;
             _dbContext.Add(stockPicking);
             _dbContext.SaveChanges();
