@@ -149,6 +149,7 @@ public class StockPickingService : IStockPickingService
 
             }
             _dbContext.Remove(stockPicking);
+            _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = "Deleted successfully!";
         }
