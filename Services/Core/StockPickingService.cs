@@ -252,10 +252,10 @@ public class StockPickingService : IStockPickingService
             {
                 throw new Exception("Stock Picking Type not used for receipt");
             }
+            stockPicking.Name = $"{stockPickingType.Barcode}";
             stockPicking.CreateUid = createUid;
             _dbContext.Add(stockPicking);
             stockPicking.Name = $"{stockPickingType.Barcode}-{stockPicking.Id}";
-            _dbContext.Update(stockPicking);
             _dbContext.SaveChanges();
             result.Succeed = true;
             result.Data = _mapper.Map<StockPicking, StockPickingModel>(stockPicking);
