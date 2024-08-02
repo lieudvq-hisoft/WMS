@@ -21,6 +21,7 @@ public interface IStockPickingService
     Task<ResultModel> GetStockPickingIncoming(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
     Task<ResultModel> GetStockPickingInternal(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
     Task<ResultModel> GetStockPickingOutgoing(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
+    Task<ResultModel> CreateReceipt(StockPickingReceipt model, Guid createId);
 
 }
 public class StockPickingService : IStockPickingService
@@ -220,6 +221,25 @@ public class StockPickingService : IStockPickingService
             paging.Data = viewModels;
             result.Succeed = true;
             result.Data = paging;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> CreateReceipt(StockPickingReceipt model, Guid createUid)
+    {
+        var result = new ResultModel();
+        try
+        {
+            //var stockPicking = _mapper.Map<StockPickingCreate, StockPicking>(model);
+            //stockPicking.CreateUid = createUid;
+            //_dbContext.Add(stockPicking);
+            //_dbContext.SaveChanges();
+            //result.Succeed = true;
+            //result.Data = stockPicking.Id;
         }
         catch (Exception ex)
         {

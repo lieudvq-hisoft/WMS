@@ -12,6 +12,9 @@ public enum LocationType
 
     [Description("Inventory Loss: Virtual location serving as counterpart for inventory operations used to correct stock levels (Physical inventories)")]
     Inventory,
+
+    [Description("Vendor Location: Virtual location representing the source location for products coming from your vendors")]
+    Supplier
 }
 
 
