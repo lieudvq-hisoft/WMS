@@ -29,6 +29,8 @@ public class StockPickingService : IStockPickingService
     private readonly AppDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IConfiguration _configuration;
+    private readonly Guid _partnerLocationId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479");
+    private readonly Guid _vendorLocationId = new Guid("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
     public StockPickingService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration)
     {
         _dbContext = dbContext;
@@ -234,12 +236,16 @@ public class StockPickingService : IStockPickingService
         var result = new ResultModel();
         try
         {
-            //var stockPicking = _mapper.Map<StockPickingCreate, StockPicking>(model);
-            //stockPicking.CreateUid = createUid;
-            //_dbContext.Add(stockPicking);
-            //_dbContext.SaveChanges();
-            //result.Succeed = true;
-            //result.Data = stockPicking.Id;
+            var stockPicking = _mapper.Map<StockPickingReceipt, StockPicking>(model);
+            if(stockPicking.PartnerId == null)
+            {
+                stockPicking.LocationId = _vendorLocationId;
+            }
+            stockPicking.CreateUid = createUid;
+            _dbContext.Add(stockPicking);
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = stockPicking.Id;
         }
         catch (Exception ex)
         {
