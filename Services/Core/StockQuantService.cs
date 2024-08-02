@@ -282,8 +282,8 @@ public class StockQuantService : IStockQuantService
             {
                 ProductId = stockQuant.ProductProduct.Id,
                 ProductUomId = stockQuant.ProductProduct.ProductTemplate.UomId,
-                LocationId = _inventoryAdjustmentId,
-                LocationDestId = stockQuant.LocationId,
+                LocationId = stockQuant.InventoryDiffQuantity > 0 ? _inventoryAdjustmentId : stockQuant.LocationId,
+                LocationDestId = stockQuant.InventoryDiffQuantity > 0 ? stockQuant.LocationId : _inventoryAdjustmentId,
                 Name = "Product Quantity Updated",
                 State = StockMoveState.Done,
                 Reference = "Product Quantity Updated",
@@ -301,8 +301,8 @@ public class StockQuantService : IStockQuantService
                 State = StockMoveState.Done,
                 QuantityProductUom = stockQuant.InventoryDiffQuantity,
                 Quantity = (decimal)stockQuant.InventoryDiffQuantity,
-                LocationId = _inventoryAdjustmentId,
-                LocationDestId = stockQuant.LocationId,
+                LocationId = stockQuant.InventoryDiffQuantity > 0 ? _inventoryAdjustmentId : stockQuant.LocationId,
+                LocationDestId = stockQuant.InventoryDiffQuantity > 0 ? stockQuant.LocationId : _inventoryAdjustmentId,
             };
             _dbContext.StockMoveLine.Add(stockMoveLine);
 
