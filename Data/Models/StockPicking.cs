@@ -7,6 +7,11 @@ namespace Data.Models
 	public class StockPickingModel
     {
         public Guid Id { get; set; }
+        public Guid? BackorderId { get; set; }
+        public Guid LocationId { get; set; }
+        public Guid LocationDestId { get; set; }
+        public Guid PickingTypeId { get; set; }
+        public Guid? PartnerId { get; set; }
         public StockLocationModel Location { get; set; }
         public StockLocationModel LocationDest { get; set; }
         public StockPickingTypeModel PickingType { get; set; }
