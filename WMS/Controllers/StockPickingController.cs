@@ -84,4 +84,12 @@ public class StockPickingController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpGet("Info")]
+    public async Task<ActionResult> GetInfo(Guid id)
+    {
+        var result = await _stockPickingService.GetInfo(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }

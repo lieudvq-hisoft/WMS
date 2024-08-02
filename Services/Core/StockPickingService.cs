@@ -22,6 +22,7 @@ public interface IStockPickingService
     Task<ResultModel> GetStockPickingInternal(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
     Task<ResultModel> GetStockPickingOutgoing(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
     Task<ResultModel> CreateReceipt(StockPickingReceipt model, Guid createId);
+    Task<ResultModel> GetInfo(Guid id);
 
 }
 public class StockPickingService : IStockPickingService
@@ -255,6 +256,30 @@ public class StockPickingService : IStockPickingService
             stockPicking.CreateUid = createUid;
             _dbContext.Add(stockPicking);
             _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<StockPicking, StockPickingModel>(stockPicking);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetInfo(Guid id)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var stockPicking = _dbContext.StockPicking
+                .Include(_ => _.Location)
+                .Include(_ => _.LocationDest)
+                .Include(_ => _.PickingType)
+                .FirstOrDefault(_ => _.Id == id);
+            if (stockPicking == null)
+            {
+                throw new Exception("Stock Picking not exists");
+            }
             result.Succeed = true;
             result.Data = _mapper.Map<StockPicking, StockPickingModel>(stockPicking); ;
         }
