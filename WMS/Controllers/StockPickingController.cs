@@ -76,4 +76,12 @@ public class StockPickingController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPost("Receipt")]
+    public async Task<ActionResult> Create([FromBody] StockPickingReceipt model)
+    {
+        var result = await _stockPickingService.CreateReceipt(model, Guid.Parse(User.GetId()));
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }
