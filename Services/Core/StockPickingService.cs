@@ -242,12 +242,20 @@ public class StockPickingService : IStockPickingService
                 stockPicking.LocationId = _vendorLocationId;
             }
             var stockPickingType = _dbContext.StockPickingType.FirstOrDefault(_ => _.Id == model.PickingTypeId);
+            if(stockPickingType == null)
+            {
+                throw new Exception("Stock Picking Type not exists");
+            }
+            if(stockPickingType.Code != StockPickingTypeCode.Incoming)
+            {
+                throw new Exception("Stock Picking Type not used for receipt");
+            }
             stockPicking.Name = $"{stockPickingType.Barcode}-{stockPicking.Id}";
             stockPicking.CreateUid = createUid;
             _dbContext.Add(stockPicking);
             _dbContext.SaveChanges();
             result.Succeed = true;
-            result.Data = stockPicking.Id;
+            result.Data = _mapper.Map<StockPicking, StockPickingModel>(stockPicking); ;
         }
         catch (Exception ex)
         {
