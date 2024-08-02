@@ -85,6 +85,14 @@ public class StockPickingController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
+    [HttpPut("Receipt")]
+    public async Task<ActionResult> UpdateReceipt([FromBody] StockPickingUpdateReceipt model)
+    {
+        var result = await _stockPickingService.UpdateReceipt(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
     [HttpGet("Info/{id}")]
     public async Task<ActionResult> GetInfo(Guid id)
     {

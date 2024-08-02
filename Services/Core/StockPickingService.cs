@@ -22,6 +22,7 @@ public interface IStockPickingService
     Task<ResultModel> GetStockPickingInternal(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
     Task<ResultModel> GetStockPickingOutgoing(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
     Task<ResultModel> CreateReceipt(StockPickingReceipt model, Guid createId);
+    Task<ResultModel> UpdateReceipt(StockPickingUpdateReceipt model);
     Task<ResultModel> GetInfo(Guid id);
 
 }
@@ -290,5 +291,49 @@ public class StockPickingService : IStockPickingService
         }
         return result;
     }
+
+    public async Task<ResultModel> UpdateReceipt(StockPickingUpdateReceipt model)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var stockPicking = _dbContext.StockPicking.FirstOrDefault(_ => _.Id == model.Id);
+            if (stockPicking == null)
+            {
+                throw new Exception("Stock Picking not exists");
+            }
+            if (stockPicking.State == PickingState.Done)
+            {
+                throw new Exception("You cannot update a stock picking that has been set to 'Done'.");
+
+            }
+            if (model.LocationDestId != null)
+            {
+                stockPicking.LocationDestId = (Guid)model.LocationDestId;
+            }
+            if (model.Note != null)
+            {
+                stockPicking.Note = model.Note;
+            }
+            if (model.ScheduledDate != null)
+            {
+                stockPicking.ScheduledDate = model.ScheduledDate;
+            }
+            if (model.DateDeadline != null)
+            {
+                stockPicking.DateDeadline = model.DateDeadline;
+            }
+            stockPicking.WriteDate = DateTime.Now;
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<StockPicking, StockPickingModel>(stockPicking);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
 
 }
