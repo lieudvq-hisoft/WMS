@@ -414,6 +414,12 @@ public class StockPickingService : IStockPickingService
 
                 }
 
+                if (stockPicking.State == PickingState.Cancelled)
+                {
+                    throw new Exception("You cannot update a stock picking that has been set to 'Cancelled'.");
+
+                }
+
                 foreach (var stockMove in stockPicking.StockMoves)
                 {
                     stockMove.Quantity = stockMove.ProductUomQty;
@@ -449,6 +455,12 @@ public class StockPickingService : IStockPickingService
                 if (stockPicking.State == PickingState.Done)
                 {
                     throw new Exception("You cannot update a stock picking that has been set to 'Done'.");
+
+                }
+
+                if (stockPicking.State == PickingState.Cancelled)
+                {
+                    throw new Exception("You cannot update a stock picking that has been set to 'Cancelled'.");
 
                 }
 
