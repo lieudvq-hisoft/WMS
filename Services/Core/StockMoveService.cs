@@ -71,6 +71,7 @@ public class StockMoveService : IStockMoveService
                 _dbContext.SaveChanges();
                 result.Succeed = true;
                 result.Data = stockMove.Id;
+                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
