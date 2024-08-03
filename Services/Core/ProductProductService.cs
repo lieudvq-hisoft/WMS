@@ -16,6 +16,7 @@ public interface IProductProductService
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetStockQuant(PagingParam<StockQuantSortCriteria> paginationModel, Guid id);
     Task<ResultModel> GetProductVariant();
+    Task<ResultModel> GetUomUomForSelect(Guid id);
 }
 public class ProductProductService : IProductProductService
 {
@@ -142,6 +143,32 @@ public class ProductProductService : IProductProductService
             paging.Data = viewModels;
             result.Succeed = true;
             result.Data = paging;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetUomUomForSelect(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var productProduct = _dbContext.ProductProduct
+                .Include(_ => _.ProductTemplate)
+                .ThenInclude(_ => _.UomUom)
+                .FirstOrDefault(_ => _.Id == id);
+            if(productProduct == null)
+            {
+                throw new Exception("Product Variant not exists");
+
+            }
+            var uomUom = _dbContext.UomUom.Include(_ => _.Category).Where(_ => _.CategoryId == productProduct.ProductTemplate.UomUom.CategoryId).AsQueryable();
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<UomUomModel>(uomUom).ToList();
         }
         catch (Exception ex)
         {

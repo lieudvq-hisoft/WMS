@@ -42,4 +42,12 @@ public class ProductProductController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
+    [HttpGet("UomUom/Select/{id}")]
+    public async Task<ActionResult> GetUomUomForSelect(Guid id)
+    {
+        var result = await _productProductService.GetUomUomForSelect(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
 }
