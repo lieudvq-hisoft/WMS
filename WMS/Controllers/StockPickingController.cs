@@ -100,4 +100,12 @@ public class StockPickingController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpGet("StockMove/{id}")]
+    public async Task<ActionResult> GetInfo([FromQuery] PagingParam<StockMoveSortCriteria> paginationModel, Guid id)
+    {
+        var result = await _stockPickingService.GetStockMoves(paginationModel, id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }

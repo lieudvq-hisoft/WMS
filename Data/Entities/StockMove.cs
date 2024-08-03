@@ -34,14 +34,14 @@ namespace Data.Entities
         [Required]
         public string Name { get; set; }
 
-        public StockMoveState? State { get; set; }
+        public StockMoveState? State { get; set; } = StockMoveState.Draft;
 
         public string? Reference { get; set; }
 
         public string? DescriptionPicking { get; set; }
 
         [Required]
-        public decimal ProductQty { get; set; }
+        public decimal ProductQty { get; set; } = 0;
 
         [Required]
         public decimal ProductUomQty { get; set; }

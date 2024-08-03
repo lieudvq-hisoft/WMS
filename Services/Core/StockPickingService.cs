@@ -24,6 +24,8 @@ public interface IStockPickingService
     Task<ResultModel> CreateReceipt(StockPickingReceipt model, Guid createId);
     Task<ResultModel> UpdateReceipt(StockPickingUpdateReceipt model);
     Task<ResultModel> GetInfo(Guid id);
+    Task<ResultModel> GetStockMoves(PagingParam<StockMoveSortCriteria> paginationModel, Guid id);
+
 
 }
 public class StockPickingService : IStockPickingService
@@ -335,5 +337,62 @@ public class StockPickingService : IStockPickingService
         return result;
     }
 
-
+    public async Task<ResultModel> GetStockMoves(PagingParam<StockMoveSortCriteria> paginationModel, Guid id)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var stockMoves = _dbContext.StockMove
+                .Include(_ => _.ProductProduct)
+                    .ThenInclude(_ => _.ProductTemplate)
+                .Include(_ => _.ProductProduct)
+                    .ThenInclude(_ => _.ProductVariantCombinations)
+                    .ThenInclude(_ => _.ProductTemplateAttributeValue)
+                    .ThenInclude(_ => _.ProductAttributeValue)
+                .Include(_ => _.ProductUom)
+                .Where(_ => _.PickingId == id)
+                .Include(_ => _.Location)
+                .Include(_ => _.LocationDest)
+                .AsQueryable();
+            var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockMoves.Count());
+            stockMoves = stockMoves.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            stockMoves = stockMoves.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = stockMoves.Select(sm => new StockMoveModel
+            {
+                ProductProduct = new ProductProductModel
+                {
+                    Id = sm.ProductProduct.Id,
+                    Name = sm.ProductProduct.ProductTemplate.Name,
+                    Pvcs = sm.ProductProduct.ProductVariantCombinations.Select(pvc =>
+                    new Pvc
+                    {
+                        Attribute = pvc.ProductTemplateAttributeValue.ProductAttributeValue.ProductAttribute.Name,
+                        Value = pvc.ProductTemplateAttributeValue.ProductAttributeValue.Name
+                    })
+                    .ToList(),
+                    QtyAvailable = sm.ProductProduct.StockQuants.Sum(sq => sq.Quantity),
+                },
+                UomUom = _mapper.Map<UomUom, UomUomModel>(sm.ProductUom),
+                Location = _mapper.Map<StockLocation, StockLocationModel>(sm.Location),
+                LocationDest = _mapper.Map<StockLocation, StockLocationModel>(sm.LocationDest),
+                PickingId = sm.PickingId,
+                Name = sm.Name,
+                State = sm.State,
+                Reference = sm.Reference,
+                DescriptionPicking = sm.DescriptionPicking,
+                ProductQty = sm.ProductQty,
+                ProductUomQty = sm.ProductUomQty,
+                Quantity = sm.Quantity,
+                ReservationDate = sm.ReservationDate,
+            });
+            paging.Data = viewModels;
+            result.Succeed = true;
+            result.Data = paging;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
 }
