@@ -19,7 +19,6 @@ public interface IStockMoveService
     Task<ResultModel> Create(StockMoveCreate model);
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> UpdateQuantity(StockMoveQuantityUpdate model);
-
 }
 public class StockMoveService : IStockMoveService
 {
@@ -74,16 +73,33 @@ public class StockMoveService : IStockMoveService
                     throw new Exception("You cannot create a stock move that has been set to 'Cancelled'.");
                 }
                 var stockMove = _mapper.Map<StockMoveCreate, StockMove>(model);
-                stockMove.Name = product.ProductTemplate.Name + " (" + string.Join(", ", product.ProductVariantCombinations.Select(pvc => pvc.ProductTemplateAttributeValue.ProductAttributeValue.Name)) + ")";
-                stockMove.Reference = stockPicking.Name;
-                //decimal quantity =  stockMove.ProductUomQty / uomUom.Factor;
-                //quantity = Math.Round(quantity / uomUom.Rounding) * uomUom.Rounding;
-                //stockMove.Quantity = quantity;
-                if (stockPicking.State == PickingState.Assigned)
+
+                var checkStockMove = _dbContext.StockMove
+                    .FirstOrDefault(_ =>
+                    _.ProductId == stockMove.ProductId &&
+                    _.ProductUomId == stockMove.ProductUomId &&
+                    _.LocationId == stockMove.LocationId &&
+                    _.LocationDestId == stockMove.LocationDestId &&
+                    _.PickingId == stockMove.PickingId
+                    );
+                if(checkStockMove != null)
                 {
-                    stockMove.State = StockMoveState.Assigned;
+                    checkStockMove.Quantity += stockMove.Quantity;
                 }
-                _dbContext.Add(stockMove);
+                else
+                {
+                    stockMove.Name = product.ProductTemplate.Name + " (" + string.Join(", ", product.ProductVariantCombinations.Select(pvc => pvc.ProductTemplateAttributeValue.ProductAttributeValue.Name)) + ")";
+                    stockMove.Reference = stockPicking.Name;
+                    //decimal quantity =  stockMove.ProductUomQty / uomUom.Factor;
+                    //quantity = Math.Round(quantity / uomUom.Rounding) * uomUom.Rounding;
+                    //stockMove.Quantity = quantity;
+                    if (stockPicking.State == PickingState.Assigned)
+                    {
+                        stockMove.State = StockMoveState.Assigned;
+                    }
+                    _dbContext.Add(stockMove);
+                }
+
                 _dbContext.SaveChanges();
                 result.Succeed = true;
                 result.Data = stockMove.Id;
@@ -163,5 +179,4 @@ public class StockMoveService : IStockMoveService
         }
         return result;
     }
-
 }

@@ -37,5 +37,11 @@ namespace Data.Models
         public Guid Id { get; set; }
         public decimal Quantity { get; set; }
     }
+
+    public class StockMoveUomUpdate
+    {
+        public Guid Id { get; set; }
+        public Guid ProductUomId { get; set; }
+    }
 }
 
