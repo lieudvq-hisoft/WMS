@@ -31,5 +31,11 @@ namespace Data.Models
         public string? DescriptionPicking { get; set; }
         public decimal ProductUomQty { get; set; }
     }
+
+    public class StockMoveQuantityUpdate
+    {
+        public Guid Id { get; set; }
+        public decimal Quantity { get; set; }
+    }
 }
 

@@ -18,6 +18,8 @@ public interface IStockMoveService
 {
     Task<ResultModel> Create(StockMoveCreate model);
     Task<ResultModel> Delete(Guid id);
+    Task<ResultModel> UpdateQuantity(StockMoveQuantityUpdate model);
+
 }
 public class StockMoveService : IStockMoveService
 {
@@ -111,15 +113,43 @@ public class StockMoveService : IStockMoveService
                 }
                 if (stockMove.State == StockMoveState.Done)
                 {
-                    throw new Exception("You cannot update a stock move that has been set to 'Done'.");
-
-                }
-                if (stockMove.StockPicking.State == PickingState.Done)
-                {
                     throw new Exception("You cannot delete a stock move that has been set to 'Done'.");
 
                 }
                 _dbContext.Remove(stockMove);
+                _dbContext.SaveChanges();
+                result.Succeed = true;
+                result.Data = stockMove.Id;
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UpdateQuantity(StockMoveQuantityUpdate model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                var stockMove = _dbContext.StockMove.FirstOrDefault(_ => _.Id == model.Id);
+                if (stockMove == null)
+                {
+                    throw new Exception("Stock Mone not exists");
+                }
+                if (stockMove.State == StockMoveState.Done)
+                {
+                    throw new Exception("You cannot update a stock move that has been set to 'Done'.");
+
+                }
+                stockMove.Quantity = model.Quantity > 0 ? model.Quantity : 0;
                 _dbContext.SaveChanges();
                 result.Succeed = true;
                 result.Data = stockMove.Id;
