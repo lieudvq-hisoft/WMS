@@ -46,7 +46,7 @@ namespace Data.Entities
         [Required]
         public decimal ProductUomQty { get; set; }
 
-        public decimal? Quantity { get; set; } = 0;
+        public decimal? Quantity { get; set; }
 
         public DateTime? ReservationDate { get; set; }
 

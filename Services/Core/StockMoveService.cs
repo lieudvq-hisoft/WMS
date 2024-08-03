@@ -84,7 +84,7 @@ public class StockMoveService : IStockMoveService
                     );
                 if(checkStockMove != null)
                 {
-                    checkStockMove.Quantity += stockMove.Quantity;
+                    checkStockMove.ProductQty += stockMove.ProductQty;
                 }
                 else
                 {
