@@ -18,6 +18,14 @@ public class ProductProductController : ControllerBase
         _productProductService = productProductService;
     }
 
+    [HttpGet("ProductVariant")]
+    public async Task<ActionResult> GetProductVariant()
+    {
+        var result = await _productProductService.GetProductVariant();
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {

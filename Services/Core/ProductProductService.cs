@@ -15,6 +15,7 @@ public interface IProductProductService
 {
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetStockQuant(PagingParam<StockQuantSortCriteria> paginationModel, Guid id);
+    Task<ResultModel> GetProductVariant();
 }
 public class ProductProductService : IProductProductService
 {
@@ -28,6 +29,50 @@ public class ProductProductService : IProductProductService
         _mapper = mapper;
         _configuration = configuration;
     }
+
+    public async Task<ResultModel> GetProductVariant()
+    {
+        var result = new ResultModel();
+        try
+        {
+            var productProducts = _dbContext.ProductProduct
+                .Include(_ => _.ProductTemplate)
+                .Include(_ => _.ProductVariantCombinations)
+                .ThenInclude(_ => _.ProductTemplateAttributeValue)
+                .ThenInclude(_ => _.ProductAttributeValue)
+                .ThenInclude(_ => _.ProductAttribute)
+                .Include(_ => _.StockQuants).AsQueryable();
+            //var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, productProducts.Count());
+            //productProducts = productProducts.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
+            //productProducts = productProducts.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
+            var viewModels = productProducts
+                .Select(_ =>
+                new ProductProductModel
+                {
+                    Id = _.Id,
+                    Name = _.ProductTemplate.Name,
+                    Pvcs = _.ProductVariantCombinations.Select(pvc =>
+                    new Pvc
+                    {
+                        Attribute = pvc.ProductTemplateAttributeValue.ProductAttributeValue.ProductAttribute.Name,
+                        Value = pvc.ProductTemplateAttributeValue.ProductAttributeValue.Name
+                    })
+                    .ToList(),
+                    QtyAvailable = _.StockQuants.Sum(sq => sq.Quantity),
+                    UomUom = _.ProductTemplate.UomUom.Name
+                });
+            //paging.Data = viewModels;
+            result.Succeed = true;
+            //result.Data = paging;
+            result.Data = viewModels;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
 
     public async Task<ResultModel> Delete(Guid id)
     {
