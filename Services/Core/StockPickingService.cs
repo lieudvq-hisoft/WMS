@@ -9,6 +9,7 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Services.Core;
 
@@ -27,6 +28,7 @@ public interface IStockPickingService
     Task<ResultModel> GetStockMoves(PagingParam<StockMoveSortCriteria> paginationModel, Guid id);
     Task<ResultModel> MakeAsTodo(Guid id);
     Task<ResultModel> Cancel(Guid id);
+    Task<ResultModel> Validate(Guid id);
 }
 public class StockPickingService : IStockPickingService
 {
@@ -490,6 +492,88 @@ public class StockPickingService : IStockPickingService
                     stockMove.State = StockMoveState.Cancelled;
                 }
                 stockPicking.State = PickingState.Cancelled;
+                _dbContext.SaveChanges();
+                result.Succeed = true;
+                result.Data = stockPicking.Id;
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> Validate(Guid id)
+    {
+        var result = new ResultModel();
+        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                var stockPicking = _dbContext.StockPicking
+                    .Include(_ => _.StockMoves)
+                        .ThenInclude(_ => _.ProductUom)
+                    .FirstOrDefault(_ => _.Id == id);
+                if (stockPicking == null)
+                {
+                    throw new Exception("Stock Picking not exists");
+                }
+                if (stockPicking.State == PickingState.Done)
+                {
+                    throw new Exception("You cannot update a stock picking that has been set to 'Done'.");
+
+                }
+
+                if (stockPicking.State == PickingState.Cancelled)
+                {
+                    throw new Exception("You cannot update a stock picking that has been set to 'Cancelled'.");
+
+                }
+
+                foreach (var stockMove in stockPicking.StockMoves)
+                {
+                    if(stockMove.ProductUomQty < stockMove.Quantity)
+                    {
+                        throw new Exception("You have processed less products than the initial demand.");
+                    }
+
+                    decimal quantity = stockMove.ProductUomQty / stockMove.ProductUom.Factor;
+                    quantity = Math.Round(quantity / stockMove.ProductUom.Rounding) * stockMove.ProductUom.Rounding;
+                    stockMove.Quantity = quantity;
+
+                    var stockQuant = _dbContext.StockQuant.FirstOrDefault(_ => _.LocationId == stockMove.LocationDestId && _.ProductId == stockMove.ProductId);
+
+                    if(stockQuant == null)
+                    {
+                        stockQuant = new StockQuant
+                        {
+                            ProductId = stockMove.ProductId,
+                            LocationId = stockMove.LocationDestId,
+                            Quantity = (decimal)stockMove.Quantity,
+                        };
+                    }else
+                    {
+                        stockQuant.Quantity = (decimal)(stockQuant.Quantity + stockMove.Quantity);
+                    }
+
+                    var stockMoveLine = new StockMoveLine
+                    {
+                        MoveId = stockMove.Id,
+                        ProductUomId = stockMove.ProductUomId,
+                        QuantId = stockQuant.Id,
+                        State = StockMoveState.Done,
+                        QuantityProductUom = stockMove.ProductUomQty,
+                        Quantity = (decimal)stockMove.Quantity,
+                        LocationId = stockMove.LocationId,
+                        LocationDestId = stockMove.LocationDestId,
+                    };
+                    _dbContext.StockMoveLine.Add(stockMoveLine);
+
+                }
+                stockPicking.State = PickingState.Done;
                 _dbContext.SaveChanges();
                 result.Succeed = true;
                 result.Data = stockPicking.Id;
