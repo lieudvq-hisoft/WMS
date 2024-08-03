@@ -5,6 +5,7 @@ namespace Data.Models
 {
 	public class StockMoveModel
     {
+        public Guid Id { get; set; }
         public ProductProductModel ProductProduct { get; set; }
         public UomUomModel UomUom { get; set; }
         public StockLocationModel Location { get; set; }

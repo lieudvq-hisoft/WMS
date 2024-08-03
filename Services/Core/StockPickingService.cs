@@ -364,6 +364,7 @@ public class StockPickingService : IStockPickingService
             stockMoves = stockMoves.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
             var viewModels = stockMoves.Select(sm => new StockMoveModel
             {
+                Id = sm.Id,
                 ProductProduct = new ProductProductModel
                 {
                     Id = sm.ProductProduct.Id,
