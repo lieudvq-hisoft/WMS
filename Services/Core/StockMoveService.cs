@@ -67,6 +67,7 @@ public class StockMoveService : IStockMoveService
                 //decimal quantity =  stockMove.ProductUomQty / uomUom.Factor;
                 //quantity = Math.Round(quantity / uomUom.Rounding) * uomUom.Rounding;
                 //stockMove.Quantity = quantity;
+                _dbContext.Add(stockMove);
                 _dbContext.SaveChanges();
                 result.Succeed = true;
                 result.Data = stockMove.Id;
