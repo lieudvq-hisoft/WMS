@@ -420,6 +420,11 @@ public class StockPickingService : IStockPickingService
 
                 }
 
+                if (stockPicking.StockMoves.Count() == 0)
+                {
+                    throw new Exception("There are no operations for make as to do.");
+                }
+
                 foreach (var stockMove in stockPicking.StockMoves)
                 {
                     stockMove.Quantity = stockMove.ProductUomQty;
