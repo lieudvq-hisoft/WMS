@@ -309,6 +309,11 @@ public class StockPickingService : IStockPickingService
                 throw new Exception("You cannot update a stock picking that has been set to 'Done'.");
 
             }
+            if (stockPicking.State == PickingState.Cancelled)
+            {
+                throw new Exception("You cannot update a stock picking that has been set to 'Cancelled'.");
+
+            }
             if (model.LocationDestId != null)
             {
                 stockPicking.LocationDestId = (Guid)model.LocationDestId;
