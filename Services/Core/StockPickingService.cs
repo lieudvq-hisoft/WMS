@@ -535,7 +535,7 @@ public class StockPickingService : IStockPickingService
 
                 foreach (var stockMove in stockPicking.StockMoves)
                 {
-                    if(stockMove.ProductUomQty < stockMove.Quantity)
+                    if(stockMove.ProductUomQty > stockMove.Quantity)
                     {
                         throw new Exception("You have processed less products than the initial demand.");
                     }
