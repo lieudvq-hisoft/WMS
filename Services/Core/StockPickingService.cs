@@ -25,8 +25,7 @@ public interface IStockPickingService
     Task<ResultModel> UpdateReceipt(StockPickingUpdateReceipt model);
     Task<ResultModel> GetInfo(Guid id);
     Task<ResultModel> GetStockMoves(PagingParam<StockMoveSortCriteria> paginationModel, Guid id);
-
-
+    Task<ResultModel> MakeAsTodo(Guid id);
 }
 public class StockPickingService : IStockPickingService
 {
@@ -392,6 +391,44 @@ public class StockPickingService : IStockPickingService
         catch (Exception ex)
         {
             result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> MakeAsTodo(Guid id)
+    {
+        var result = new ResultModel();
+        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                var stockPicking = _dbContext.StockPicking.Include(_ => _.StockMoves).FirstOrDefault(_ => _.Id == id);
+                if (stockPicking == null)
+                {
+                    throw new Exception("Stock Picking not exists");
+                }
+                if (stockPicking.State == PickingState.Done)
+                {
+                    throw new Exception("You cannot update a stock picking that has been set to 'Done'.");
+
+                }
+
+                foreach (var stockMove in stockPicking.StockMoves)
+                {
+                    stockMove.Quantity = stockMove.ProductUomQty;
+                    stockMove.State = StockMoveState.Assigned;
+                }
+                stockPicking.State = PickingState.Assigned;
+                _dbContext.SaveChanges();
+                result.Succeed = true;
+                result.Data = stockPicking.Id;
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
         }
         return result;
     }

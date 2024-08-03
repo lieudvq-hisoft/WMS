@@ -108,4 +108,12 @@ public class StockPickingController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPut("MakeAsTodo/{id}")]
+    public async Task<ActionResult> MakeAsTodo(Guid id)
+    {
+        var result = await _stockPickingService.MakeAsTodo(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }

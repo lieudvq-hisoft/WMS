@@ -43,5 +43,7 @@ namespace Data.Entities
 
         public DateTime? DateDone { get; set; }
 
+        public virtual ICollection<StockMove> StockMoves { get; set; }
+
     }
 }
