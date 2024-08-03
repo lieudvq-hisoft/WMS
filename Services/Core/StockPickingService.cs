@@ -279,10 +279,16 @@ public class StockPickingService : IStockPickingService
                 .Include(_ => _.Location)
                 .Include(_ => _.LocationDest)
                 .Include(_ => _.PickingType)
+                .Include(_ => _.StockMoves)
                 .FirstOrDefault(_ => _.Id == id);
             if (stockPicking == null)
             {
                 throw new Exception("Stock Picking not exists");
+            }
+            if(stockPicking.StockMoves.Count() == 0)
+            {
+                stockPicking.State = PickingState.Draft;
+                _dbContext.SaveChanges();
             }
             result.Succeed = true;
             result.Data = _mapper.Map<StockPicking, StockPickingModel>(stockPicking); ;
