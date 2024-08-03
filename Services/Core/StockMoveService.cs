@@ -122,7 +122,7 @@ public class StockMoveService : IStockMoveService
         {
             try
             {
-                var stockMove = _dbContext.StockMove.Include(_ => _.StockPicking).FirstOrDefault(_ => _.Id == id);
+                var stockMove = _dbContext.StockMove.FirstOrDefault(_ => _.Id == id);
                 if (stockMove == null)
                 {
                     throw new Exception("Stock Mone not exists");
