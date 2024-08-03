@@ -87,7 +87,7 @@ public class StockPickingService : IStockPickingService
         var result = new ResultModel();
         try
         {
-            var stockPicking = _dbContext.StockPicking.FirstOrDefault(_ => _.Id == model.Id);
+            var stockPicking = _dbContext.StockPicking.Include(_ => _.StockMoves).FirstOrDefault(_ => _.Id == model.Id);
             if (stockPicking == null)
             {
                 throw new Exception("Stock Picking not exists");
@@ -104,6 +104,10 @@ public class StockPickingService : IStockPickingService
             if (model.LocationDestId != null)
             {
                 stockPicking.LocationDestId = (Guid)model.LocationDestId;
+                foreach (var stockMove in stockPicking.StockMoves)
+                {
+                    stockMove.LocationDestId = (Guid)model.LocationDestId;
+                }
             }
             if (model.PartnerId != null)
             {
