@@ -17,7 +17,7 @@ namespace Services.Core;
 public interface IStockMoveService
 {
     Task<ResultModel> Create(StockMoveCreate model);
-
+    Task<ResultModel> Delete(Guid id);
 }
 public class StockMoveService : IStockMoveService
 {
@@ -68,6 +68,44 @@ public class StockMoveService : IStockMoveService
                 //quantity = Math.Round(quantity / uomUom.Rounding) * uomUom.Rounding;
                 //stockMove.Quantity = quantity;
                 _dbContext.Add(stockMove);
+                _dbContext.SaveChanges();
+                result.Succeed = true;
+                result.Data = stockMove.Id;
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> Delete(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                var stockMove = _dbContext.StockMove.Include(_ => _.StockPicking).FirstOrDefault(_ => _.Id == id);
+                if (stockMove == null)
+                {
+                    throw new Exception("Stock Mone not exists");
+                }
+                if (stockMove.State == StockMoveState.Done)
+                {
+                    throw new Exception("You cannot update a stock move that has been set to 'Done'.");
+
+                }
+                if (stockMove.StockPicking.State == PickingState.Done)
+                {
+                    throw new Exception("You cannot delete a stock move that has been set to 'Done'.");
+
+                }
+                _dbContext.Remove(stockMove);
                 _dbContext.SaveChanges();
                 result.Succeed = true;
                 result.Data = stockMove.Id;
