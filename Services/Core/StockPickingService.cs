@@ -554,6 +554,7 @@ public class StockPickingService : IStockPickingService
                             LocationId = stockMove.LocationDestId,
                             Quantity = (decimal)stockMove.Quantity,
                         };
+                        _dbContext.Add(stockQuant);
                     }else
                     {
                         stockQuant.Quantity = (decimal)(stockQuant.Quantity + stockMove.Quantity);
