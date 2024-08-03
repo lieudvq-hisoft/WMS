@@ -116,4 +116,12 @@ public class StockPickingController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPut("Cancel/{id}")]
+    public async Task<ActionResult> Cancel(Guid id)
+    {
+        var result = await _stockPickingService.Cancel(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }
