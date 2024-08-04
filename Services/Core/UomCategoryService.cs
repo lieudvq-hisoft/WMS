@@ -38,7 +38,7 @@ public class UomCategoryService : IUomCategoryService
         var result = new ResultModel();
         try
         {
-            var uomCategories = _dbContext.UomCategory.Include(_ => _.UomUoms.OrderByDescending(u => u.CreateDate)).AsQueryable();
+            var uomCategories = _dbContext.UomCategory.Include(_ => _.UomUoms.OrderBy(u => u.CreateDate)).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, uomCategories.Count());
             uomCategories = uomCategories.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             uomCategories = uomCategories.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
