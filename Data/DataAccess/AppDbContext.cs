@@ -105,12 +105,6 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
             .HasForeignKey(r => r.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<UomUom>()
-            .HasMany(r => r.StockMoves)
-            .WithOne(u => u.ProductUom)
-            .HasForeignKey(r => r.ProductUomId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         modelBuilder.Entity<ProductCategory>()
             .HasOne(r => r.ProductRemoval)
             .WithMany(u => u.ProductCategories)
@@ -175,6 +169,12 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
             .HasOne(r => r.ProductProduct)
             .WithMany(u => u.StockQuants)
             .HasForeignKey(r => r.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<StockMove>()
+            .HasOne(r => r.ProductUom)
+            .WithMany(u => u.StockMoves)
+            .HasForeignKey(r => r.ProductUomId)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<StockMoveLine>()
