@@ -219,7 +219,7 @@ public class ProductTemplateService : IProductTemplateService
                     {
                         Id = _.ProductId,
                         Name = _.ProductProduct.ProductTemplate.Name,
-                        Pvcs = _.ProductProduct.ProductVariantCombinations.Select(pvc =>
+                        Pvcs = _.ProductProduct.ProductVariantCombinations.OrderBy(pvc => pvc.CreateDate).Select(pvc =>
                             new Pvc
                             {
                                 Attribute = pvc.ProductTemplateAttributeValue.ProductAttributeValue.ProductAttribute.Name,
@@ -331,7 +331,7 @@ public class ProductTemplateService : IProductTemplateService
                 .ThenInclude(_ => _.ProductAttributeValue)
                 .ThenInclude(_ => _.ProductAttribute)
                 .Include(_ => _.ProductProducts)
-                .ThenInclude(_ => _.ProductVariantCombinations)
+                .ThenInclude(_ => _.ProductVariantCombinations.OrderBy(pvc => pvc.CreateDate))
                 .Where(_ => _.Id == id).FirstOrDefault();
             if(productTemplate == null)
             {
@@ -357,7 +357,7 @@ public class ProductTemplateService : IProductTemplateService
                 var suggestPvcSet = new HashSet<Guid>(combinationSuggest.Select(_ => _.ProductTemplateAttributeValueId));
                 foreach (var productCurrent in productTemplate.ProductProducts)
                 {
-                    var currentPtavIds = productCurrent.ProductVariantCombinations.Select(_ => _.ProductTemplateAttributeValueId).ToList();
+                    var currentPtavIds = productCurrent.ProductVariantCombinations.OrderBy(pvc => pvc.CreateDate).Select(_ => _.ProductTemplateAttributeValueId).ToList();
                     var currentPtavIdSet = new HashSet<Guid>(currentPtavIds);
 
                     if (suggestPvcSet.SetEquals(currentPtavIdSet))
@@ -465,7 +465,7 @@ public class ProductTemplateService : IProductTemplateService
                 {
                     Id = _.Id,
                     Name = _.ProductTemplate.Name,
-                    Pvcs = _.ProductVariantCombinations.Select(pvc =>
+                    Pvcs = _.ProductVariantCombinations.OrderBy(pvc => pvc.CreateDate).Select(pvc =>
                     new Pvc
                     {
                         Attribute = pvc.ProductTemplateAttributeValue.ProductAttributeValue.ProductAttribute.Name,
