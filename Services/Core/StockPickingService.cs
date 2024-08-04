@@ -542,8 +542,8 @@ public class StockPickingService : IStockPickingService
 
                     decimal quantity = stockMove.ProductUomQty / stockMove.ProductUom.Factor;
                     quantity = Math.Round(quantity / stockMove.ProductUom.Rounding) * stockMove.ProductUom.Rounding;
-                    stockMove.Quantity = quantity;
-
+                    stockMove.ProductQty = quantity;
+                    stockMove.State = StockMoveState.Done;
                     var stockQuant = _dbContext.StockQuant.FirstOrDefault(_ => _.LocationId == stockMove.LocationDestId && _.ProductId == stockMove.ProductId);
 
                     if(stockQuant == null)
@@ -567,7 +567,7 @@ public class StockPickingService : IStockPickingService
                         QuantId = stockQuant.Id,
                         State = StockMoveState.Done,
                         QuantityProductUom = stockMove.ProductUomQty,
-                        Quantity = (decimal)stockMove.Quantity,
+                        Quantity = (decimal)stockMove.ProductQty,
                         LocationId = stockMove.LocationId,
                         LocationDestId = stockMove.LocationDestId,
                     };
