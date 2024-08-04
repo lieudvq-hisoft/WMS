@@ -15,7 +15,7 @@ public interface IUomCategoryService
 {
     Task<ResultModel> Get(PagingParam<SortCriteria> paginationModel);
     Task<ResultModel> Create(UomCategoryCreate model);
-    Task<ResultModel> GetUomUom(PagingParam<SortCriteria> paginationModel, Guid uomCateId);
+    Task<ResultModel> GetUomUom(PagingParam<SortUomUomCriteria> paginationModel, Guid uomCateId);
     Task<ResultModel> UpdateInfo(UomCategoryUpdate model);
     Task<ResultModel> GetInfo(Guid id);
     Task<ResultModel> Delete(Guid id);
@@ -73,7 +73,7 @@ public class UomCategoryService : IUomCategoryService
         return result;
     }
 
-    public async Task<ResultModel> GetUomUom(PagingParam<SortCriteria> paginationModel, Guid uomCateId)
+    public async Task<ResultModel> GetUomUom(PagingParam<SortUomUomCriteria> paginationModel, Guid uomCateId)
     {
         var result = new ResultModel();
         try

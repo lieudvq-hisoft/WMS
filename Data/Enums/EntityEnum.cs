@@ -22,6 +22,11 @@ public enum SortCriteria
     Name
 }
 
+public enum SortUomUomCriteria
+{
+    CreateDate
+}
+
 public enum ProductCategorySortCriteria
 {
     CompleteName,
