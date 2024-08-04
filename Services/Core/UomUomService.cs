@@ -101,12 +101,23 @@ public class UomUomService : IUomUomService
         result.Succeed = false;
         try
         {
-            var uomUom = _dbContext.UomUom.FirstOrDefault(_ => _.Id == model.Id);
+            var uomUom = _dbContext.UomUom
+                .Include(_ => _.Category)
+                .Include(_ => _.ProductTemplates)
+                .ThenInclude(_ => _.ProductProducts)
+                .ThenInclude(_ => _.StockQuants)
+                .FirstOrDefault(_ => _.Id == model.Id);
             if (uomUom == null)
             {
                 throw new Exception("UomUom not exists");
             }
-            if(uomUom.UomType != "Reference")
+            bool hasStockQuant = uomUom.ProductTemplates.Any(_ => _.ProductProducts
+                    .Any(product => product.StockQuants.Any(stockQuant => stockQuant.Quantity > 0)));
+            if (hasStockQuant)
+            {
+                throw new Exception("You cannot change the ratio of this unit of measure as some products with this UoM have already been moved or are currently reserved.");
+            }
+            if (uomUom.UomType != "Reference")
             {
                 uomUom.Ratio = (decimal)model.Factor;
                 uomUom.WriteDate = DateTime.Now;
