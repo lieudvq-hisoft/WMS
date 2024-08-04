@@ -557,7 +557,7 @@ public class StockPickingService : IStockPickingService
                         _dbContext.Add(stockQuant);
                     }else
                     {
-                        stockQuant.Quantity = (decimal)(stockQuant.Quantity + stockMove.Quantity);
+                        stockQuant.Quantity = (decimal)(stockQuant.Quantity + stockMove.ProductQty);
                     }
 
                     var stockMoveLine = new StockMoveLine
