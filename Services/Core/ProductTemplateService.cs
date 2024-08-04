@@ -173,7 +173,7 @@ public class ProductTemplateService : IProductTemplateService
                 {
                     Id = _.Id,
                     Name = _.ProductTemplate.Name,
-                    Pvcs = _.ProductVariantCombinations.Select(pvc =>
+                    Pvcs = _.ProductVariantCombinations.OrderBy(pvc => pvc.CreateDate).Select(pvc =>
                     new Pvc
                     {
                         Attribute = pvc.ProductTemplateAttributeValue.ProductAttributeValue.ProductAttribute.Name,
