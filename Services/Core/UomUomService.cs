@@ -70,7 +70,7 @@ public class UomUomService : IUomUomService
                 .ThenInclude(_ => _.UomUoms)
                 .ThenInclude(_ => _.ProductTemplates)
                 .ThenInclude(_ => _.ProductProducts)
-                .ThenInclude(_ => _.StockQuants)
+                .ThenInclude(_ => _.StockMoves)
                 .FirstOrDefault(_ => _.Id == model.Id);
             if (uomUom == null)
             {
@@ -80,7 +80,7 @@ public class UomUomService : IUomUomService
                 .UomUoms.Any(uomUom =>
                     uomUom.ProductTemplates.Any(productTemplate =>
                         productTemplate.ProductProducts.Any(product =>
-                            product.StockQuants.Any(stockQuant => stockQuant.Quantity > 0))));
+                            product.StockMoves.Any(stockMove => stockMove.ProductUomQty > 0))));
             if (hasStockQuant)
             {
                 throw new Exception("You cannot change the ratio of this unit of measure as some products with this UoM have already been moved or are currently reserved.");
@@ -108,14 +108,14 @@ public class UomUomService : IUomUomService
             var uomUom = _dbContext.UomUom
                 .Include(_ => _.ProductTemplates)
                 .ThenInclude(_ => _.ProductProducts)
-                .ThenInclude(_ => _.StockQuants).FirstOrDefault(_ => _.Id == model.Id);
+                .ThenInclude(_ => _.StockMoves).FirstOrDefault(_ => _.Id == model.Id);
             if (uomUom == null)
             {
                 throw new Exception("UomUom not exists");
             }
             bool hasStockQuant = uomUom.ProductTemplates.Any(productTemplate =>
                                     productTemplate.ProductProducts.Any(product =>
-                                        product.StockQuants.Any(stockQuant => stockQuant.Quantity > 0)));
+                                        product.StockMoves.Any(stockMove => stockMove.ProductUomQty > 0)));
             if (hasStockQuant)
             {
                 throw new Exception("You cannot change the ratio of this unit of measure as some products with this UoM have already been moved or are currently reserved.");
