@@ -48,7 +48,7 @@ namespace Data.Entities
 
         [Required]
         [Column(TypeName = "numeric")]
-        public decimal Rounding { get; set; }
+        public decimal Rounding { get; set; } = (decimal)0.01;
 
         public bool? Active { get; set; }
 

@@ -19,7 +19,7 @@ namespace Data.Models
         public UomType UomType { get; set; }
         public string Name { get; set; }
         public decimal Factor { get; set; }
-        public decimal Rounding { get; set; }
+        //public decimal Rounding { get; set; }
         public bool? Active { get; set; }
     }
 
@@ -27,7 +27,7 @@ namespace Data.Models
     {
         public Guid Id { get; set; }
         public string? Name { get; set; }
-        public decimal? Rounding { get; set; }
+        //public decimal? Rounding { get; set; }
         public bool? Active { get; set; }
     }
 

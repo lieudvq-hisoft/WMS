@@ -145,10 +145,10 @@ public class UomUomService : IUomUomService
             {
                 uomUom.Name = model.Name;
             }
-            if (model.Rounding != null)
-            {
-                uomUom.Rounding = (decimal)model.Rounding;
-            }
+            //if (model.Rounding != null)
+            //{
+            //    uomUom.Rounding = (decimal)model.Rounding;
+            //}
             if (model.Active != null)
             {
                 uomUom.Active = model.Active;
