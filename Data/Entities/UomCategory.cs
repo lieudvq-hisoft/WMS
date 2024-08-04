@@ -54,6 +54,11 @@ namespace Data.Entities
                 {
                     foreach (var uom in UomUoms.Where(u => u.Id != newReference.Id))
                     {
+                        bool hasStockMove = uom.StockMoves.Any();
+                        if (hasStockMove)
+                        {
+                            throw new Exception("You cannot change the ratio of this unit of measure as some products with this UoM have already been moved or are currently reserved.");
+                        }
                         uom.Factor = uom.Factor / (newReference.Factor != 0 ? newReference.Factor : 1);
                         uom.UomType = uom.Factor > 1 ? "Smaller" : "Bigger";
                     }

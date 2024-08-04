@@ -66,6 +66,7 @@ namespace Data.Entities
         public virtual User WriteUser { get; set; }
 
         public virtual ICollection<ProductTemplate> ProductTemplates { get; set; }
+        public virtual ICollection<StockMove> StockMoves { get; set; }
 
         [NotMapped]
         private string _uomType;

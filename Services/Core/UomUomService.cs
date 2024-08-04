@@ -63,39 +63,38 @@ public class UomUomService : IUomUomService
     {
         var result = new ResultModel();
         result.Succeed = false;
-        try
+        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
         {
-            var uomUom = _dbContext.UomUom
-                .Include(_ => _.Category)
-                .ThenInclude(_ => _.UomUoms)
-                .ThenInclude(_ => _.ProductTemplates)
-                .ThenInclude(_ => _.ProductProducts)
-                .ThenInclude(_ => _.StockMoves)
-                .FirstOrDefault(_ => _.Id == model.Id);
-            if (uomUom == null)
+            try
             {
-                throw new Exception("UomUom not exists");
+                var uomUom = _dbContext.UomUom
+                    .Include(_ => _.StockMoves)
+                    .Include(_ => _.Category).ThenInclude(_ => _.UomUoms).ThenInclude(_ => _.StockMoves)
+                    .FirstOrDefault(_ => _.Id == model.Id);
+                if (uomUom == null)
+                {
+                    throw new Exception("UomUom not exists");
+                }
+                bool hasStockMove = uomUom.StockMoves.Any();
+                if (hasStockMove)
+                {
+                    throw new Exception("You cannot change the ratio of this unit of measure as some products with this UoM have already been moved or are currently reserved.");
+                }
+                uomUom.UomType = model.UomType.ToString();
+                uomUom.Category.UpdateReferenceUom(uomUom.Id);
+                uomUom.WriteDate = DateTime.Now;
+                _dbContext.SaveChanges();
+                result.Succeed = true;
+                result.Data = _mapper.Map<UomUom, UomUomModel>(uomUom);
+                await transaction.CommitAsync();
             }
-            bool hasStockQuant = uomUom.Category
-                .UomUoms.Any(uomUom =>
-                    uomUom.ProductTemplates.Any(productTemplate =>
-                        productTemplate.ProductProducts.Any(product =>
-                            product.StockMoves.Any(stockMove => stockMove.ProductUomQty > 0))));
-            if (hasStockQuant)
+            catch (Exception ex)
             {
-                throw new Exception("You cannot change the ratio of this unit of measure as some products with this UoM have already been moved or are currently reserved.");
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
             }
-            uomUom.UomType = model.UomType.ToString();
-            uomUom.Category.UpdateReferenceUom(uomUom.Id);
-            uomUom.WriteDate = DateTime.Now;
-            _dbContext.SaveChanges();
-            result.Succeed = true;
-            result.Data = _mapper.Map<UomUom, UomUomModel>(uomUom);
         }
-        catch (Exception ex)
-        {
-            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        }
+
         return result;
     }
 
@@ -105,18 +104,13 @@ public class UomUomService : IUomUomService
         result.Succeed = false;
         try
         {
-            var uomUom = _dbContext.UomUom
-                .Include(_ => _.ProductTemplates)
-                .ThenInclude(_ => _.ProductProducts)
-                .ThenInclude(_ => _.StockMoves).FirstOrDefault(_ => _.Id == model.Id);
+            var uomUom = _dbContext.UomUom.Include(_ => _.StockMoves).FirstOrDefault(_ => _.Id == model.Id);
             if (uomUom == null)
             {
                 throw new Exception("UomUom not exists");
             }
-            bool hasStockQuant = uomUom.ProductTemplates.Any(productTemplate =>
-                                    productTemplate.ProductProducts.Any(product =>
-                                        product.StockMoves.Any(stockMove => stockMove.ProductUomQty > 0)));
-            if (hasStockQuant)
+            bool hasStockMove = uomUom.StockMoves.Any();
+            if (hasStockMove)
             {
                 throw new Exception("You cannot change the ratio of this unit of measure as some products with this UoM have already been moved or are currently reserved.");
             }
