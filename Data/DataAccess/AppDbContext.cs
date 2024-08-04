@@ -105,6 +105,12 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
             .HasForeignKey(r => r.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<UomUom>()
+            .HasMany(r => r.StockMoves)
+            .WithOne(u => u.ProductUom)
+            .HasForeignKey(r => r.ProductUomId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         modelBuilder.Entity<ProductCategory>()
             .HasOne(r => r.ProductRemoval)
             .WithMany(u => u.ProductCategories)
