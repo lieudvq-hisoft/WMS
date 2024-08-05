@@ -575,6 +575,7 @@ public class StockPickingService : IStockPickingService
 
                 }
                 stockPicking.State = PickingState.Done;
+                stockPicking.DateDone = DateTime.Now;
                 _dbContext.SaveChanges();
                 result.Succeed = true;
                 result.Data = stockPicking.Id;
