@@ -179,6 +179,7 @@ public class StockPickingService : IStockPickingService
             var stockPickings = _dbContext.StockPicking
                 .Include(_ => _.PickingType)
                 .ThenInclude(_ => _.Warehouse)
+                .Include(_ => _.Backorder)
                 .Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
             stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
