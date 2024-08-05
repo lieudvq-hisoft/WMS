@@ -287,6 +287,7 @@ public class StockPickingService : IStockPickingService
                 .Include(_ => _.LocationDest)
                 .Include(_ => _.PickingType)
                 .Include(_ => _.StockMoves)
+                .Include(_ => _.Backorder)
                 .FirstOrDefault(_ => _.Id == id);
             if (stockPicking == null)
             {

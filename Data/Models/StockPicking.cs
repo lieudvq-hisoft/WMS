@@ -21,6 +21,7 @@ namespace Data.Models
         public DateTime? ScheduledDate { get; set; }
         public DateTime? DateDeadline { get; set; }
         public DateTime? DateDone { get; set; }
+        public StockPickingModel? Backorder { get; set; }
     }
 
     public class StockPickingCreate
