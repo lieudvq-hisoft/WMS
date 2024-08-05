@@ -548,6 +548,7 @@ public class StockPickingService : IStockPickingService
                     {
                         var backorder = new StockPicking
                         {
+                            LocationId = stockPicking.LocationId,
                             LocationDestId = stockPicking.LocationDestId,
                             PickingTypeId = stockPicking.PickingTypeId,
                             Note = stockPicking.Note,
@@ -555,6 +556,7 @@ public class StockPickingService : IStockPickingService
                             DateDeadline = stockPicking.DateDeadline,
                             BackorderId = stockPicking.Id,
                             CreateUid = stockPicking.CreateUid,
+                            State = PickingState.Waiting,
                         };
                         _dbContext.Add(backorder);
                         backorder.Name = $"{stockPicking.PickingType.Barcode}-{backorder.Id}";
@@ -567,9 +569,10 @@ public class StockPickingService : IStockPickingService
                             LocationId = stockMove.LocationId,
                             LocationDestId = stockMove.LocationDestId,
                             DescriptionPicking = stockMove.DescriptionPicking,
-                            ProductUomQty = (decimal)(stockMove.Quantity - stockMove.ProductUomQty),
+                            ProductUomQty = (decimal)(stockMove.ProductUomQty - stockMove.Quantity),
                             Name = stockMove.Name,
                             Reference = stockMove.Reference,
+                            State = StockMoveState.Waiting,
                         };
                         _dbContext.Add(stockMoveBackorder);
                         _dbContext.SaveChanges();
