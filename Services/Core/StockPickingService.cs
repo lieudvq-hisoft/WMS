@@ -7,6 +7,7 @@ using Data.Enums;
 using Data.Model;
 using Data.Models;
 using Data.Utils.Paging;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using static Confluent.Kafka.ConfigPropertyNames;
@@ -521,6 +522,7 @@ public class StockPickingService : IStockPickingService
             try
             {
                 var stockPicking = _dbContext.StockPicking
+                    .Include(_ => _.PickingType)
                     .Include(_ => _.StockMoves)
                         .ThenInclude(_ => _.ProductUom)
                     .FirstOrDefault(_ => _.Id == id);
@@ -544,7 +546,33 @@ public class StockPickingService : IStockPickingService
                 {
                     if(stockMove.ProductUomQty > stockMove.Quantity)
                     {
-                        throw new Exception("You have processed less products than the initial demand.");
+                        var backorder = new StockPicking
+                        {
+                            LocationDestId = stockPicking.LocationDestId,
+                            PickingTypeId = stockPicking.PickingTypeId,
+                            Note = stockPicking.Note,
+                            ScheduledDate = stockPicking.ScheduledDate,
+                            DateDeadline = stockPicking.DateDeadline,
+                            BackorderId = stockPicking.Id,
+                            CreateUid = stockPicking.CreateUid,
+                        };
+                        _dbContext.Add(backorder);
+                        backorder.Name = $"{stockPicking.PickingType.Barcode}-{backorder.Id}";
+
+                        var stockMoveBackorder = new StockMove
+                        {
+                            ProductId = stockMove.ProductId,
+                            ProductUomId = stockMove.ProductUomId,
+                            PickingId = backorder.Id,
+                            LocationId = stockMove.LocationId,
+                            LocationDestId = stockMove.LocationDestId,
+                            DescriptionPicking = stockMove.DescriptionPicking,
+                            ProductUomQty = (decimal)(stockMove.Quantity - stockMove.ProductUomQty),
+                            Name = stockMove.Name,
+                            Reference = stockMove.Reference,
+                        };
+                        _dbContext.Add(stockMoveBackorder);
+                        _dbContext.SaveChanges();
                     }
 
                     decimal quantity = (decimal)(stockMove.Quantity / stockMove.ProductUom.Factor);
