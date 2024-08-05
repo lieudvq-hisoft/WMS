@@ -540,7 +540,7 @@ public class StockPickingService : IStockPickingService
                         throw new Exception("You have processed less products than the initial demand.");
                     }
 
-                    decimal quantity = stockMove.ProductUomQty / stockMove.ProductUom.Factor;
+                    decimal quantity = (decimal)(stockMove.Quantity / stockMove.ProductUom.Factor);
                     quantity = Math.Round(quantity / stockMove.ProductUom.Rounding) * stockMove.ProductUom.Rounding;
                     stockMove.ProductQty = quantity;
                     stockMove.State = StockMoveState.Done;
@@ -566,7 +566,7 @@ public class StockPickingService : IStockPickingService
                         ProductUomId = stockMove.ProductUomId,
                         QuantId = stockQuant.Id,
                         State = StockMoveState.Done,
-                        QuantityProductUom = stockMove.ProductUomQty,
+                        QuantityProductUom = stockMove.Quantity,
                         Quantity = (decimal)stockMove.ProductQty,
                         LocationId = stockMove.LocationId,
                         LocationDestId = stockMove.LocationDestId,
