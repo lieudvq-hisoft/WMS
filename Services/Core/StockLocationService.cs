@@ -30,6 +30,7 @@ public class StockLocationService : IStockLocationService
     private readonly Guid _physicalLocationId = new Guid("e2a7c3e0-1a4d-43b6-95e1-123456789abc");
     private readonly Guid _partnerLocationId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479");
     private readonly Guid _vendorLocationId = new Guid("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
+    private readonly Guid _customerLocationId = new Guid("6ba7b180-9cad-11d1-80b4-00c04fd430c8");
     public StockLocationService(AppDbContext dbContext, IMapper mapper, IConfiguration configuration)
     {
         _dbContext = dbContext;
@@ -123,7 +124,7 @@ public class StockLocationService : IStockLocationService
                 throw new Exception("Stock location not exists");
             }
 
-            if (stockLocation.Id == _virtualLocationId || stockLocation.Id == _inventoryAdjustmentId || stockLocation.Id == _physicalLocationId || stockLocation.Id == _partnerLocationId || stockLocation.Id == _vendorLocationId)
+            if (stockLocation.Id == _virtualLocationId || stockLocation.Id == _inventoryAdjustmentId || stockLocation.Id == _physicalLocationId || stockLocation.Id == _partnerLocationId || stockLocation.Id == _vendorLocationId || stockLocation.Id == _customerLocationId)
             {
                 throw new Exception("Unable to delete this document because it is used as a default property");
             }

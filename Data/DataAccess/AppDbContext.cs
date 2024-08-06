@@ -212,6 +212,7 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
         var physicalLocationId = new Guid("e2a7c3e0-1a4d-43b6-95e1-123456789abc");
         var partnerLocationId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479");
         var vendorLocationId = new Guid("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
+        var customerLocationId = new Guid("6ba7b180-9cad-11d1-80b4-00c04fd430c8");
         modelBuilder.Entity<StockLocation>().HasData(
             new Entities.StockLocation()
             {
@@ -259,6 +260,16 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
                 CompleteName = "Partners / Vendors",
                 ParentPath = $"{partnerLocationId}/{vendorLocationId}/",
                 Usage = Enums.LocationType.Supplier,
+            });
+        modelBuilder.Entity<StockLocation>().HasData(
+            new Entities.StockLocation()
+            {
+                Id = customerLocationId,
+                LocationId = partnerLocationId,
+                Name = "Customers",
+                CompleteName = "Partners / Customers",
+                ParentPath = $"{partnerLocationId}/{customerLocationId}/",
+                Usage = Enums.LocationType.Customer,
             });
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }

@@ -14,7 +14,10 @@ public enum LocationType
     Inventory,
 
     [Description("Vendor Location: Virtual location representing the source location for products coming from your vendors")]
-    Supplier
+    Supplier,
+
+    [Description("Vendor Location: Virtual location representing the source location for products coming from your customers")]
+    Customer
 }
 
 
