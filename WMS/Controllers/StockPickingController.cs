@@ -124,4 +124,12 @@ public class StockPickingController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPut("Validate/DeliveryOrder/{id}")]
+    public async Task<ActionResult> ValidateDeliveryOrder(Guid id)
+    {
+        var result = await _stockPickingService.ValidateDeliveryOrder(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }

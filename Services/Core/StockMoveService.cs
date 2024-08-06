@@ -90,9 +90,6 @@ public class StockMoveService : IStockMoveService
                 {
                     stockMove.Name = product.ProductTemplate.Name + " (" + string.Join(", ", product.ProductVariantCombinations.Select(pvc => pvc.ProductTemplateAttributeValue.ProductAttributeValue.Name)) + ")";
                     stockMove.Reference = stockPicking.Name;
-                    //decimal quantity =  stockMove.ProductUomQty / uomUom.Factor;
-                    //quantity = Math.Round(quantity / uomUom.Rounding) * uomUom.Rounding;
-                    //stockMove.Quantity = quantity;
                     if (stockPicking.State == PickingState.Assigned)
                     {
                         stockMove.State = StockMoveState.Assigned;
