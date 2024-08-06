@@ -39,6 +39,8 @@ namespace Data.Models
     public class StockMoveQuantityUpdate
     {
         public Guid Id { get; set; }
+
+        [Range(1, 1000, ErrorMessage = "Quantity must be between 1 and 1000.")]
         public decimal Quantity { get; set; }
     }
 
