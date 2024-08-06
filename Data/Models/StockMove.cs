@@ -1,4 +1,6 @@
-﻿using Data.Entities;
+﻿using Data.DataAccess.Constant;
+using System.ComponentModel.DataAnnotations;
+using Data.Entities;
 using Data.Enums;
 
 namespace Data.Models
@@ -29,6 +31,8 @@ namespace Data.Models
         public Guid LocationId { get; set; }
         public Guid LocationDestId { get; set; }
         public string? DescriptionPicking { get; set; }
+
+        [Range(1, 1000, ErrorMessage = "Quantity must be between 1 and 1000.")]
         public decimal ProductUomQty { get; set; }
     }
 
