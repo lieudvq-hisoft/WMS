@@ -670,6 +670,10 @@ public class StockPickingService : IStockPickingService
                         stockMove.ProductQty = quantity;
                         stockQuant.Quantity = (decimal)(stockQuant.Quantity - stockMove.ProductQty);
                         stockMove.State = StockMoveState.Done;
+                    }else
+                    {
+                        throw new Exception($"You cannot validate because there are not enough quantity");
+
                     }
 
                     if (stockMove.ProductUomQty > stockMove.Quantity)
