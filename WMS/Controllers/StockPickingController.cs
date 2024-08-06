@@ -21,30 +21,6 @@ public class StockPickingController : ControllerBase
         _stockPickingService = stockPickingService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult> Get([FromQuery] PagingParam<SortStockPickingCriteria> paginationModel)
-    {
-        var result = await _stockPickingService.Get(paginationModel);
-        if (result.Succeed) return Ok(result.Data);
-        return BadRequest(result.ErrorMessage);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult> Create([FromBody] StockPickingCreate model)
-    {
-        var result = await _stockPickingService.Create(model, Guid.Parse(User.GetId()));
-        if (result.Succeed) return Ok(result.Data);
-        return BadRequest(result.ErrorMessage);
-    }
-
-    [HttpPut]
-    public async Task<ActionResult> Put([FromBody] StockPickingUpdate model)
-    {
-        var result = await _stockPickingService.Update(model);
-        if (result.Succeed) return Ok(result.Data);
-        return BadRequest(result.ErrorMessage);
-    }
-
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
@@ -89,6 +65,22 @@ public class StockPickingController : ControllerBase
     public async Task<ActionResult> UpdateReceipt([FromBody] StockPickingUpdateReceipt model)
     {
         var result = await _stockPickingService.UpdateReceipt(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [HttpPost("DeliveryOrder")]
+    public async Task<ActionResult> CreateDeliveryOrder([FromBody] StockPickingDeliveryOrder model)
+    {
+        var result = await _stockPickingService.CreateDeliveryOrder(model, Guid.Parse(User.GetId()));
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [HttpPut("DeliveryOrder")]
+    public async Task<ActionResult> UpdateDeliveryOrder([FromBody] StockPickingUpdateDeliveryOrder model)
+    {
+        var result = await _stockPickingService.UpdateDeliveryOrder(model);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }

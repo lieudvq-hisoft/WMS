@@ -67,5 +67,24 @@ namespace Data.Models
         public DateTime? ScheduledDate { get; set; }
         public DateTime? DateDeadline { get; set; }
     }
+
+    public class StockPickingDeliveryOrder
+    {
+        public Guid LocationId { get; set; }
+        public Guid PickingTypeId { get; set; }
+        public Guid? PartnerId { get; set; }
+        public string? Note { get; set; }
+        public DateTime? ScheduledDate { get; set; }
+        public DateTime? DateDeadline { get; set; }
+    }
+
+        public class StockPickingUpdateDeliveryOrder
+    {
+        public Guid Id { get; set; }
+        public Guid? LocationId { get; set; }
+        public string? Note { get; set; }
+        public DateTime? ScheduledDate { get; set; }
+        public DateTime? DateDeadline { get; set; }
+    }
 }
 
