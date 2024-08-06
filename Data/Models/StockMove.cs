@@ -32,7 +32,7 @@ namespace Data.Models
         public Guid LocationDestId { get; set; }
         public string? DescriptionPicking { get; set; }
 
-        [Range(1, 1000, ErrorMessage = "Quantity must be between 1 and 1000.")]
+        [Range(1, 100000, ErrorMessage = "Quantity must be between 1 and 100000.")]
         public decimal ProductUomQty { get; set; }
     }
 
@@ -40,7 +40,7 @@ namespace Data.Models
     {
         public Guid Id { get; set; }
 
-        [Range(1, 1000, ErrorMessage = "Quantity must be between 1 and 1000.")]
+        [Range(1, 100000, ErrorMessage = "Quantity must be between 1 and 100000.")]
         public decimal Quantity { get; set; }
     }
 
