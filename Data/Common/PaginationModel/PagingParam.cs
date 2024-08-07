@@ -39,6 +39,6 @@ public class PagingParam<TKey> where TKey : System.Enum
     [JsonConverter(typeof(PagingConstant.OrderCriteria))]
     public PagingConstant.OrderCriteria SortOrder { get; set; }
 
-    public string SearchText { get; set; } = "";
+    public string? SearchText { get; set; }
 
 }
