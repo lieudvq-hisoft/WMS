@@ -136,6 +136,10 @@ public class StockPickingService : IStockPickingService
                 .Include(_ => _.PickingType)
                 .ThenInclude(_ => _.Warehouse)
                 .Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Outgoing).AsQueryable();
+            if (!string.IsNullOrEmpty(paginationModel.SearchText))
+            {
+                stockPickings = stockPickings.Where(_ => _.Name.Contains(paginationModel.SearchText));
+            }
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
             stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             stockPickings = stockPickings.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
