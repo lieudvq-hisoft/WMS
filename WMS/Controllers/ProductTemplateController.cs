@@ -117,7 +117,7 @@ public class ProductTemplateController : ControllerBase
     [HttpDelete("Image/{id}")]
     public async Task<ActionResult> DeleteImage(Guid id)
     {
-        var result = await _productTemplateService.Delete(id);
+        var result = await _productTemplateService.DeleteImage(id);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
