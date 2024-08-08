@@ -47,6 +47,8 @@ namespace Data.Entities
         [ForeignKey("UomId")]
         public virtual UomUom UomUom { get; set; }
 
+        public string? ImageUrl { get; set; }
+
         public virtual ICollection<ProductProduct> ProductProducts { get; set; }
 
         public virtual ICollection<ProductTemplateAttributeLine> ProductTemplateAttributeLines { get; set; }

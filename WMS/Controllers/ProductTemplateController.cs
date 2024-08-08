@@ -105,4 +105,12 @@ public class ProductTemplateController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPut("Image/{id}")]
+    public async Task<ActionResult> UpdateImage([FromForm] ProductTemplateImageUpdate model, Guid id)
+    {
+        var result = await _productTemplateService.UpdateImage(model, id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }

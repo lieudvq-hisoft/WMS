@@ -8,6 +8,7 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Services.Utils;
 
 namespace Services.Core;
 
@@ -24,6 +25,7 @@ public interface IProductTemplateService
     Task<ResultModel> GetProductVariant(PagingParam<ProductVariantSortCriteria> paginationModel, Guid id);
     Task<ResultModel> GetStockQuant(PagingParam<StockQuantSortCriteria> paginationModel, Guid id);
     Task<ResultModel> GetProductVariantForSelect(Guid id);
+    Task<ResultModel> UpdateImage(ProductTemplateImageUpdate model, Guid id);
 
 }
 public class ProductTemplateService : IProductTemplateService
@@ -517,6 +519,37 @@ public class ProductTemplateService : IProductTemplateService
             {
                 break;
             }
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UpdateImage(ProductTemplateImageUpdate model, Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var productTemplate = _dbContext.ProductTemplate.FirstOrDefault(_ => _.Id == id);
+            if (productTemplate == null)
+            {
+                result.ErrorMessage = "Product Template not exist!";
+                return result;
+            }
+            if (productTemplate.ImageUrl != null)
+            {
+                string dirPathDelete = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                MyFunction.DeleteFile(dirPathDelete + productTemplate.ImageUrl);
+            }
+            string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Product", productTemplate.Id.ToString());
+            productTemplate.ImageUrl = await MyFunction.UploadImageAsync(model.File, dirPath);
+            productTemplate.WriteDate = DateTime.Now;
+            await _dbContext.SaveChangesAsync();
+            result.Succeed = true;
+            result.Data = productTemplate.ImageUrl;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
         }
         return result;
     }

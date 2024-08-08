@@ -40,12 +40,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\" />
-    <Content Remove="wwwroot\product\" />
+    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\" />
-    <Folder Include="wwwroot\product\" />
-    <Folder Include="wwwroot\" />
+    <Content Remove="wwwroot\" />
   </ItemGroup>
 </Project>

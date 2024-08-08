@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.AspNetCore.Http;
+
 namespace Data.Models
 {
 	public class ProductTemplateModel
@@ -56,6 +58,11 @@ namespace Data.Models
     {
         public Guid ProductTemplateId { get; set; }
         public List<Guid> PtavIds { get; set; }
+    }
+
+    public class ProductTemplateImageUpdate
+    {
+        public IFormFile File { get; set; }
     }
 }
 

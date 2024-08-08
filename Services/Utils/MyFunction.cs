@@ -46,7 +46,7 @@ namespace Services.Utils
             return dateTime - DateTime.Now;
         }
 
-        public static async Task<string> uploadImageAsync(IFormFile file, string path)
+        public static async Task<string> UploadImageAsync(IFormFile file, string path)
         {
 
             if (!Directory.Exists(path))
@@ -67,7 +67,7 @@ namespace Services.Utils
             return filePath.Split("/app/wwwroot")[1];
         }
 
-        public static async Task<string> uploadFileAsync(IFormFile file, string path, string splitString)
+        public static async Task<string> UploadFileAsync(IFormFile file, string path, string splitString)
         {
 
             if (!Directory.Exists(path))
@@ -88,7 +88,7 @@ namespace Services.Utils
             return filePath.Split(splitString)[1];
         }
 
-        public static void deleteFile(string filePath)
+        public static void DeleteFile(string filePath)
         {
             if (File.Exists(filePath))
             {
@@ -96,15 +96,13 @@ namespace Services.Utils
             }
         }
 
-        public static async Task<FileEModel> downloadFile(string filePath)
+        public static async Task<FileEModel> DownloadFile(string filePath)
         {
             var result = new FileEModel();
             result.Content = File.ReadAllBytes(filePath);
             result.Extension = Path.GetExtension(filePath);
             return result;
         }
-
-
 
         public static (int position, DateTime[] days) GetWeekInfo()
         {
