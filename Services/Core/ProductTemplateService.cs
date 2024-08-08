@@ -26,6 +26,7 @@ public interface IProductTemplateService
     Task<ResultModel> GetStockQuant(PagingParam<StockQuantSortCriteria> paginationModel, Guid id);
     Task<ResultModel> GetProductVariantForSelect(Guid id);
     Task<ResultModel> UpdateImage(ProductTemplateImageUpdate model, Guid id);
+    Task<ResultModel> DeleteImage(Guid id);
 
 }
 public class ProductTemplateService : IProductTemplateService
@@ -547,6 +548,33 @@ public class ProductTemplateService : IProductTemplateService
             await _dbContext.SaveChangesAsync();
             result.Succeed = true;
             result.Data = productTemplate.ImageUrl;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> DeleteImage(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var productTemplate = _dbContext.ProductTemplate.Where(_ => _.Id == id).FirstOrDefault();
+            if (productTemplate == null)
+            {
+                result.ErrorMessage = "Product Template not exist!";
+                return result;
+            }
+            string dirPathDelete = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            MyFunction.DeleteFile(dirPathDelete + productTemplate.ImageUrl);
+
+            productTemplate.ImageUrl = null;
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = "Delete Image successful";
         }
         catch (Exception ex)
         {
