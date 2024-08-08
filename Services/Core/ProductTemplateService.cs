@@ -127,6 +127,10 @@ public class ProductTemplateService : IProductTemplateService
                 .Include(_ => _.ProductProducts)
                 .ThenInclude(_ => _.StockQuants)
                 .AsQueryable();
+            if (!string.IsNullOrEmpty(paginationModel.SearchText))
+            {
+                productTemplates = productTemplates.Where(_ => _.Name.Contains(paginationModel.SearchText));
+            }
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, productTemplates.Count());
             productTemplates = productTemplates.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             productTemplates = productTemplates.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
