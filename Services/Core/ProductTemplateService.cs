@@ -144,7 +144,8 @@ public class ProductTemplateService : IProductTemplateService
                 ProductCategory = _mapper.Map<ProductCategoryModel>(pt.ProductCategory),
                 UomUom = _mapper.Map<UomUomModel>(pt.UomUom),
                 TotalVariant = pt.ProductProducts.Count(),
-                QtyAvailable = pt.ProductProducts.SelectMany(pp => pp.StockQuants).Sum(sq => sq.Quantity)
+                QtyAvailable = pt.ProductProducts.SelectMany(pp => pp.StockQuants).Sum(sq => sq.Quantity),
+                ImageUrl = pt.ImageUrl,
             });
             paging.Data = viewModels;
             result.Succeed = true;
