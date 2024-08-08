@@ -76,7 +76,7 @@ public class ProductTemplateService : IProductTemplateService
             {
                 productTemplate.CategId = (Guid)model.CategId;
             }
-            if (model.UomId != null)
+            if (model.UomId != null && model.UomId != productTemplate.UomId)
             {
                 bool hasStockQuant = productTemplate.ProductProducts
                     .Any(product => product.StockQuants.Any(stockQuant => stockQuant.Quantity > 0));
