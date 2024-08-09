@@ -85,6 +85,22 @@ public class StockPickingController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
+    [HttpPost("InternalTransfer")]
+    public async Task<ActionResult> CreateInternalTransfer([FromBody] StockPickingInternalTransfer model)
+    {
+        var result = await _stockPickingService.CreateInternalTransfer(model, Guid.Parse(User.GetId()));
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [HttpPut("InternalTransfer")]
+    public async Task<ActionResult> UpdateInternalTransfer([FromBody] StockPickingUpdateInternalTransfer model)
+    {
+        var result = await _stockPickingService.UpdateInternalTransfer(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
     [HttpGet("Info/{id}")]
     public async Task<ActionResult> GetInfo(Guid id)
     {

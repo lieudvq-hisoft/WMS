@@ -31,6 +31,10 @@ public interface IStockPickingService
     Task<ResultModel> CreateDeliveryOrder(StockPickingDeliveryOrder model, Guid createId);
     Task<ResultModel> UpdateDeliveryOrder(StockPickingUpdateDeliveryOrder model);
     Task<ResultModel> ValidateDeliveryOrder(Guid id);
+
+    Task<ResultModel> CreateInternalTransfer(StockPickingInternalTransfer model, Guid createId);
+    Task<ResultModel> UpdateInternalTransfer(StockPickingUpdateInternalTransfer model);
+
 }
 public class StockPickingService : IStockPickingService
 {
@@ -112,6 +116,10 @@ public class StockPickingService : IStockPickingService
                 .Include(_ => _.PickingType)
                 .ThenInclude(_ => _.Warehouse)
                 .Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
+            if (!string.IsNullOrEmpty(paginationModel.SearchText))
+            {
+                stockPickings = stockPickings.Where(_ => _.Name.Contains(paginationModel.SearchText));
+            }
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
             stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             stockPickings = stockPickings.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
@@ -207,6 +215,40 @@ public class StockPickingService : IStockPickingService
             if (stockPickingType.Code != StockPickingTypeCode.Outgoing)
             {
                 throw new Exception("Stock Picking Type not used for delivery order");
+            }
+            stockPicking.Name = $"{stockPickingType.Barcode}";
+            stockPicking.CreateUid = createUid;
+            _dbContext.Add(stockPicking);
+            stockPicking.Name = $"{stockPickingType.Barcode}-{stockPicking.Id}";
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<StockPicking, StockPickingModel>(stockPicking);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> CreateInternalTransfer(StockPickingInternalTransfer model, Guid createUid)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var stockPicking = _mapper.Map<StockPickingInternalTransfer, StockPicking>(model);
+            var stockPickingType = _dbContext.StockPickingType.FirstOrDefault(_ => _.Id == model.PickingTypeId);
+            if (stockPickingType == null)
+            {
+                throw new Exception("Stock Picking Type not exists");
+            }
+            if (stockPickingType.Code != StockPickingTypeCode.Internal)
+            {
+                throw new Exception("Stock Picking Type not used for internal transfer");
+            }
+            if (stockPicking.LocationId == stockPicking.LocationDestId)
+            {
+                throw new Exception("Location and destination location are the same");
             }
             stockPicking.Name = $"{stockPickingType.Barcode}";
             stockPicking.CreateUid = createUid;
@@ -337,6 +379,72 @@ public class StockPickingService : IStockPickingService
                     foreach (var stockMove in stockPicking.StockMoves)
                     {
                         stockMove.LocationId = stockPicking.LocationId;
+                    }
+                }
+            }
+            if (model.Note != null)
+            {
+                stockPicking.Note = model.Note;
+            }
+            if (model.ScheduledDate != null)
+            {
+                stockPicking.ScheduledDate = model.ScheduledDate;
+            }
+            if (model.DateDeadline != null)
+            {
+                stockPicking.DateDeadline = model.DateDeadline;
+            }
+            stockPicking.WriteDate = DateTime.Now;
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<StockPicking, StockPickingModel>(stockPicking);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UpdateInternalTransfer(StockPickingUpdateInternalTransfer model)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var stockPicking = _dbContext.StockPicking.Include(_ => _.StockMoves).FirstOrDefault(_ => _.Id == model.Id);
+            if (stockPicking == null)
+            {
+                throw new Exception("Stock Picking not exists");
+            }
+            if (stockPicking.State == PickingState.Done)
+            {
+                throw new Exception("You cannot update a stock picking that has been set to 'Done'.");
+
+            }
+            if (stockPicking.State == PickingState.Cancelled)
+            {
+                throw new Exception("You cannot update a stock picking that has been set to 'Cancelled'.");
+
+            }
+            if (model.LocationId != null)
+            {
+                stockPicking.LocationId = (Guid)model.LocationId;
+                if (stockPicking.StockMoves.Any())
+                {
+                    foreach (var stockMove in stockPicking.StockMoves)
+                    {
+                        stockMove.LocationId = stockPicking.LocationId;
+                    }
+                }
+            }
+            if (model.LocationDestId != null)
+            {
+                stockPicking.LocationDestId = (Guid)model.LocationDestId;
+                if (stockPicking.StockMoves.Any())
+                {
+                    foreach (var stockMove in stockPicking.StockMoves)
+                    {
+                        stockMove.LocationDestId = stockPicking.LocationDestId;
                     }
                 }
             }
