@@ -904,6 +904,18 @@ public class StockPickingService : IStockPickingService
                     {
                         stockMove.ProductQty = quantity;
                         stockQuantSrc.Quantity = (decimal)(stockQuantSrc.Quantity - stockMove.ProductQty);
+                        var stockMoveLineSrc = new StockMoveLine
+                        {
+                            MoveId = stockMove.Id,
+                            ProductUomId = stockMove.ProductUomId,
+                            QuantId = stockQuantSrc.Id,
+                            State = StockMoveState.Done,
+                            QuantityProductUom =0 - stockMove.Quantity,
+                            Quantity = 0 - (decimal)stockMove.ProductQty,
+                            LocationId = stockMove.LocationId,
+                            LocationDestId = stockMove.LocationDestId,
+                        };
+                        _dbContext.StockMoveLine.Add(stockMoveLineSrc);
                     }
                     else
                     {
@@ -927,20 +939,20 @@ public class StockPickingService : IStockPickingService
                     else
                     {
                         stockQuantDest.Quantity = (decimal)(stockQuantDest.Quantity + stockMove.ProductQty);
+                        var stockMoveLineDest = new StockMoveLine
+                        {
+                            MoveId = stockMove.Id,
+                            ProductUomId = stockMove.ProductUomId,
+                            QuantId = stockQuantDest.Id,
+                            State = StockMoveState.Done,
+                            QuantityProductUom = stockMove.Quantity,
+                            Quantity = (decimal)stockMove.ProductQty,
+                            LocationId = stockMove.LocationId,
+                            LocationDestId = stockMove.LocationDestId,
+                        };
+                        _dbContext.StockMoveLine.Add(stockMoveLineDest);
                     }
 
-                    var stockMoveLine = new StockMoveLine
-                    {
-                        MoveId = stockMove.Id,
-                        ProductUomId = stockMove.ProductUomId,
-                        QuantId = stockQuantSrc.Id,
-                        State = StockMoveState.Done,
-                        QuantityProductUom = stockMove.Quantity,
-                        Quantity = (decimal)stockMove.ProductQty,
-                        LocationId = stockMove.LocationId,
-                        LocationDestId = stockMove.LocationDestId,
-                    };
-                    _dbContext.StockMoveLine.Add(stockMoveLine);
                     if (stockMove.ProductUomQty > stockMove.Quantity)
                     {
                         var backorder = new StockPicking
