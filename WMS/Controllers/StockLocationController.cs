@@ -60,4 +60,12 @@ public class StockLocationController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpGet("StockQuant/{id}")]
+    public async Task<ActionResult> GetStockQuant([FromQuery] PagingParam<StockQuantSortCriteria> paginationModel, Guid id)
+    {
+        var result = await _stockLocationService.GetStockQuant(paginationModel, id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }
