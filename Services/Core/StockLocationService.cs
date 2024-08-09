@@ -155,6 +155,10 @@ public class StockLocationService : IStockLocationService
                     .ThenInclude(pp => pp.ProductVariantCombinations)
                 .Where(sq => sq.LocationId == id && sq.StockLocation.Usage == LocationType.Internal)
                 .AsQueryable();
+            if (!string.IsNullOrEmpty(paginationModel.SearchText))
+            {
+                stockQuants = stockQuants.Where(_ => _.ProductProduct.ProductTemplate.Name.Contains(paginationModel.SearchText));
+            }
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockQuants.Count());
             stockQuants = stockQuants.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             stockQuants = stockQuants.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
