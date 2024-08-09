@@ -34,6 +34,7 @@ public interface IStockPickingService
 
     Task<ResultModel> CreateInternalTransfer(StockPickingInternalTransfer model, Guid createId);
     Task<ResultModel> UpdateInternalTransfer(StockPickingUpdateInternalTransfer model);
+    Task<ResultModel> ValidateInternalTransfer(Guid id);
 
 }
 public class StockPickingService : IStockPickingService
@@ -839,6 +840,141 @@ public class StockPickingService : IStockPickingService
                     };
                     _dbContext.StockMoveLine.Add(stockMoveLine);
 
+                }
+                stockPicking.State = PickingState.Done;
+                stockPicking.DateDone = DateTime.Now;
+                _dbContext.SaveChanges();
+                result.Succeed = true;
+                result.Data = stockPicking.Id;
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> ValidateInternalTransfer(Guid id)
+    {
+        var result = new ResultModel();
+        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                var stockPicking = _dbContext.StockPicking
+                    .Include(_ => _.PickingType)
+                    .Include(_ => _.StockMoves)
+                        .ThenInclude(_ => _.ProductUom)
+                    .Include(_ => _.Location)
+                    .FirstOrDefault(_ => _.Id == id && _.PickingType.Code == StockPickingTypeCode.Internal);
+                if (stockPicking == null)
+                {
+                    throw new Exception("Stock Picking not exists");
+                }
+                if (stockPicking.State == PickingState.Done)
+                {
+                    throw new Exception("You cannot update a stock picking that has been set to 'Done'.");
+
+                }
+
+                if (stockPicking.State == PickingState.Cancelled)
+                {
+                    throw new Exception("You cannot update a stock picking that has been set to 'Cancelled'.");
+
+                }
+
+                foreach (var stockMove in stockPicking.StockMoves)
+                {
+                    var stockQuantSrc = _dbContext.StockQuant
+                        .FirstOrDefault(_ => _.LocationId == stockMove.LocationId && _.ProductId == stockMove.ProductId);
+
+                    if (stockQuantSrc == null)
+                    {
+                        throw new Exception($"You cannot validate because there are not enough quantity");
+
+                    }
+
+                    decimal quantity = (decimal)(stockMove.Quantity / stockMove.ProductUom.Factor);
+                    quantity = Math.Round(quantity / stockMove.ProductUom.Rounding) * stockMove.ProductUom.Rounding;
+
+                    if (stockQuantSrc.Quantity >= quantity)
+                    {
+                        stockMove.ProductQty = quantity;
+                        stockQuantSrc.Quantity = (decimal)(stockQuantSrc.Quantity - stockMove.ProductQty);
+                    }
+                    else
+                    {
+                        throw new Exception($"You cannot validate because there are not enough quantity");
+
+                    }
+
+                    var stockQuantDest = _dbContext.StockQuant
+                        .FirstOrDefault(_ => _.LocationId == stockMove.LocationDestId && _.ProductId == stockMove.ProductId);
+
+                    if (stockQuantDest == null)
+                    {
+                        stockQuantDest = new StockQuant
+                        {
+                            ProductId = stockMove.ProductId,
+                            LocationId = stockMove.LocationDestId,
+                            Quantity = (decimal)stockMove.ProductQty,
+                        };
+                        _dbContext.Add(stockQuantDest);
+                    }
+                    else
+                    {
+                        stockQuantDest.Quantity = (decimal)(stockQuantDest.Quantity + stockMove.ProductQty);
+                    }
+
+                    var stockMoveLine = new StockMoveLine
+                    {
+                        MoveId = stockMove.Id,
+                        ProductUomId = stockMove.ProductUomId,
+                        QuantId = stockQuantSrc.Id,
+                        State = StockMoveState.Done,
+                        QuantityProductUom = stockMove.Quantity,
+                        Quantity = (decimal)stockMove.ProductQty,
+                        LocationId = stockMove.LocationId,
+                        LocationDestId = stockMove.LocationDestId,
+                    };
+                    _dbContext.StockMoveLine.Add(stockMoveLine);
+                    if (stockMove.ProductUomQty > stockMove.Quantity)
+                    {
+                        var backorder = new StockPicking
+                        {
+                            LocationId = stockPicking.LocationId,
+                            LocationDestId = stockPicking.LocationDestId,
+                            PickingTypeId = stockPicking.PickingTypeId,
+                            Note = stockPicking.Note,
+                            ScheduledDate = stockPicking.ScheduledDate,
+                            DateDeadline = stockPicking.DateDeadline,
+                            BackorderId = stockPicking.Id,
+                            CreateUid = stockPicking.CreateUid,
+                            State = PickingState.Waiting,
+                        };
+                        _dbContext.Add(backorder);
+                        backorder.Name = $"{stockPicking.PickingType.Barcode}-{backorder.Id}";
+
+                        var stockMoveBackorder = new StockMove
+                        {
+                            ProductId = stockMove.ProductId,
+                            ProductUomId = stockMove.ProductUomId,
+                            PickingId = backorder.Id,
+                            LocationId = stockMove.LocationId,
+                            LocationDestId = stockMove.LocationDestId,
+                            DescriptionPicking = stockMove.DescriptionPicking,
+                            ProductUomQty = (decimal)(stockMove.ProductUomQty - stockMove.Quantity),
+                            Name = stockMove.Name,
+                            Reference = stockMove.Reference,
+                            State = StockMoveState.Waiting,
+                        };
+                        _dbContext.Add(stockMoveBackorder);
+                        _dbContext.SaveChanges();
+                    }
+                    stockMove.State = StockMoveState.Done;
                 }
                 stockPicking.State = PickingState.Done;
                 stockPicking.DateDone = DateTime.Now;

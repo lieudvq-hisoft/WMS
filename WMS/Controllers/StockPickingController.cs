@@ -148,4 +148,12 @@ public class StockPickingController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPut("Validate/InternalTransfer/{id}")]
+    public async Task<ActionResult> ValidateInternalTransfer(Guid id)
+    {
+        var result = await _stockPickingService.ValidateInternalTransfer(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }
