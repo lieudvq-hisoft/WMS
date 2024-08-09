@@ -115,7 +115,7 @@ public class StockPickingService : IStockPickingService
             var stockPickings = _dbContext.StockPicking
                 .Include(_ => _.PickingType)
                 .ThenInclude(_ => _.Warehouse)
-                .Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Incoming).AsQueryable();
+                .Where(_ => _.PickingType.WarehouseId == warehouseId && _.PickingType.Code == StockPickingTypeCode.Internal).AsQueryable();
             if (!string.IsNullOrEmpty(paginationModel.SearchText))
             {
                 stockPickings = stockPickings.Where(_ => _.Name.Contains(paginationModel.SearchText));
