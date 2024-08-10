@@ -50,7 +50,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("ProductAttribute");
+                    b.ToTable("ProductAttribute", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProductAttributeValue", b =>
@@ -86,7 +86,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("ProductAttributeValue");
+                    b.ToTable("ProductAttributeValue", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProductCategory", b =>
@@ -134,7 +134,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("ProductCategory");
+                    b.ToTable("ProductCategory", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProductProduct", b =>
@@ -169,7 +169,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("ProductProduct");
+                    b.ToTable("ProductProduct", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProductRemoval", b =>
@@ -204,7 +204,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("ProductRemoval");
+                    b.ToTable("ProductRemoval", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProductTemplate", b =>
@@ -263,7 +263,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("ProductTemplate");
+                    b.ToTable("ProductTemplate", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProductTemplateAttributeLine", b =>
@@ -303,7 +303,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("ProductTemplateAttributeLine");
+                    b.ToTable("ProductTemplateAttributeLine", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProductTemplateAttributeValue", b =>
@@ -343,7 +343,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("ProductTemplateAttributeValue");
+                    b.ToTable("ProductTemplateAttributeValue", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProductVariantCombination", b =>
@@ -383,7 +383,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("ProductVariantCombination");
+                    b.ToTable("ProductVariantCombination", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ResPartner", b =>
@@ -413,7 +413,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("ResPartner");
+                    b.ToTable("ResPartner", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.Role", b =>
@@ -528,7 +528,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("StockLocation");
+                    b.ToTable("StockLocation", (string)null);
 
                     b.HasData(
                         new
@@ -536,69 +536,69 @@ namespace WMS.Migrations
                             Id = new Guid("b7d84e2e-39f3-4a8e-a5a5-8b8e839e7071"),
                             Active = true,
                             CompleteName = "Virtual Locations",
-                            CreateDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7310),
+                            CreateDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2520),
                             Name = "Virtual Locations",
                             ParentPath = "b7d84e2e-39f3-4a8e-a5a5-8b8e839e7071/",
                             Usage = 0,
-                            WriteDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7320)
+                            WriteDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2520)
                         },
                         new
                         {
                             Id = new Guid("d95a2d57-68a6-4f85-b6b3-d3eb2a5b73a6"),
                             Active = true,
                             CompleteName = "Virtual Locations / Inventory adjustment",
-                            CreateDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7390),
+                            CreateDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2570),
                             LocationId = new Guid("b7d84e2e-39f3-4a8e-a5a5-8b8e839e7071"),
                             Name = "Inventory adjustment",
                             ParentPath = "b7d84e2e-39f3-4a8e-a5a5-8b8e839e7071/d95a2d57-68a6-4f85-b6b3-d3eb2a5b73a6/",
                             Usage = 0,
-                            WriteDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7390)
+                            WriteDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2570)
                         },
                         new
                         {
                             Id = new Guid("e2a7c3e0-1a4d-43b6-95e1-123456789abc"),
                             Active = true,
                             CompleteName = "Physical Locations",
-                            CreateDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7410),
+                            CreateDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2590),
                             Name = "Physical Locations",
                             ParentPath = "e2a7c3e0-1a4d-43b6-95e1-123456789abc/",
                             Usage = 0,
-                            WriteDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7410)
+                            WriteDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2600)
                         },
                         new
                         {
                             Id = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
                             Active = true,
                             CompleteName = "Partners",
-                            CreateDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7420),
+                            CreateDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2610),
                             Name = "Partners",
                             ParentPath = "f47ac10b-58cc-4372-a567-0e02b2c3d479/",
                             Usage = 0,
-                            WriteDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7420)
+                            WriteDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2610)
                         },
                         new
                         {
                             Id = new Guid("6ba7b810-9dad-11d1-80b4-00c04fd430c8"),
                             Active = true,
                             CompleteName = "Partners / Vendors",
-                            CreateDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7430),
+                            CreateDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2620),
                             LocationId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
                             Name = "Vendors",
                             ParentPath = "f47ac10b-58cc-4372-a567-0e02b2c3d479/6ba7b810-9dad-11d1-80b4-00c04fd430c8/",
                             Usage = 3,
-                            WriteDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7430)
+                            WriteDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2620)
                         },
                         new
                         {
                             Id = new Guid("6ba7b180-9cad-11d1-80b4-00c04fd430c8"),
                             Active = true,
                             CompleteName = "Partners / Customers",
-                            CreateDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7440),
+                            CreateDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2630),
                             LocationId = new Guid("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
                             Name = "Customers",
                             ParentPath = "f47ac10b-58cc-4372-a567-0e02b2c3d479/6ba7b180-9cad-11d1-80b4-00c04fd430c8/",
                             Usage = 4,
-                            WriteDate = new DateTime(2024, 8, 10, 14, 44, 7, 317, DateTimeKind.Local).AddTicks(7450)
+                            WriteDate = new DateTime(2024, 8, 8, 11, 35, 9, 123, DateTimeKind.Local).AddTicks(2630)
                         });
                 });
 
@@ -629,7 +629,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("StockLot");
+                    b.ToTable("StockLot", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.StockMove", b =>
@@ -709,7 +709,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("StockMove");
+                    b.ToTable("StockMove", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.StockMoveLine", b =>
@@ -773,7 +773,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("StockMoveLine");
+                    b.ToTable("StockMoveLine", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.StockPicking", b =>
@@ -847,7 +847,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("StockPicking");
+                    b.ToTable("StockPicking", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.StockPickingType", b =>
@@ -900,7 +900,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("StockPickingType");
+                    b.ToTable("StockPickingType", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.StockQuant", b =>
@@ -960,7 +960,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("StockQuant");
+                    b.ToTable("StockQuant", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.StockWarehouse", b =>
@@ -1028,7 +1028,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("StockWarehouse");
+                    b.ToTable("StockWarehouse", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.UomCategory", b =>
@@ -1059,7 +1059,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("UomCategory");
+                    b.ToTable("UomCategory", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.UomUom", b =>
@@ -1108,7 +1108,7 @@ namespace WMS.Migrations
 
                     b.HasIndex("WriteUid");
 
-                    b.ToTable("UomUom", t =>
+                    b.ToTable("UomUom", null, t =>
                         {
                             t.HasCheckConstraint("uom_uom_factor_gt_zero", "\"Factor\" <> 0");
 
@@ -1219,8 +1219,8 @@ namespace WMS.Migrations
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "8a12fe29-7fe8-41f3-9af2-54b1ca8d4207",
                             CurrenNoticeCount = 0,
-                            DateCreated = new DateTime(2024, 8, 10, 14, 44, 7, 313, DateTimeKind.Local).AddTicks(6690),
-                            DateUpdated = new DateTime(2024, 8, 10, 14, 44, 7, 313, DateTimeKind.Local).AddTicks(6690),
+                            DateCreated = new DateTime(2024, 8, 8, 11, 35, 9, 122, DateTimeKind.Local).AddTicks(3300),
+                            DateUpdated = new DateTime(2024, 8, 8, 11, 35, 9, 122, DateTimeKind.Local).AddTicks(3300),
                             Email = "lieudvq0302@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "System",
@@ -1867,15 +1867,15 @@ namespace WMS.Migrations
                         .HasForeignKey("CreateUid");
 
                     b.HasOne("Data.Entities.StockLocation", "LotStock")
-                        .WithMany("LotStockWarehouses")
+                        .WithMany()
                         .HasForeignKey("LotStockId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Data.Entities.StockLocation", "ViewLocation")
-                        .WithMany("ViewStockWarehouses")
+                        .WithMany()
                         .HasForeignKey("ViewLocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Data.Entities.StockLocation", "WhInputStockLoc")
@@ -2063,11 +2063,7 @@ namespace WMS.Migrations
 
             modelBuilder.Entity("Data.Entities.StockLocation", b =>
                 {
-                    b.Navigation("LotStockWarehouses");
-
                     b.Navigation("StockQuants");
-
-                    b.Navigation("ViewStockWarehouses");
                 });
 
             modelBuilder.Entity("Data.Entities.StockMove", b =>
