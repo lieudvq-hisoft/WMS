@@ -28,8 +28,6 @@ namespace Data.Entities
         public LocationType Usage { get; set; }
 
         public virtual ICollection<StockQuant> StockQuants { get; set; }
-        public virtual ICollection<StockWarehouse> LotStockWarehouses { get; set; }
-        public virtual ICollection<StockWarehouse> ViewStockWarehouses { get; set; }
 
     }
 }
