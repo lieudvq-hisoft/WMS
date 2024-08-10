@@ -45,6 +45,14 @@ public class StockLocationController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
+    [HttpGet("SelectParent")]
+    public async Task<ActionResult> GetForSelectParent()
+    {
+        var result = await _stockLocationService.GetForSelectParent();
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
     [HttpGet("Internal")]
     public async Task<ActionResult> GetInternalLocation()
     {
