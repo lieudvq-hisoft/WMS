@@ -19,6 +19,13 @@ namespace Data.Models
 
     }
 
+    public class StockLocationUpdate
+    {
+        public Guid Id { get; set; }
+        public string? Name { get; set; }
+        public LocationType? Usage { get; set; }
+    }
+
     public class StockLocationCreate
     {
         public string Name { get; set; }

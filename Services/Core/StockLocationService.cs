@@ -24,6 +24,7 @@ public interface IStockLocationService
     Task<ResultModel> GetStockQuant(PagingParam<StockQuantSortCriteria> paginationModel, Guid id);
     Task<ResultModel> Create(StockLocationCreate model);
     Task<ResultModel> UpdateParent(StockLocationParentUpdate model);
+    Task<ResultModel> Update(StockLocationUpdate model);
 
 }
 public class StockLocationService : IStockLocationService
@@ -308,6 +309,54 @@ public class StockLocationService : IStockLocationService
         }
         return result;
     }
+
+    public async Task<ResultModel> Update(StockLocationUpdate model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                var stockLocation = _dbContext.StockLocation
+                    .Include(_ => _.StockQuants)
+                    .Include(_ => _.ParentLocation).FirstOrDefault(_ => _.Id == model.Id);
+                if (stockLocation == null)
+                {
+                    throw new Exception("Location not exists");
+                }
+                if (model.Name != null)
+                {
+                    stockLocation.Name = model.Name;
+                    ComputeCompleteNameAndParentPath(stockLocation);
+                    UpdateCompleteNameAndParentPathRecursive(_dbContext, stockLocation.Id);
+                }
+                if (model.Usage != null)
+                {
+                    if (stockLocation.StockQuants.Any())
+                    {
+                        throw new Exception("You cannot change the location type because there is already a product in this location.");
+                    }
+                    stockLocation.Usage = (LocationType)model.Usage;
+                }
+                stockLocation.WriteDate = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+
+                result.Succeed = true;
+                result.Data = _mapper.Map<StockLocation, StockLocationModel>(stockLocation);
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
+        }
+        return result;
+    }
+
 
     private async void ComputeCompleteNameAndParentPath(StockLocation stockLocation)
     {

@@ -92,4 +92,12 @@ public class StockLocationController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPut]
+    public async Task<ActionResult> Update([FromBody] StockLocationUpdate model)
+    {
+        var result = await _stockLocationService.Update(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }
