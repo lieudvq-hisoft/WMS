@@ -276,6 +276,10 @@ public class StockLocationService : IStockLocationService
                 {
                     throw new Exception("Location not exists");
                 }
+                if (stockLocation.Id == _virtualLocationId || stockLocation.Id == _inventoryAdjustmentId || stockLocation.Id == _physicalLocationId || stockLocation.Id == _partnerLocationId || stockLocation.Id == _vendorLocationId || stockLocation.Id == _customerLocationId)
+                {
+                    throw new Exception("Unable to update this document because it is used as a default property");
+                }
                 bool hasStockQuant = stockLocation.StockQuants.Any();
 
                 if (hasStockQuant)
@@ -324,6 +328,10 @@ public class StockLocationService : IStockLocationService
                 if (stockLocation == null)
                 {
                     throw new Exception("Location not exists");
+                }
+                if (stockLocation.Id == _virtualLocationId || stockLocation.Id == _inventoryAdjustmentId || stockLocation.Id == _physicalLocationId || stockLocation.Id == _partnerLocationId || stockLocation.Id == _vendorLocationId || stockLocation.Id == _customerLocationId)
+                {
+                    throw new Exception("Unable to update this document because it is used as a default property");
                 }
                 if (model.Name != null)
                 {
