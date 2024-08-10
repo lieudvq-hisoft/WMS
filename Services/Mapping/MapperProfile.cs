@@ -74,7 +74,7 @@ namespace Services.Mapping
 
             CreateMap<StockLocation, StockLocationModel>().ReverseMap();
             CreateMap<StockLocation, StockLocationInfo>().ReverseMap();
-
+            CreateMap<StockLocation, StockLocationCreate>().ReverseMap();
 
             CreateMap<StockPickingType, StockPickingTypeModel>().ReverseMap();
             CreateMap<StockPickingType, StockPickingTypeInfo>()

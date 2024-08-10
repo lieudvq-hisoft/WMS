@@ -20,6 +20,8 @@ public interface IStockLocationService
     Task<ResultModel> GetInternalLocation();
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetStockQuant(PagingParam<StockQuantSortCriteria> paginationModel, Guid id);
+    Task<ResultModel> Create(StockLocationCreate model);
+
 }
 public class StockLocationService : IStockLocationService
 {
@@ -193,6 +195,41 @@ public class StockLocationService : IStockLocationService
             paging.Data = viewModels;
             result.Succeed = true;
             result.Data = paging;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> Create(StockLocationCreate model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var stockLocation = _mapper.Map<StockLocationCreate, StockLocation>(model);
+            if (stockLocation.LocationId != null)
+            {
+                var parentStockLocation = _dbContext.StockLocation.FirstOrDefault(_ => _.Id == stockLocation.LocationId);
+                if (parentStockLocation == null)
+                {
+                    throw new Exception("Parent Location not exists");
+                }
+                _dbContext.Add(stockLocation);
+                stockLocation.CompleteName = $"{parentStockLocation.CompleteName}/{stockLocation.Name}";
+                stockLocation.ParentPath = $"{parentStockLocation.ParentPath}/{stockLocation.Id}";
+            }
+            else
+            {
+                _dbContext.Add(stockLocation);
+                stockLocation.CompleteName = stockLocation.Name;
+                stockLocation.ParentPath = stockLocation.Id.ToString();
+            }
+            _dbContext.SaveChanges();
+            result.Succeed = true;
+            result.Data = _mapper.Map<StockLocation, StockLocationModel>(stockLocation);
         }
         catch (Exception ex)
         {

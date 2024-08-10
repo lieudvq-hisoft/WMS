@@ -18,5 +18,12 @@ namespace Data.Models
         public StockLocationModel? ParentLocation { get; set; }
 
     }
+
+    public class StockLocationCreate
+    {
+        public string Name { get; set; }
+        public Guid? LocationId { get; set; }
+        public LocationType Usage { get; set; }
+    }
 }
 

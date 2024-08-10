@@ -68,4 +68,12 @@ public class StockLocationController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPost]
+    public async Task<ActionResult> Create([FromBody] StockLocationCreate model)
+    {
+        var result = await _stockLocationService.Create(model);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }
