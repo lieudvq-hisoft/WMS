@@ -362,8 +362,8 @@ public class StockLocationService : IStockLocationService
     {
         if (stockLocation.ParentLocation != null)
         {
-            stockLocation.CompleteName = $"{stockLocation.ParentLocation.CompleteName}/{stockLocation.Name}";
-            stockLocation.ParentPath = $"{stockLocation.ParentLocation.ParentPath}/{stockLocation.Id}";
+            stockLocation.CompleteName = $"{stockLocation.ParentLocation.CompleteName} / {stockLocation.Name}";
+            stockLocation.ParentPath = $"{stockLocation.ParentLocation.ParentPath} / {stockLocation.Id}";
         }
         else
         {
@@ -378,8 +378,8 @@ public class StockLocationService : IStockLocationService
         {
             if (child.ParentLocation != null)
             {
-                child.CompleteName = $"{child.ParentLocation.CompleteName}/{child.Name}";
-                child.ParentPath = $"{child.ParentLocation.ParentPath}/{child.Id}";
+                child.CompleteName = $"{child.ParentLocation.CompleteName} / {child.Name}";
+                child.ParentPath = $"{child.ParentLocation.ParentPath} / {child.Id}";
             }
 
             UpdateCompleteNameAndParentPathRecursive(dbContext, child.Id);

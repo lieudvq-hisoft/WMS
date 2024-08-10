@@ -63,7 +63,7 @@ public class StockWarehouseService : IStockWarehouseService
                     Id = lotStockId,
                     LocationId = viewLocationId,
                     Name = "Stock",
-                    CompleteName = $"{viewLocation.CompleteName}/Stock",
+                    CompleteName = $"{viewLocation.CompleteName} / Stock",
                     ParentPath = $"{viewLocation.ParentPath}{lotStockId}",
                     Usage = LocationType.Internal,
                 };
@@ -75,7 +75,7 @@ public class StockWarehouseService : IStockWarehouseService
                     Id = whInputStockLocId,
                     LocationId = viewLocationId,
                     Name = "Input",
-                    CompleteName = $"{viewLocation.CompleteName}/Input",
+                    CompleteName = $"{viewLocation.CompleteName} / Input",
                     ParentPath = $"{viewLocation.ParentPath}{whInputStockLocId}",
                     Usage = LocationType.Internal,
                 };
@@ -87,7 +87,7 @@ public class StockWarehouseService : IStockWarehouseService
                     Id = whQcStockLocId,
                     LocationId = viewLocationId,
                     Name = "Quality Control",
-                    CompleteName = $"{viewLocation.CompleteName}/Quality Control",
+                    CompleteName = $"{viewLocation.CompleteName} / Quality Control",
                     ParentPath = $"{viewLocation.ParentPath}{whQcStockLocId}",
                     Usage = LocationType.Internal,
                 };
@@ -99,7 +99,7 @@ public class StockWarehouseService : IStockWarehouseService
                     Id = whOutputStockLocId,
                     LocationId = viewLocationId,
                     Name = "Output",
-                    CompleteName = $"{viewLocation.CompleteName}/Output",
+                    CompleteName = $"{viewLocation.CompleteName} / Output",
                     ParentPath = $"{viewLocation.ParentPath}{whOutputStockLocId}",
                     Usage = LocationType.Internal,
                 };
@@ -111,7 +111,7 @@ public class StockWarehouseService : IStockWarehouseService
                     Id = whPackStockLocId,
                     LocationId = viewLocationId,
                     Name = "Packing Zone",
-                    CompleteName = $"{viewLocation.CompleteName}/Packing Zone",
+                    CompleteName = $"{viewLocation.CompleteName} / Packing Zone",
                     ParentPath = $"{viewLocation.ParentPath}{whPackStockLocId}",
                     Usage = LocationType.Internal,
                 };
