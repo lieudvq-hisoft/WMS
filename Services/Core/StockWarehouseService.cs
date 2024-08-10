@@ -343,7 +343,7 @@ public class StockWarehouseService : IStockWarehouseService
         {
             if (child.ParentLocation != null)
             {
-                child.CompleteName = $"{child.ParentLocation.CompleteName}/{child.Name}";
+                child.CompleteName = $"{child.ParentLocation.CompleteName} / {child.Name}";
                 child.ParentPath = $"{child.ParentLocation.ParentPath}/{child.Id}";
             }
 
