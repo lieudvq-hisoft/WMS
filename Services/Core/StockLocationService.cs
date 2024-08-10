@@ -280,12 +280,13 @@ public class StockLocationService : IStockLocationService
                 {
                     throw new Exception("Unable to update this document because it is used as a default property");
                 }
-                bool hasStockQuant = stockLocation.StockQuants.Any();
 
-                if (hasStockQuant)
+                var locationDocument = _dbContext.StockWarehouse.FirstOrDefault(_ => _.ViewLocationId == stockLocation.Id || _.LotStockId == stockLocation.Id);
+                if(locationDocument != null)
                 {
-                    throw new Exception("You cannot change the Parent Location because there is already a product in this location.");
+                    throw new Exception("Unable to update this document because it is used as a default property");
                 }
+
                 if (newParentStockLocation.ParentPath.Contains(stockLocation.Id.ToString()))
                 {
                     throw new InvalidOperationException($"Detected a cyclic dependency involving ID {stockLocation.Id.ToString()}. Update aborted to prevent infinite recursion.");
@@ -333,6 +334,11 @@ public class StockLocationService : IStockLocationService
                 {
                     throw new Exception("Unable to update this document because it is used as a default property");
                 }
+                var locationDocument = _dbContext.StockWarehouse.FirstOrDefault(_ => _.ViewLocationId == stockLocation.Id || _.LotStockId == stockLocation.Id);
+                if (locationDocument != null)
+                {
+                    throw new Exception("Unable to update this document because it is used as a default property");
+                }
                 if (model.Name != null)
                 {
                     stockLocation.Name = model.Name;
@@ -341,10 +347,6 @@ public class StockLocationService : IStockLocationService
                 }
                 if (model.Usage != null)
                 {
-                    if (stockLocation.StockQuants.Any())
-                    {
-                        throw new Exception("You cannot change the location type because there is already a product in this location.");
-                    }
                     stockLocation.Usage = (LocationType)model.Usage;
                 }
                 stockLocation.WriteDate = DateTime.Now;
@@ -364,7 +366,6 @@ public class StockLocationService : IStockLocationService
         }
         return result;
     }
-
 
     private async void ComputeCompleteNameAndParentPath(StockLocation stockLocation)
     {
