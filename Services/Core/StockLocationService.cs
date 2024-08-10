@@ -27,7 +27,6 @@ public interface IStockLocationService
     Task<ResultModel> Create(StockLocationCreate model);
     Task<ResultModel> UpdateParent(StockLocationParentUpdate model);
     Task<ResultModel> Update(StockLocationUpdate model);
-
 }
 public class StockLocationService : IStockLocationService
 {
@@ -144,6 +143,7 @@ public class StockLocationService : IStockLocationService
         }
         return result;
     }
+
     public async Task<ResultModel> Delete(Guid id)
     {
         var result = new ResultModel();
@@ -377,7 +377,7 @@ public class StockLocationService : IStockLocationService
         if (stockLocation.ParentLocation != null)
         {
             stockLocation.CompleteName = $"{stockLocation.ParentLocation.CompleteName} / {stockLocation.Name}";
-            stockLocation.ParentPath = $"{stockLocation.ParentLocation.ParentPath} / {stockLocation.Id}";
+            stockLocation.ParentPath = $"{stockLocation.ParentLocation.ParentPath}/{stockLocation.Id}";
         }
         else
         {
@@ -393,7 +393,7 @@ public class StockLocationService : IStockLocationService
             if (child.ParentLocation != null)
             {
                 child.CompleteName = $"{child.ParentLocation.CompleteName} / {child.Name}";
-                child.ParentPath = $"{child.ParentLocation.ParentPath} / {child.Id}";
+                child.ParentPath = $"{child.ParentLocation.ParentPath}/{child.Id}";
             }
 
             UpdateCompleteNameAndParentPathRecursive(dbContext, child.Id);
