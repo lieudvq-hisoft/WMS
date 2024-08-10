@@ -46,6 +46,12 @@ public class StockWarehouseService : IStockWarehouseService
 
                 var stockWarehouse = _mapper.Map<StockWarehouseCreate, StockWarehouse>(model);
 
+                var warehouseWithCode = _dbContext.StockWarehouse.FirstOrDefault(_ => _.Code == stockWarehouse.Code);
+
+                if (warehouseWithCode != null)
+                {
+                    throw new Exception("The code of the warehouse must be unique");
+                }
                 var viewLocationId = Guid.NewGuid();
                 var viewLocation = new StockLocation
                 {
@@ -210,6 +216,13 @@ public class StockWarehouseService : IStockWarehouseService
             }
             if(model.Code != null)
             {
+                var warehouseWithCode = _dbContext.StockWarehouse.FirstOrDefault(_ => _.Code == stockWarehouse.Code && _.Id != stockWarehouse.Id);
+
+                if (warehouseWithCode != null)
+                {
+                    throw new Exception("The code of the warehouse must be unique");
+                }
+
                 string oldCode = stockWarehouse.Code;
                 stockWarehouse.Code = model.Code;
                 stockWarehouse.ViewLocation.Name = model.Code;
