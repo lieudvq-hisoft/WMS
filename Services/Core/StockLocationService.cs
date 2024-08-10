@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using Data.Common.PaginationModel;
 using Data.DataAccess;
@@ -128,7 +130,11 @@ public class StockLocationService : IStockLocationService
         var result = new ResultModel();
         try
         {
-            var productCategories = _dbContext.StockLocation.Where(_ => _.Usage == LocationType.Internal).AsQueryable().OrderBy(_ => _.CompleteName);
+            var productCategories = _dbContext.StockLocation
+                .Where(_ =>
+                //_.Usage == LocationType.Internal
+                _.Id != _virtualLocationId && _.Id != _inventoryAdjustmentId &&  _.Id != _physicalLocationId && _.Id != _partnerLocationId && _.Id != _vendorLocationId && _.Id != _customerLocationId
+            ).AsQueryable().OrderBy(_ => _.CompleteName);
             result.Succeed = true;
             result.Data = _mapper.ProjectTo<StockLocationModel>(productCategories).ToList();
         }
@@ -138,7 +144,6 @@ public class StockLocationService : IStockLocationService
         }
         return result;
     }
-
     public async Task<ResultModel> Delete(Guid id)
     {
         var result = new ResultModel();
