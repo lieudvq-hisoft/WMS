@@ -45,6 +45,10 @@ public class StockLocationService : IStockLocationService
         try
         {
             var stockLocations = _dbContext.StockLocation.AsQueryable();
+            if (!string.IsNullOrEmpty(paginationModel.SearchText))
+            {
+                stockLocations = stockLocations.Where(_ => _.Name.Contains(paginationModel.SearchText));
+            }
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockLocations.Count());
             stockLocations = stockLocations.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
             stockLocations = stockLocations.GetWithPaging(paginationModel.PageIndex, paginationModel.PageSize);
