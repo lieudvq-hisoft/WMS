@@ -939,19 +939,20 @@ public class StockPickingService : IStockPickingService
                     else
                     {
                         stockQuantDest.Quantity = (decimal)(stockQuantDest.Quantity + stockMove.ProductQty);
-                        var stockMoveLineDest = new StockMoveLine
-                        {
-                            MoveId = stockMove.Id,
-                            ProductUomId = stockMove.ProductUomId,
-                            QuantId = stockQuantDest.Id,
-                            State = StockMoveState.Done,
-                            QuantityProductUom = stockMove.Quantity,
-                            Quantity = (decimal)stockMove.ProductQty,
-                            LocationId = stockMove.LocationId,
-                            LocationDestId = stockMove.LocationDestId,
-                        };
-                        _dbContext.StockMoveLine.Add(stockMoveLineDest);
                     }
+
+                    var stockMoveLineDest = new StockMoveLine
+                    {
+                        MoveId = stockMove.Id,
+                        ProductUomId = stockMove.ProductUomId,
+                        QuantId = stockQuantDest.Id,
+                        State = StockMoveState.Done,
+                        QuantityProductUom = stockMove.Quantity,
+                        Quantity = (decimal)stockMove.ProductQty,
+                        LocationId = stockMove.LocationId,
+                        LocationDestId = stockMove.LocationDestId,
+                    };
+                    _dbContext.StockMoveLine.Add(stockMoveLineDest);
 
                     if (stockMove.ProductUomQty > stockMove.Quantity)
                     {
