@@ -9,6 +9,7 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Services.Core;
 
@@ -264,7 +265,7 @@ public class StockLocationService : IStockLocationService
         {
             try
             {
-                var newParentStockLocation = _dbContext.StockLocation.FirstOrDefault(_ => _.Id == model.ParentId);
+                var newParentStockLocation = _dbContext.StockLocation.Include(_ => _.StockQuants).FirstOrDefault(_ => _.Id == model.ParentId);
                 if (newParentStockLocation == null)
                 {
                     throw new Exception("New parent Location not exists");
@@ -273,6 +274,12 @@ public class StockLocationService : IStockLocationService
                 if (stockLocation == null)
                 {
                     throw new Exception("Location not exists");
+                }
+                bool hasStockQuant = stockLocation.StockQuants.Any();
+
+                if (hasStockQuant)
+                {
+                    throw new Exception("You cannot change the Parent Location because there is already a product in this location.");
                 }
                 if (newParentStockLocation.ParentPath.Contains(stockLocation.Id.ToString()))
                 {

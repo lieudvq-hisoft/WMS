@@ -82,7 +82,7 @@ public class ProductTemplateService : IProductTemplateService
             if (model.UomId != null && model.UomId != productTemplate.UomId)
             {
                 bool hasStockQuant = productTemplate.ProductProducts
-                    .Any(product => product.StockQuants.Any(stockQuant => stockQuant.Quantity > 0));
+                    .Any(product => product.StockQuants.Any());
                 if (hasStockQuant)
                 {
                     throw new Exception("You cannot change the unit of measure as there are already stock moves for this product. If you want to change the unit of measure, you should rather archive this product and create a new one.");
