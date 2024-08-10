@@ -265,12 +265,12 @@ public class StockLocationService : IStockLocationService
         {
             try
             {
-                var newParentStockLocation = _dbContext.StockLocation.Include(_ => _.StockQuants).FirstOrDefault(_ => _.Id == model.ParentId);
+                var newParentStockLocation = _dbContext.StockLocation.FirstOrDefault(_ => _.Id == model.ParentId);
                 if (newParentStockLocation == null)
                 {
                     throw new Exception("New parent Location not exists");
                 }
-                var stockLocation = _dbContext.StockLocation.FirstOrDefault(_ => _.Id == model.Id);
+                var stockLocation = _dbContext.StockLocation.Include(_ => _.StockQuants).FirstOrDefault(_ => _.Id == model.Id);
                 if (stockLocation == null)
                 {
                     throw new Exception("Location not exists");
