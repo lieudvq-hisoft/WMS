@@ -25,5 +25,11 @@ namespace Data.Models
         public Guid? LocationId { get; set; }
         public LocationType Usage { get; set; }
     }
+
+    public class StockLocationParentUpdate
+    {
+        public Guid Id { get; set; }
+        public Guid ParentId { get; set; }
+    }
 }
 

@@ -22,6 +22,7 @@ public interface IStockLocationService
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetStockQuant(PagingParam<StockQuantSortCriteria> paginationModel, Guid id);
     Task<ResultModel> Create(StockLocationCreate model);
+    Task<ResultModel> UpdateParent(StockLocationParentUpdate model);
 
 }
 public class StockLocationService : IStockLocationService
@@ -253,6 +254,80 @@ public class StockLocationService : IStockLocationService
             result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
         }
         return result;
+    }
+
+    public async Task<ResultModel> UpdateParent(StockLocationParentUpdate model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        using (var transaction = await _dbContext.Database.BeginTransactionAsync())
+        {
+            try
+            {
+                var newParentStockLocation = _dbContext.StockLocation.FirstOrDefault(_ => _.Id == model.ParentId);
+                if (newParentStockLocation == null)
+                {
+                    throw new Exception("New parent Location not exists");
+                }
+                var stockLocation = _dbContext.StockLocation.FirstOrDefault(_ => _.Id == model.Id);
+                if (stockLocation == null)
+                {
+                    throw new Exception("Location not exists");
+                }
+                if (newParentStockLocation.ParentPath.Contains(stockLocation.Id.ToString()))
+                {
+                    throw new InvalidOperationException($"Detected a cyclic dependency involving ID {stockLocation.Id.ToString()}. Update aborted to prevent infinite recursion.");
+                }
+                stockLocation.LocationId = newParentStockLocation.Id;
+                await _dbContext.SaveChangesAsync();
+
+                ComputeCompleteNameAndParentPath(stockLocation);
+                UpdateCompleteNameAndParentPathRecursive(_dbContext, stockLocation.Id);
+
+                stockLocation.WriteDate = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+
+                result.Succeed = true;
+                result.Data = _mapper.Map<StockLocation, StockLocationModel>(stockLocation);
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                await transaction.RollbackAsync();
+            }
+        }
+        return result;
+    }
+
+    private async void ComputeCompleteNameAndParentPath(StockLocation stockLocation)
+    {
+        if (stockLocation.ParentLocation != null)
+        {
+            stockLocation.CompleteName = $"{stockLocation.ParentLocation.CompleteName} / {stockLocation.Name}";
+            stockLocation.ParentPath = $"{stockLocation.ParentLocation.ParentPath}/{stockLocation.Id}";
+        }
+        else
+        {
+            stockLocation.CompleteName = stockLocation.Name;
+            stockLocation.ParentPath = stockLocation.Id.ToString();
+        }
+    }
+
+    private async void UpdateCompleteNameAndParentPathRecursive(AppDbContext dbContext, Guid Id)
+    {
+        foreach (var child in dbContext.StockLocation.Include(_ => _.ParentLocation).Where(c => c.LocationId == Id).ToList())
+        {
+            if (child.ParentLocation != null)
+            {
+                child.CompleteName = $"{child.ParentLocation.CompleteName} / {child.Name}";
+                child.ParentPath = $"{child.ParentLocation.ParentPath}/{child.Id}";
+            }
+
+            UpdateCompleteNameAndParentPathRecursive(dbContext, child.Id);
+        }
     }
 
 }
