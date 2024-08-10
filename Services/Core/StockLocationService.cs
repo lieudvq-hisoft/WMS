@@ -238,7 +238,7 @@ public class StockLocationService : IStockLocationService
                     throw new Exception("Parent Location not exists");
                 }
                 _dbContext.Add(stockLocation);
-                stockLocation.CompleteName = $"{parentStockLocation.CompleteName}/{stockLocation.Name}";
+                stockLocation.CompleteName = $"{parentStockLocation.CompleteName} / {stockLocation.Name}";
                 stockLocation.ParentPath = $"{parentStockLocation.ParentPath}/{stockLocation.Id}";
             }
             else
