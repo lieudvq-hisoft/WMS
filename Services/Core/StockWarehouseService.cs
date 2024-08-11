@@ -56,6 +56,7 @@ public class StockWarehouseService : IStockWarehouseService
                 var viewLocation = new StockLocation
                 {
                     Id = viewLocationId,
+                    LocationId = _physicalLocationId,
                     Name = stockWarehouse.Code,
                     CompleteName = stockWarehouse.Code,
                     ParentPath = $"{_physicalLocationId}/{viewLocationId}/",
