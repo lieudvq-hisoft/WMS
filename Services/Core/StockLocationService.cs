@@ -52,7 +52,7 @@ public class StockLocationService : IStockLocationService
         var result = new ResultModel();
         try
         {
-            var stockLocations = _dbContext.StockLocation.AsQueryable();
+            var stockLocations = _dbContext.StockLocation.Include(_ => _.StockQuants).AsQueryable();
             if (!string.IsNullOrEmpty(paginationModel.SearchText))
             {
                 stockLocations = stockLocations.Where(_ => _.CompleteName.Contains(paginationModel.SearchText));
