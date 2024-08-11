@@ -21,7 +21,7 @@ public interface IStockLocationService
     Task<ResultModel> GetInfo(Guid id);
     Task<ResultModel> GetForSelectParent(Guid id);
     Task<ResultModel> GetForSelectParent();
-    Task<ResultModel> GetInternalLocation();
+    Task<ResultModel> GetLocation();
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetStockQuant(PagingParam<StockQuantSortCriteria> paginationModel, Guid id);
     Task<ResultModel> Create(StockLocationCreate model);
@@ -125,7 +125,7 @@ public class StockLocationService : IStockLocationService
         return result;
     }
 
-    public async Task<ResultModel> GetInternalLocation()
+    public async Task<ResultModel> GetLocation()
     {
         var result = new ResultModel();
         try

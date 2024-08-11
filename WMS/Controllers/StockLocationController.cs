@@ -53,10 +53,10 @@ public class StockLocationController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
-    [HttpGet("Internal")]
-    public async Task<ActionResult> GetInternalLocation()
+    [HttpGet("Select")]
+    public async Task<ActionResult> GetLocation()
     {
-        var result = await _stockLocationService.GetInternalLocation();
+        var result = await _stockLocationService.GetLocation();
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
@@ -102,7 +102,7 @@ public class StockLocationController : ControllerBase
     }
 
     [HttpGet("Warehouse/{id}")]
-    public async Task<ActionResult> GetInternalLocation(Guid id)
+    public async Task<ActionResult> GetLocationWarehouse(Guid id)
     {
         var result = await _stockLocationService.GetLocationWarehouse(id);
         if (result.Succeed) return Ok(result.Data);
