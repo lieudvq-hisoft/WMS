@@ -27,6 +27,7 @@ public interface IStockLocationService
     Task<ResultModel> Create(StockLocationCreate model);
     Task<ResultModel> UpdateParent(StockLocationParentUpdate model);
     Task<ResultModel> Update(StockLocationUpdate model);
+    Task<ResultModel> GetLocationWarehouse(Guid warehouseId);
 }
 public class StockLocationService : IStockLocationService
 {
@@ -136,6 +137,32 @@ public class StockLocationService : IStockLocationService
             ).AsQueryable().OrderBy(_ => _.CompleteName);
             result.Succeed = true;
             result.Data = _mapper.ProjectTo<StockLocationModel>(productCategories).ToList();
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetLocationWarehouse(Guid warehouseId)
+    {
+        var result = new ResultModel();
+        try
+        {
+            var warehouse = _dbContext.StockWarehouse.Include(_ => _.ViewLocation).FirstOrDefault(_ => _.Id == warehouseId);
+            if (warehouse == null)
+            {
+                throw new Exception("Warehouse not exists");
+            }
+            var viewLocationParentPath = warehouse.ViewLocation.ParentPath;
+            var stockLocations = _dbContext.StockLocation
+                .Where(_ =>
+                _.ParentPath.StartsWith(viewLocationParentPath) &&
+                _.Id != _virtualLocationId && _.Id != _inventoryAdjustmentId && _.Id != _physicalLocationId && _.Id != _partnerLocationId && _.Id != _vendorLocationId && _.Id != _customerLocationId
+            ).AsQueryable().OrderBy(_ => _.CompleteName);
+            result.Succeed = true;
+            result.Data = _mapper.ProjectTo<StockLocationModel>(stockLocations).ToList();
         }
         catch (Exception ex)
         {

@@ -100,4 +100,12 @@ public class StockLocationController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpGet("Warehouse/{id}")]
+    public async Task<ActionResult> GetInternalLocation(Guid id)
+    {
+        var result = await _stockLocationService.GetLocationWarehouse(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
 }
