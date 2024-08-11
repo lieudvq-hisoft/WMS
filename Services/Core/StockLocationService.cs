@@ -78,7 +78,7 @@ public class StockLocationService : IStockLocationService
         result.Succeed = false;
         try
         {
-            var stockLocation = _dbContext.StockLocation.Include(_ => _.ParentLocation).FirstOrDefault(_ => _.Id == id);
+            var stockLocation = _dbContext.StockLocation.Include(_ => _.StockQuants).Include(_ => _.ParentLocation).FirstOrDefault(_ => _.Id == id);
             if (stockLocation == null)
             {
                 throw new Exception("Stock location not exists");
