@@ -72,7 +72,8 @@ namespace Services.Mapping
             CreateMap<StockWarehouse, StockWarehouseUpdate>().ReverseMap();
             CreateMap<StockWarehouse, StockWarehouseInfo>().ReverseMap();
 
-            CreateMap<StockLocation, StockLocationModel>().ReverseMap();
+            CreateMap<StockLocation, StockLocationModel>()
+                .ForMember(dest => dest.HasStockQuant, opt => opt.MapFrom(src =>src.StockQuants.Any()));
             CreateMap<StockLocation, StockLocationInfo>().ReverseMap();
             CreateMap<StockLocation, StockLocationCreate>().ReverseMap();
 

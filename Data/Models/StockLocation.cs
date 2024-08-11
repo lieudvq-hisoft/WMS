@@ -11,6 +11,7 @@ namespace Data.Models
         public string? ParentPath { get; set; }
         public string? Barcode { get; set; }
         public LocationType Usage { get; set; }
+        public bool HasStockQuant { get; set; } = false;
     }
 
     public class StockLocationInfo : StockLocationModel
