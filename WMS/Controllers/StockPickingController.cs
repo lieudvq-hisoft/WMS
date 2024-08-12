@@ -30,9 +30,9 @@ public class StockPickingController : ControllerBase
     }
 
     [HttpGet("Incoming/{warehouseId}")]
-    public async Task<ActionResult> GetStockPickingIncoming([FromQuery] PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId)
+    public async Task<ActionResult> GetStockPickingIncoming([FromQuery] PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId, [FromQuery] StockPickingSearch stockPickingSearch)
     {
-        var result = await _stockPickingService.GetStockPickingIncoming(paginationModel, warehouseId);
+        var result = await _stockPickingService.GetStockPickingIncoming(paginationModel, warehouseId, stockPickingSearch);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }

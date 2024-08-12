@@ -107,5 +107,12 @@ namespace Data.Models
         public DateTime? ScheduledDate { get; set; }
         public DateTime? DateDeadline { get; set; }
     }
+
+    public class StockPickingSearch
+    {
+        public string? LocationName { get; set; }
+        public string? LocationDestName { get; set; }
+        public PickingState? State { get; set; }
+    }
 }
 
