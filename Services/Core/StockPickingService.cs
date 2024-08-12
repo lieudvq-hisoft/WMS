@@ -95,12 +95,12 @@ public class StockPickingService : IStockPickingService
             }
             if (!string.IsNullOrEmpty(stockPickingSearch.LocationName))
             {
-                stockPickings = stockPickings.Where(_ => _.Location.Name.Contains(stockPickingSearch.LocationName));
+                stockPickings = stockPickings.Where(_ => _.Location.CompleteName.Contains(stockPickingSearch.LocationName));
 
             }
             if (!string.IsNullOrEmpty(stockPickingSearch.LocationDestName))
             {
-                stockPickings = stockPickings.Where(_ => _.LocationDest.Name.Contains(stockPickingSearch.LocationDestName));
+                stockPickings = stockPickings.Where(_ => _.LocationDest.CompleteName.Contains(stockPickingSearch.LocationDestName));
 
             }
             if (stockPickingSearch.State != null)
