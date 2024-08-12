@@ -38,17 +38,17 @@ public class StockPickingController : ControllerBase
     }
 
     [HttpGet("Internal/{warehouseId}")]
-    public async Task<ActionResult> GetStockPickingInternal([FromQuery] PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId)
+    public async Task<ActionResult> GetStockPickingInternal([FromQuery] PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId, [FromQuery] StockPickingSearch stockPickingSearch)
     {
-        var result = await _stockPickingService.GetStockPickingInternal(paginationModel, warehouseId);
+        var result = await _stockPickingService.GetStockPickingInternal(paginationModel, warehouseId, stockPickingSearch);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
 
     [HttpGet("Outgoing/{warehouseId}")]
-    public async Task<ActionResult> GetStockPickingOutgoing([FromQuery] PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId)
+    public async Task<ActionResult> GetStockPickingOutgoing([FromQuery] PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId, [FromQuery] StockPickingSearch stockPickingSearch)
     {
-        var result = await _stockPickingService.GetStockPickingOutgoing(paginationModel, warehouseId);
+        var result = await _stockPickingService.GetStockPickingOutgoing(paginationModel, warehouseId, stockPickingSearch);
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }

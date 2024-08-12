@@ -18,8 +18,8 @@ public interface IStockPickingService
 {
     Task<ResultModel> Delete(Guid id);
     Task<ResultModel> GetStockPickingIncoming(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId, StockPickingSearch stockPickingSearch);
-    Task<ResultModel> GetStockPickingInternal(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
-    Task<ResultModel> GetStockPickingOutgoing(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId);
+    Task<ResultModel> GetStockPickingInternal(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId, StockPickingSearch stockPickingSearch);
+    Task<ResultModel> GetStockPickingOutgoing(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId, StockPickingSearch stockPickingSearch);
     Task<ResultModel> CreateReceipt(StockPickingReceipt model, Guid createId);
     Task<ResultModel> UpdateReceipt(StockPickingUpdateReceipt model);
     Task<ResultModel> GetInfo(Guid id);
@@ -123,7 +123,7 @@ public class StockPickingService : IStockPickingService
         return result;
     }
 
-    public async Task<ResultModel> GetStockPickingInternal(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId)
+    public async Task<ResultModel> GetStockPickingInternal(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId, StockPickingSearch stockPickingSearch)
     {
         var result = new ResultModel();
         try
@@ -135,6 +135,21 @@ public class StockPickingService : IStockPickingService
             if (!string.IsNullOrEmpty(paginationModel.SearchText))
             {
                 stockPickings = stockPickings.Where(_ => _.Name.Contains(paginationModel.SearchText));
+            }
+            if (!string.IsNullOrEmpty(stockPickingSearch.LocationName))
+            {
+                stockPickings = stockPickings.Where(_ => _.Location.CompleteName.Contains(stockPickingSearch.LocationName));
+
+            }
+            if (!string.IsNullOrEmpty(stockPickingSearch.LocationDestName))
+            {
+                stockPickings = stockPickings.Where(_ => _.LocationDest.CompleteName.Contains(stockPickingSearch.LocationDestName));
+
+            }
+            if (stockPickingSearch.State != null)
+            {
+                stockPickings = stockPickings.Where(_ => _.State == stockPickingSearch.State);
+
             }
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
             stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
@@ -151,7 +166,7 @@ public class StockPickingService : IStockPickingService
         return result;
     }
 
-    public async Task<ResultModel> GetStockPickingOutgoing(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId)
+    public async Task<ResultModel> GetStockPickingOutgoing(PagingParam<SortStockPickingCriteria> paginationModel, Guid warehouseId, StockPickingSearch stockPickingSearch)
     {
         var result = new ResultModel();
         try
@@ -163,6 +178,21 @@ public class StockPickingService : IStockPickingService
             if (!string.IsNullOrEmpty(paginationModel.SearchText))
             {
                 stockPickings = stockPickings.Where(_ => _.Name.Contains(paginationModel.SearchText));
+            }
+            if (!string.IsNullOrEmpty(stockPickingSearch.LocationName))
+            {
+                stockPickings = stockPickings.Where(_ => _.Location.CompleteName.Contains(stockPickingSearch.LocationName));
+
+            }
+            if (!string.IsNullOrEmpty(stockPickingSearch.LocationDestName))
+            {
+                stockPickings = stockPickings.Where(_ => _.LocationDest.CompleteName.Contains(stockPickingSearch.LocationDestName));
+
+            }
+            if (stockPickingSearch.State != null)
+            {
+                stockPickings = stockPickings.Where(_ => _.State == stockPickingSearch.State);
+
             }
             var paging = new PagingModel(paginationModel.PageIndex, paginationModel.PageSize, stockPickings.Count());
             stockPickings = stockPickings.GetWithSorting(paginationModel.SortKey.ToString(), paginationModel.SortOrder);
