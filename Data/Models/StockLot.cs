@@ -15,7 +15,6 @@ namespace Data.Models
     public class StockLotInfo : StockLotModel
     {
         public ProductProduct ProductProduct { get; set; }
-        public StockLocation? StockLocation { get; set; }
     }
 
     public class StockLotCreate

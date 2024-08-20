@@ -12,10 +12,6 @@ namespace Data.Entities
         [ForeignKey("ProductId")]
         public virtual ProductProduct ProductProduct { get; set; }
 
-        public Guid? LocationId { get; set; }
-        [ForeignKey("LocationId")]
-        public virtual StockLocation? StockLocation { get; set; }
-
         [Required]
         public string Name { get; set; }
 

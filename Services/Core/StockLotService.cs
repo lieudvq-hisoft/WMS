@@ -92,7 +92,6 @@ public class StockLotService : IStockLotService
         {
             var stockLots = _dbContext.StockLot
                 .Include(_ => _.ProductProduct)
-                .Include(_ => _.StockLocation)
                 .AsQueryable();
             if (!string.IsNullOrEmpty(paginationModel.SearchText))
             {

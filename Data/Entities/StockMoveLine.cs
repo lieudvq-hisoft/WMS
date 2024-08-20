@@ -38,5 +38,9 @@ namespace Data.Entities
         [ForeignKey("LocationDestId")]
         public virtual StockLocation LocationDest { get; set; }
 
+        public Guid? LotId { get; set; }
+        [ForeignKey("LotId")]
+        public virtual StockLot? StockLot { get; set; }
+
     }
 }
