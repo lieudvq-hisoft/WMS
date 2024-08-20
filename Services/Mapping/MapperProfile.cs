@@ -93,6 +93,12 @@ namespace Services.Mapping
             CreateMap<StockPicking, StockPickingInternalTransfer>().ReverseMap();
 
             CreateMap<StockMoveCreate, StockMove>().ReverseMap();
+
+            CreateMap<StockLot, StockLotCreate>().ReverseMap();
+            CreateMap<StockLot, StockLotUpdate>().ReverseMap();
+            CreateMap<StockLot, StockLotModel>().ReverseMap();
+            CreateMap<StockLot, StockLotInfo>().ReverseMap();
+
         }
     }
 }

@@ -80,6 +80,12 @@ public enum StockMoveSortCriteria
     CreateDate
 }
 
+public enum StockLotSortCriteria
+{
+    CreateDate,
+    Name
+}
+
 public enum UomType
 {
     [EnumMember(Value = "Bigger")]

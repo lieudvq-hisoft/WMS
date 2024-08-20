@@ -301,5 +301,7 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid, IdentityUserClai
     public DbSet<StockMoveLine> StockMoveLine { get; set; }
     public DbSet<StockMove> StockMove { get; set; }
     public DbSet<StockPicking> StockPicking { get; set; }
+    public DbSet<StockLot> StockLot { get; set; }
+
 
 }
