@@ -52,7 +52,7 @@ public class StockQuantService : IStockQuantService
                     throw new Exception("Product not exists");
 
                 }
-                var stockQuant = _dbContext.StockQuant.FirstOrDefault(_ => _.ProductId == model.ProductId && _.LocationId == model.LocationId);
+                var stockQuant = _dbContext.StockQuant.FirstOrDefault(_ => _.ProductId == model.ProductId && _.LocationId == model.LocationId && _.LotId == model.LotId);
                 if (stockQuant != null)
                 {
                     throw new Exception("This record already exists");
