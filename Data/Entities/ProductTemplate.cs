@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Enums;
 using Newtonsoft.Json;
 
 namespace Data.Entities
@@ -19,7 +20,7 @@ namespace Data.Entities
         public string DetailedType { get; set; }
 
         [Required]
-        public string Tracking { get; set; } = "None";
+        public ProductTrackingType? Tracking { get; set; } = ProductTrackingType.None;
 
         public string Description { get; set; }
 

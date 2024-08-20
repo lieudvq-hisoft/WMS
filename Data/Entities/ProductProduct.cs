@@ -31,8 +31,6 @@ namespace Data.Entities
         [ForeignKey("ProductTmplId")]
         public virtual ProductTemplate ProductTemplate { get; set; }
 
-        public ProductTrackingType? Tracking { get; set; } = ProductTrackingType.None;
-
         public virtual ICollection<ProductVariantCombination> ProductVariantCombinations { get; set; }
         public virtual ICollection<StockQuant> StockQuants { get; set; }
         public virtual ICollection<StockMove> StockMoves { get; set; }

@@ -1,4 +1,5 @@
 ﻿
+using Data.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace Data.Models
@@ -40,7 +41,7 @@ namespace Data.Models
         public Guid? UomId { get; set; }
         public string? Name { get; set; }
         public string? DetailedType { get; set; }
-        public string? Tracking { get; set; }
+        public ProductTrackingType? Tracking { get; set; }
         public string? Description { get; set; }
     }
 
