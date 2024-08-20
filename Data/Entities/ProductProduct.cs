@@ -34,6 +34,7 @@ namespace Data.Entities
         public virtual ICollection<ProductVariantCombination> ProductVariantCombinations { get; set; }
         public virtual ICollection<StockQuant> StockQuants { get; set; }
         public virtual ICollection<StockMove> StockMoves { get; set; }
+        public virtual ICollection<StockLot> StockLots { get; set; }
 
     }
 }
