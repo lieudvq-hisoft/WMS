@@ -30,7 +30,7 @@ namespace Data.Models
         public Guid UomId { get; set; }
         public string Name { get; set; }
         public string DetailedType { get; set; }
-        public string Tracking { get; set; }
+        //public string Tracking { get; set; }
         public string Description { get; set; }
     }
 
