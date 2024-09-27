@@ -156,4 +156,20 @@ public class StockPickingController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpPut("File/{id}")]
+    public async Task<ActionResult> UpdateFile([FromForm] StockPickingFileUpload model, Guid id)
+    {
+        var result = await _stockPickingService.UploadFile(model, id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
+    [HttpDelete("File")]
+    public async Task<IActionResult> DeleteFcmToken([FromBody] DeleteFileModel model)
+    {
+        var rs = await _stockPickingService.DeleteFile(model);
+        if (rs.Succeed) return Ok(rs.Data);
+        return BadRequest(rs.ErrorMessage);
+    }
 }

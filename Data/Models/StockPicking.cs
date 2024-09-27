@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Data.Entities;
 using Data.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace Data.Models
 {
@@ -22,6 +23,7 @@ namespace Data.Models
         public DateTime? DateDeadline { get; set; }
         public DateTime? DateDone { get; set; }
         public StockPickingModel? Backorder { get; set; }
+        public List<string>? FilePaths { get; set; }
     }
 
     public class StockPickingCreate
@@ -45,6 +47,7 @@ namespace Data.Models
         public string? Note { get; set; }
         public DateTime? ScheduledDate { get; set; }
         public DateTime? DateDeadline { get; set; }
+        public List<string>? FilePaths { get; set; }
     }
 
     public class StockPickingUpdateReceipt
@@ -76,6 +79,7 @@ namespace Data.Models
         public string? Note { get; set; }
         public DateTime? ScheduledDate { get; set; }
         public DateTime? DateDeadline { get; set; }
+        public List<string>? FilePaths { get; set; }
     }
 
     public class StockPickingUpdateDeliveryOrder
@@ -96,6 +100,7 @@ namespace Data.Models
         public string? Note { get; set; }
         public DateTime? ScheduledDate { get; set; }
         public DateTime? DateDeadline { get; set; }
+        public List<string>? FilePaths { get; set; }
     }
 
     public class StockPickingUpdateInternalTransfer
@@ -113,6 +118,17 @@ namespace Data.Models
         public string? LocationName { get; set; }
         public string? LocationDestName { get; set; }
         public PickingState? State { get; set; }
+    }
+
+    public class StockPickingFileUpload
+    {
+        public IFormFile File { get; set; }
+    }
+
+    public class DeleteFileModel
+    {
+        public Guid Id { get; set; }
+        public string FilePath { get; set; }
     }
 }
 

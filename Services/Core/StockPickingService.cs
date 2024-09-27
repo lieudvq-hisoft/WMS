@@ -10,6 +10,7 @@ using Data.Utils.Paging;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Services.Utils;
 using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Services.Core;
@@ -35,6 +36,9 @@ public interface IStockPickingService
     Task<ResultModel> CreateInternalTransfer(StockPickingInternalTransfer model, Guid createId);
     Task<ResultModel> UpdateInternalTransfer(StockPickingUpdateInternalTransfer model);
     Task<ResultModel> ValidateInternalTransfer(Guid id);
+
+    Task<ResultModel> UploadFile(StockPickingFileUpload model, Guid id);
+    Task<ResultModel> DeleteFile(DeleteFileModel model);
 
 }
 public class StockPickingService : IStockPickingService
@@ -1046,6 +1050,63 @@ public class StockPickingService : IStockPickingService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 await transaction.RollbackAsync();
             }
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> UploadFile(StockPickingFileUpload model, Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var stockPicking = _dbContext.StockPicking.FirstOrDefault(_ => _.Id == id);
+            if (stockPicking == null)
+            {
+                result.ErrorMessage = "Stock Picking not exists!";
+                return result;
+            }
+            string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Product", stockPicking.Id.ToString());
+            string filePath = await MyFunction.UploadImageAsync(model.File, dirPath);
+            stockPicking.FilePaths.Add(filePath);
+            stockPicking.WriteDate = DateTime.Now;
+            await _dbContext.SaveChangesAsync();
+            result.Succeed = true;
+            result.Data = stockPicking.FilePaths;
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> DeleteFile(DeleteFileModel model)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var stockPicking = _dbContext.StockPicking.Where(_ => _.Id == model.Id).FirstOrDefault();
+            if (stockPicking == null)
+            {
+                result.ErrorMessage = "Stock Picking not exist!";
+                return result;
+            }
+            string dirPathDelete = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            if (stockPicking.FilePaths.Contains(model.FilePath))
+            {
+                MyFunction.DeleteFile(dirPathDelete + model.FilePath);
+                stockPicking.FilePaths.Remove(model.FilePath);
+                _dbContext.SaveChanges();
+
+            }
+            result.Succeed = true;
+            result.Data = "Delete Image successful";
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
         }
         return result;
     }

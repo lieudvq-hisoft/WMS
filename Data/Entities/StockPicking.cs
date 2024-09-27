@@ -43,6 +43,8 @@ namespace Data.Entities
 
         public DateTime? DateDone { get; set; }
 
+        public List<string>? FilePaths { get; set; } = new List<string>();
+
         public virtual ICollection<StockMove> StockMoves { get; set; }
 
     }
