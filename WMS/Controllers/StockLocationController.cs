@@ -108,4 +108,12 @@ public class StockLocationController : ControllerBase
         if (result.Succeed) return Ok(result.Data);
         return BadRequest(result.ErrorMessage);
     }
+
+    [HttpGet("QrCode/{id}")]
+    public async Task<ActionResult> GetQrcode(Guid id)
+    {
+        var result = await _stockLocationService.GetQrcode(id);
+        if (result.Succeed) return File((byte[])result.Data, "image/png");
+        return BadRequest(result.ErrorMessage);
+    }
 }

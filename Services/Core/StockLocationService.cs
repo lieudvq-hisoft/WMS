@@ -11,6 +11,7 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Services.Utils;
 using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Services.Core;
@@ -28,6 +29,7 @@ public interface IStockLocationService
     Task<ResultModel> UpdateParent(StockLocationParentUpdate model);
     Task<ResultModel> Update(StockLocationUpdate model);
     Task<ResultModel> GetLocationWarehouse(Guid warehouseId);
+    Task<ResultModel> GetQrcode(Guid id);
 }
 public class StockLocationService : IStockLocationService
 {
@@ -395,6 +397,29 @@ public class StockLocationService : IStockLocationService
                 result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 await transaction.RollbackAsync();
             }
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetQrcode(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.StockLocation.Where(_ => _.Id == id).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Location not exists";
+                result.Succeed = false;
+                return result;
+            }
+            result.Succeed = true;
+            result.Data = MyFunction.GenerateQrcode(data.Id.ToString());
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
         }
         return result;
     }
