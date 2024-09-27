@@ -1066,6 +1066,10 @@ public class StockPickingService : IStockPickingService
                 result.ErrorMessage = "Stock Picking not exists!";
                 return result;
             }
+            if(stockPicking.FilePaths == null)
+            {
+                stockPicking.FilePaths = new List<string>();
+            }
             string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Product", stockPicking.Id.ToString());
             string filePath = await MyFunction.UploadImageAsync(model.File, dirPath);
             stockPicking.FilePaths.Add(filePath);
