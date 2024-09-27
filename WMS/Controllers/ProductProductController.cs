@@ -54,7 +54,7 @@ public class ProductProductController : ControllerBase
     public async Task<ActionResult> GetQrcode(Guid id)
     {
         var result = await _productProductService.GetQrcode(id);
-        if (result.Succeed) return Ok(result.Data);
+        if (result.Succeed) return File((byte[])result.Data, "image/png");
         return BadRequest(result.ErrorMessage);
     }
 
