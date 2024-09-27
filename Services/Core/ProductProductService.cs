@@ -8,6 +8,7 @@ using Data.Models;
 using Data.Utils.Paging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Services.Utils;
 
 namespace Services.Core;
 
@@ -17,6 +18,7 @@ public interface IProductProductService
     Task<ResultModel> GetStockQuant(PagingParam<StockQuantSortCriteria> paginationModel, Guid id);
     Task<ResultModel> GetProductVariant();
     Task<ResultModel> GetUomUomForSelect(Guid id);
+    Task<ResultModel> GetQrcode(Guid id);
 }
 public class ProductProductService : IProductProductService
 {
@@ -73,7 +75,6 @@ public class ProductProductService : IProductProductService
         }
         return result;
     }
-
 
     public async Task<ResultModel> Delete(Guid id)
     {
@@ -169,6 +170,29 @@ public class ProductProductService : IProductProductService
             var uomUom = _dbContext.UomUom.Include(_ => _.Category).Where(_ => _.CategoryId == productProduct.ProductTemplate.UomUom.CategoryId).AsQueryable();
             result.Succeed = true;
             result.Data = _mapper.ProjectTo<UomUomModel>(uomUom).ToList();
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+        return result;
+    }
+
+    public async Task<ResultModel> GetQrcode(Guid id)
+    {
+        var result = new ResultModel();
+        result.Succeed = false;
+        try
+        {
+            var data = _dbContext.ProductProduct.Where(_ => _.Id == id).FirstOrDefault();
+            if (data == null)
+            {
+                result.ErrorMessage = "Product Variant not exists";
+                result.Succeed = false;
+                return result;
+            }
+            result.Succeed = true;
+            result.Data = MyFunction.GenerateQrcode(data.Id.ToString());
         }
         catch (Exception ex)
         {

@@ -50,4 +50,12 @@ public class ProductProductController : ControllerBase
         return BadRequest(result.ErrorMessage);
     }
 
+    [HttpGet("QrCode/{id}")]
+    public async Task<ActionResult> GetQrcode(Guid id)
+    {
+        var result = await _productProductService.GetQrcode(id);
+        if (result.Succeed) return Ok(result.Data);
+        return BadRequest(result.ErrorMessage);
+    }
+
 }
