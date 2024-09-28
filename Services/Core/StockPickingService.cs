@@ -1070,7 +1070,7 @@ public class StockPickingService : IStockPickingService
             {
                 stockPicking.FilePaths = new List<string>();
             }
-            string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Product", stockPicking.Id.ToString());
+            string dirPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "StockPicking", stockPicking.Id.ToString());
             string filePath = await MyFunction.UploadImageAsync(model.File, dirPath);
             stockPicking.FilePaths.Add(filePath);
             stockPicking.WriteDate = DateTime.Now;
